@@ -1,0 +1,3 @@
+[submodule "submodules/ahb3lite_pkg"]
+	path = submodules/ahb3lite_pkg
+	url = https://github.com/roalogic/ahb3lite_pkg.git
