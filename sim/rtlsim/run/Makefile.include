@@ -1,0 +1,90 @@
+#################################################################
+##                                                             ##
+##    ██████╗  ██████╗  █████╗                                 ##
+##    ██╔══██╗██╔═══██╗██╔══██╗                                ##
+##    ██████╔╝██║   ██║███████║                                ##
+##    ██╔══██╗██║   ██║██╔══██║                                ##
+##    ██║  ██║╚██████╔╝██║  ██║                                ##
+##    ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝                                ##
+##          ██╗      ██████╗  ██████╗ ██╗ ██████╗              ##
+##          ██║     ██╔═══██╗██╔════╝ ██║██╔════╝              ##
+##          ██║     ██║   ██║██║  ███╗██║██║                   ##
+##          ██║     ██║   ██║██║   ██║██║██║                   ##
+##          ███████╗╚██████╔╝╚██████╔╝██║╚██████╗              ##
+##          ╚══════╝ ╚═════╝  ╚═════╝ ╚═╝ ╚═════╝              ##
+##                                                             ##
+##    AHB3-Lite Interconnect                                   ##
+##    Simulator Include file                                   ##
+##                                                             ##
+#################################################################
+##                                                             ##
+##     Copyright (C) 2016-2017 ROA Logic BV                    ##
+##     www.roalogic.com                                        ##
+##                                                             ##
+##    This source file may be used and distributed without     ##
+##  restrictions, provided that this copyright statement is    ##
+##  not removed from the file and that any derivative work     ##
+##  contains the original copyright notice and the associated  ##
+##  disclaimer.                                                ##
+##                                                             ##
+##    This soure file is free software; you can redistribute   ##
+##  it and/or modify it under the terms of the GNU General     ##
+##  Public License as published by the Free Software           ##
+##  Foundation, either version 3 of the License, or (at your   ##
+##  option) any later versions.                                ##
+##  The current text of the License can be found at:           ##
+##  http://www.gnu.org/licenses/gpl.html                       ##
+##                                                             ##
+##    This source file is distributed in the hope that it will ##
+##  be useful, but WITHOUT ANY WARRANTY; without even the      ##
+##  implied warranty of MERCHANTABILITY or FITTNESS FOR A      ##
+##  PARTICULAR PURPOSE. See the GNU General Public License for ##
+##  more details.                                              ##
+##                                                             ##
+#################################################################
+
+
+#####################################################################
+# Design constants
+#####################################################################
+INCDIRS:=
+DEFINES:= 
+
+
+#####################################################################
+# Design Sources
+#####################################################################
+DUT_SRC_DIR=$(ROOT_DIR)/rtl/verilog
+RTL_TOP  = 
+RTL_VLOG = $(ROOT_DIR)/submodules/ahb3lite_pkg/rtl/verilog/ahb3lite_pkg.sv		\
+	   $(DUT_SRC_DIR)/ahb3lite_interconnect.sv			\
+	   $(DUT_SRC_DIR)/ahb3lite_interconnect_master_port.sv		\
+	   $(DUT_SRC_DIR)/ahb3lite_interconnect_slave_port.sv
+RTL_VHDL =
+
+
+#####################################################################
+# Testbench Sources
+#####################################################################
+TB_PREREQ=
+TB_TOP=testbench_top
+TB_SRC_DIR=$(ROOT_DIR)/bench/verilog
+
+TB_VLOG = $(TB_SRC_DIR)/ahb3lite_if.sv		\
+	  $(TB_SRC_DIR)/testbench_top.sv	\
+	  $(TB_SRC_DIR)/BaseTr.sv		\
+	  $(TB_SRC_DIR)/BusTr.sv		\
+	  $(TB_SRC_DIR)/AHBBusTr.sv		\
+	  $(TB_SRC_DIR)/BaseConfig.sv		\
+	  $(TB_SRC_DIR)/Config.sv		\
+	  $(TB_SRC_DIR)/BaseScoreBoard.sv	\
+	  $(TB_SRC_DIR)/ScoreBoard.sv		\
+	  $(TB_SRC_DIR)/BusGenerator.sv		\
+	  $(TB_SRC_DIR)/BaseDrv.sv		\
+	  $(TB_SRC_DIR)/AHB3LiteDrv.sv		\
+	  $(TB_SRC_DIR)/BaseMon.sv		\
+	  $(TB_SRC_DIR)/AHB3LiteMon.sv		\
+	  $(TB_SRC_DIR)/Environment.sv		\
+	  $(TB_SRC_DIR)/test.sv
+TB_VHDL =
+
