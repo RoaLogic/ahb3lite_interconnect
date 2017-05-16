@@ -185,12 +185,18 @@ endtask : run
 // Wrap-up, cleanup, reporting
 function void Environment::wrap_up();
   $display("\n\n---------------------------");
-  $display("Simulation ended           ");
+  $display ("------------------------------------------------------------");
+  $display (" ,------.                    ,--.                ,--.       ");
+  $display (" |  .--. ' ,---.  ,--,--.    |  |    ,---. ,---. `--' ,---. ");
+  $display (" |  '--'.'| .-. |' ,-.  |    |  |   | .-. | .-. |,--.| .--' ");
+  $display (" |  |\\  \\ ' '-' '\\ '-'  |    |  '--.' '-' ' '-' ||  |\\ `--. ");
+  $display (" `--' '--' `---'  `--`--'    `-----' `---' `-   /`--' `---' ");
+  $display ("- Simulation Ended ----------------------  `---'  ----------");
 
   //Call scoreboard wrap-up function for actual reports
   scb.wrap_up();
 
-  $display("---------------------------\n\n");
+  $display("-------------------------------------------------------------\n\n");
 endfunction : wrap_up
 
 
