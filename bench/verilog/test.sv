@@ -17,7 +17,7 @@
 //                                                             //
 /////////////////////////////////////////////////////////////////
 //                                                             //
-//     Copyright (C) 2016 ROA Logic BV                         //
+//     Copyright (C) 2016-2017 ROA Logic BV                    //
 //     www.roalogic.com                                        //
 //                                                             //
 //    This source file may be used and distributed without     //
@@ -67,20 +67,8 @@ initial begin
   foreach (mst_priority[i]) mst_priority[i] = $urandom(7);
   $root.testbench_top.mst_priority <= mst_priority;
 
- /*
-  >> Riviera-Pro Bug <<
- */
-//  master = $root.testbench_top.ahb_master;
-  master[0] = $root.testbench_top.ahb_master[0];
-  master[1] = $root.testbench_top.ahb_master[1];
-  master[2] = $root.testbench_top.ahb_master[2];
-
-//  slave  = $root.testbench_top.ahb_slave;
-  slave[0] = $root.testbench_top.ahb_slave[0];
-  slave[1] = $root.testbench_top.ahb_slave[1];
-  slave[2] = $root.testbench_top.ahb_slave[2];
-  slave[3] = $root.testbench_top.ahb_slave[3];
-  slave[4] = $root.testbench_top.ahb_slave[4];
+  master = $root.testbench_top.ahb_master;
+  slave  = $root.testbench_top.ahb_slave;
 
   env = new(master,slave,mst_priority,addr_base,addr_mask);
   env.gen_cfg();
