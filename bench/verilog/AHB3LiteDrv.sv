@@ -184,7 +184,7 @@ task AHB3LiteDrv::ahb_data(input AHBBusTr tr);
 
       if (!tr.Write)
       begin
-          //Extra cycle for reading (actually this is the 1st)
+          //Extra cycle for reading (read at the end of the cycle)
           wait4hready();
 
           //set HWDATA='xxxx'
