@@ -1,0 +1,104 @@
+%define new document type
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+% Load packages
+\usepackage{graphicx,grffile} % Graphics support
+\usepackage{geometry}
+\usepackage{array}
+\usepackage[table]{xcolor}
+\usepackage{placeins}
+\usepackage{multirow}
+\usepackage{float}
+\usepackage[shadow]{todonotes}
+\usepackage{lmodern} % Font Library
+\usepackage{amssymb,amsmath} % Math Fonts
+\usepackage{ifxetex,ifluatex}
+\usepackage{longtable} % Long table supprot
+\usepackage{vmargin} % Margin control  
+\usepackage{tabularx} % Table support
+\usepackage{booktabs} % For \toprule, \midrule and \bottomrule
+\usepackage{csvsimple} % Import CSV files
+\usepackage{layout} % Show summary of page layout
+\usepackage{hyperref} % Hyperlink support   
+\usepackage{titlesec} %Headings Styliser
+\usepackage{fancyhdr} % Header & Footer control
+\usepackage{comment}
+\usepackage[olditem,oldenum]{paralist}
+\usepackage{titling}
+
+% Setup margins & page style
+
+%\setlength{\topmargin}{-0.5in}
+%\setlength{\textheight}{9in}
+%\setlength{\oddsidemargin}{0in}
+%\setlength{\evensidemargin}{0in}
+%\setlength{\textwidth}{6.5in}
+
+% Page Layout Control
+
+% Hyperlink formatting
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=blue,
+}
+ 
+\urlstyle{same}
+
+% Define Roa Logic Colour Scheme
+
+\newcommand{\headlinecolor}{\normalcolor}
+\definecolor{rlchapter}{HTML}{3D5986}
+\definecolor{rlsection}{HTML}{5B80B8}
+\definecolor{rltable}{HTML}{D5DFED}
+
+% Font & Colour control
+\renewcommand{\familydefault}{\rmdefault}
+%\renewcommand{\headlinecolor}{\color{rlchapter}}
+
+
+% Heading Formats
+\titleformat{\chapter}
+   {\normalfont\Huge\bfseries\color{rlchapter}\sffamily}{\thechapter.}{1em}{}[{\titlerule[0.8pt]}]
+   
+\titleformat{\section}
+  {\color{rlsection}\sffamily\LARGE\bfseries}{\thesection}{1em}{}
+
+\titleformat{\subsection}
+  {\color{rlsection}\sffamily\large\bfseries}{\thesubsection}{1em}{}
+  
+\titleformat{\subsubsection}
+  {\color{rlsection}\sffamily\large\bfseries}{\thesubsubsection}{1em}{}
+  
+\titlespacing*{\chapter}      {0pt}{1.5ex plus 1ex minus .2ex}{2.3ex plus .2ex}
+\titlespacing*{\section}      {0pt}{1.5ex plus 1ex minus .2ex}{2.3ex plus .2ex}
+\titlespacing*{\subsection}   {0pt}{1.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+\titlespacing*{\subsubsection}{0pt}{1.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+\titlespacing*{\paragraph}    {0pt}{1.25ex plus 1ex minus .2ex}{0.5em}
+\titlespacing*{\subparagraph} {\parindent}{3.25ex plus 1ex minus .2ex}{0.5em}
+
+% Paragraph formatting
+%\setlength{\parindent}{1em}
+\setlength{\parskip}{0.5em}
+
+% Long table formatting
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}                  
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}                        
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
+
+% Center all Floats (Figs & Tables)
+\makeatletter
+\g@addto@macro\@floatboxreset\centering
+\makeatother
+
+%
+% Custom Commands
+%
+
+% Define ToDo Colours
+\presetkeys{todonotes}{color=blue!30, backgroundcolor=white, bordercolor=black, figcolor=white}{}
+
+
