@@ -1,5 +1,10 @@
-Introduction
-============
+---
+Title: AHB-Lite Multi-Layer Switch
+Category: Product Brief
+Author: Roa Logic
+---
+
+# Introduction
 
 The Roa Logic AHB-Lite Multi-layer Interconnect is a fully parameterized soft IP High Performance, Low Latency Interconnect Fabric for AHB-Lite. It allows a virtually unlimited number of AHB-Lite Bus Masters and Slaves to be connected without the need of bus arbitration to be implemented by the Bus Masters. Instead, Slave Side Arbitration is implemented for each Slave Port within the core.
 
@@ -7,8 +12,7 @@ The Roa Logic AHB-Lite Multi-layer Interconnect is a fully parameterized soft IP
 
 The Multi-layer Interconnect supports priority based and Round-Robin based arbitration when multiple Bus Masters request access to the same Slave Port. Typically arbitration completes within 1 clock cycle.
 
-Features
---------
+## Features
 
 -   AMBA AHB-Lite Compatible
 
@@ -22,11 +26,9 @@ Features
 
 -   Slave Port address decoding
 
-Specifications
-==============
+# Specifications
 
-Functional Description
-----------------------
+## Functional Description
 
 The Roa Logic AHB-Lite Multi-layer Interconnect is a highly configurable Interconnect Fabric for AMBA AHB-Lite based systems, enabling multiple Masters to be connected to multiple Slaves.
 
@@ -36,14 +38,13 @@ A new connection is typically created within one clock cycle, providing high ban
 
 ![Example Master / Slave Communication Setup<span data-label="fig:ahb-lite-switch-sys1"></span>](assets/img/ahb-lite-switch-sys1.png)
 
-Master Port
------------
+## Master Port
 
 An AHB-Lite Bus Master connects to a Master port of the Multi-layer Interconnect. The Master port is implemented as a regular AHB-Lite Slave Interface thereby allowing support for complex bus structures.
 
-Figure 3‑2 shows an example bus structure where a Bus Master – Master-1 – has two directly connected Slaves; the Interconnect-Master-Port1 and Slave-4
+The following figure shows an example bus structure where a Bus Master – Master-1 – has two directly connected Slaves; the Interconnect-Master-Port1 and Slave-4
 
-![Connectivity Example for 2 Bus Masters, 4 Slaves<span data-label="fig:ahb-lite-switch-sys1"></span>](assets/img/ahb-lite-switch-sys2.png)
+![Connectivity Example for 2 Bus Masters, 4 Slaves<span data-label="fig:ahb-lite-switch-sys2"></span>](assets/img/ahb-lite-switch-sys2.png)
 
 To access a Slave, the Interconnect first checks if the designated Slave Port is available. If it is available the Slave Port immediately switches to the requesting Master. If the Slave Port is occupied due to another Master accessing the Slave, the Master Port generates wait states until the requested Slave becomes available. Note the pipelined nature of the AHB-Lite bus may cause a single wait state to be inserted when the Slave switches to a new Master.
 
@@ -67,12 +68,11 @@ However the current Master may lock the bus by asserting HMASTLOCK; this prevent
 
 The number of Master Ports is specified by the MASTERS parameter.
 
-Slave Port
-----------
+## Slave Port
 
-An AHB-Lite Bus Slave connects to a Slave Port of the Multi-layer Interconnect. The Slave Port is implemented as a regular AHB3Lite Master Interface thereby allowing support for complex bus structures such as shown in Figure 3‑3
+An AHB-Lite Bus Slave connects to a Slave Port of the Multi-layer Interconnect. The Slave Port is implemented as a regular AHB3Lite Master Interface thereby allowing support for complex bus structures such as shown below:
 
-![Connectivity Example for 2 Bus Masters, 6 Slaves<span data-label="fig:ahb-lite-switch-sys1"></span>](assets/img/ahb-lite-switch-sys3.png)
+![Connectivity Example for 2 Bus Masters, 6 Slaves<span data-label="fig:ahb-lite-switch-sys3"></span>](assets/img/ahb-lite-switch-sys3.png)
 
 ### Address Space Configuration
 
@@ -116,16 +116,13 @@ Similarly since there is no other slave on the Slave Bus, the Slave Port’s HRE
 
 The number of Slave Ports is specified by the SLAVES parameter.
 
-Configurations
-==============
+# Configurations
 
-Introduction
-------------
+## Introduction
 
 The Roa Logic AHB-Lite Multi-layer Interconnect is a highly configurable Interconnect Fabric for AMBA AHB-Lite based systems. The core parameters and configuration options are described in this section.
 
-Core Parameters
----------------
+## Core Parameters
 
 | Parameter   |   Type  | Default | Description            |
 |:------------|:-------:|:-------:|:-----------------------|
@@ -150,11 +147,9 @@ The MASTERS parameter specifies the number of Master Ports on the Interconnect f
 
 The SLAVES parameter specifies the number of Slave Ports on the Interconnect Fabric.
 
-Interfaces
-==========
+# Interfaces
 
-Global Signals
---------------
+## Global Signals
 
 The common signals are shared between all devices on the AHB bus. The AHB-Lite Interconnect has Master and Slave AHB-Lite buses and they all use the global signals.
 
@@ -171,8 +166,7 @@ When the active low asynchronous HRESETn input is asserted (‘0’), the core i
 
 HCLK is the system clock. All internal logic operates at the rising edge of the system clock. All AHB bus timings are related to the rising edge of HCLK. All Master and Slave ports must operate at the same HCLK clock.
 
-Master Interfaces
------------------
+## Master Interfaces
 
 The Master Ports are regular AMB3-Lite slave interfaces. All signals are supported. See the AHB-Lite specifications for a complete description of the signals.
 
@@ -286,8 +280,7 @@ mst\_HREADY indicates the status of the local HREADY on the master’s local bus
 
 mst\_HRESP is the transfer response from the addressed slave, it can either be OKAY (‘0’) or ERROR (‘1’). The Interconnect IP routes the addressed slave’s HRESP port to mst\_HRESP.
 
-Slave Interface
----------------
+## Slave Interface
 
 The Slave Ports are regular AHB-Lite master interfaces.. All signals are supported. In addition each Slave Port has a non-standard slv\_HREADYOUT. See the AHB-Lite specifications for a complete description of the signals.
 
@@ -401,8 +394,7 @@ slv\_HREADY indicates whether the addressed slave is ready to transfer data or n
 
 slv\_HRESP is the data transfer response, it can either be OKAY (‘0’) or ERROR (‘1’). It is driven to the connected master.
 
-Resources
-=========
+# Resources
 
 Below are some example implementations for various platforms.
 
@@ -415,8 +407,7 @@ All implementations are push button, no effort has been undertaken to reduce are
 |          |     |             |        |                   |
 |          |     |             |        |                   |
 
-Revision History
-================
+# Revision History
 
 | Date       | Rev. | Comments         |
 |:-----------|:-----|:-----------------|
