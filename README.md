@@ -16,6 +16,8 @@ The Multi-layer Interconnect supports Priority and Round-Robin based arbitration
 
 [Datasheet](DATASHEET.md)
 
+- [PDF Format](docs/ahb3lite_interconnect_datasheet.pdf)
+
 ## Features
 
 - AMBA AHB-Lite Compatible
