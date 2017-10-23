@@ -8,9 +8,8 @@ The Multi-layer Interconnect supports Priority and Round-Robin based arbitration
 
 ## Documentation
 
-[Datasheet](DATASHEET.md)
-
-- [PDF Format](docs/ahb3lite_interconnect_datasheet.pdf)
+- [Datasheet](DATASHEET.md)
+  - [PDF Format](docs/ahb3lite_interconnect_datasheet.pdf)
 
 ## Features
 
