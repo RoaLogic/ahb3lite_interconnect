@@ -1,5 +1,5 @@
 ---
-Title: APB4 General Purpose IO
+Title: AHB-Lite Multilayer Switch
 Category: Product Brief
 Author: Roa Logic
 ---
