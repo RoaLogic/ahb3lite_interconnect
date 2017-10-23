@@ -33,7 +33,7 @@ The Multi-layer Interconnect supports Priority and Round-Robin based arbitration
 
 ## License
 
-Released under the RoaLogic [Non-Commerical License](/LICENSE.md)
+Released under the RoaLogic [Non-Commercial License](/LICENSE.md)
 
 ## Dependencies
 
