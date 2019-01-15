@@ -138,11 +138,11 @@ module ahb3lite_interconnect_master_port #(
   //
   // Functions
   //
-  function integer onehot2int;
-    input [SLAVES-1:0] onehot;
-
-    for (onehot2int = -1; |onehot; onehot2int++) onehot = onehot >> 1;
-  endfunction //onehot2int
+   function integer onehot2int;
+      input grey_num;
+      integer grey_num,i;
+      for (i=0; i<32; i=i+1) if (grey_num[i]) onehot2int = i;
+   endfunction
 
 
   //////////////////////////////////////////////////////////////////
