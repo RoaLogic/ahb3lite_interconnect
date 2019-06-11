@@ -1,0 +1,44 @@
+\chapter{Configurations}\label{configurations}
+
+
+\section{Introduction}\label{introduction-1}
+
+
+The Roa Logic AHB-Lite Multi-layer Interconnect is a highly configurable
+Interconnect Fabric for AMBA AHB-Lite based systems. The core parameters
+and configuration options are described in this section.
+
+\section{Core Parameters}\label{core-parameters}
+
+\begin{longtable}[]{@{}lccl@{}}
+\toprule
+Parameter & Type & Default & Description\tabularnewline
+\midrule
+\endhead
+\texttt{HADDR\_SIZE} & Integer & 32 & Address Bus Size\tabularnewline
+\texttt{HDATA\_SIZE} & Integer & 32 & Data Bus Size\tabularnewline
+\texttt{MASTERS}     & Integer & 3  & Number of Master Ports\tabularnewline
+\texttt{SLAVES}      & Integer & 8  & Number of Slave Ports\tabularnewline
+\bottomrule
+\caption{Core Parameters}
+\end{longtable}
+
+\subsection{HADDR\_SIZE}\label{haddr_size}
+
+The \texttt{HADDR\_SIZE} parameter specifies the width of the address bus for all
+Master and Slave ports.
+
+\subsection{HDATA\_SIZE}\label{hdata_size}
+
+The \texttt{HDATA\_SIZE} parameter specifies the width of the data bus for all
+Master and Slave ports.
+
+\subsection{MASTERS}\label{masters}
+
+The \texttt{MASTERS} parameter specifies the number of Master Ports on the
+Interconnect fabric.
+
+\subsection{SLAVES}\label{slaves}
+
+The \texttt{SLAVES} parameter specifies the number of Slave Ports on the
+Interconnect Fabric.

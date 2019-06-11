@@ -1,0 +1,371 @@
+\chapter{Interfaces}\label{interfaces}
+
+
+\section{Global Signals}\label{global-signals}
+
+The common signals are shared between all devices on the AHB bus. The
+AHB-Lite Interconnect has Master and Slave AHB-Lite buses and they all
+use the global signals.
+
+\begin{longtable}[]{@{}lccl@{}}
+\toprule
+Port & Size & Direction & Description\tabularnewline
+\midrule
+\endhead
+\texttt{HRESETn} & 1 & Input & Asynchronous active low reset\tabularnewline
+\texttt{HCLK} & 1 & Input & System clock input\tabularnewline
+\bottomrule
+\caption{AMBA3 Global Signals}
+\end{longtable}
+
+\subsection{HRESETn}\label{hresetn}
+
+When the active low asynchronous \texttt{HRESETn} input is asserted (`0'), the
+core is put into its initial reset state.
+
+\subsection{HCLK}\label{hclk}
+
+\texttt{HCLK} is the system clock. All internal logic operates at the rising edge
+of the system clock. All AHB bus timings are related to the rising edge
+of \texttt{HCLK}. All Master and Slave ports must operate at the same \texttt{HCLK} clock.
+
+\section{Master Interfaces}\label{master-interfaces}
+
+The Master Ports are regular AMB3-Lite slave interfaces. All signals are
+supported. See the AHB-Lite specifications for a complete description of
+the signals.
+
+\begin{longtable}[]{@{}lccl@{}}
+\toprule
+Port & Size & Direction & Description\tabularnewline
+\midrule
+\endhead
+\texttt{mst\_HSEL}      & 1                     & Input  & Bus Select\tabularnewline
+\texttt{mst\_HTRANS}    & 2                     & Input  & Transfer Type\tabularnewline
+\texttt{mst\_HADDR}     & \texttt{HADDR\_SIZE}  & Input  & Address Bus\tabularnewline
+\texttt{mst\_HWDATA}    & \texttt{HDATA\_SIZE}  & Input  & Write Data Bus\tabularnewline
+\texttt{mst\_HRDATA}    & \texttt{HDATA\_SIZE}  & Output & Read Data Bus\tabularnewline
+\texttt{mst\_HWRITE}    & 1                     & Input  & Write Select\tabularnewline
+\texttt{mst\_HSIZE}     & 3                     & Input  & Transfer Size\tabularnewline
+\texttt{mst\_HBURST}    & 3                     & Input  & Transfer Burst Size\tabularnewline
+\texttt{mst\_HPROT}     & 4                     & Input  & Transfer Protection Level\tabularnewline
+\texttt{mst\_HMASTLOCK} & 1                     & Input  & Transfer Master Lock\tabularnewline
+\texttt{mst\_HREADYOUT} & 1                     & Output & Transfer Ready Output\tabularnewline
+\texttt{mst\_HREADY}    & 1                     & Input  & Transfer Ready Input\tabularnewline
+\texttt{mst\_HRESP}     & 1                     & Input  & Transfer Response\tabularnewline
+\bottomrule
+\caption{Master Port Interface}
+\end{longtable}
+
+\subsection{mst\_HSEL}\label{mst_hsel}
+
+The Master Port only responds to other signals on its bus when \texttt{HSEL} is
+asserted (`1'). When \texttt{mst\_HSEL} is negated (`0') the Master Port
+considers the bus IDLE and negates \texttt{mst\_HREADYOUT} (`0').
+
+\subsection{mst\_HTRANS}\label{mst_htrans}
+
+\texttt{mst\_HTRANS} indicates the type of the current transfer. It is driven to
+the connected slave.
+
+\begin{longtable}[]{@{}clp{9cm}@{}}
+\toprule
+HTRANS & Type & Description\tabularnewline
+\midrule
+\endhead
+00 & IDLE & No transfer required\tabularnewline
+01 & BUSY & Connected master is not ready to accept data, but intents to
+continue the current burst.\tabularnewline
+10 & NONSEQ & First transfer of a burst or a single
+transfer\tabularnewline
+11 & SEQ & Remaining transfers of a burst\tabularnewline
+\bottomrule
+\caption{Transfer Type (HTRANS)}
+\end{longtable}
+
+
+\subsection{mst\_HADDR}\label{mst_haddr}
+
+\texttt{mst\_HADDR} is the address bus. Its size is determined by the \texttt{HADDR\_SIZE}
+parameter. It is driven to the connected slave.
+
+\subsection{mst\_HWDATA}\label{mst_hwdata}
+
+\texttt{mst\_HWDATA} is the write data bus. Its size is determined by the
+\texttt{HDATA\_SIZE} parameter. It is driven to the connected slave.
+
+\subsection{mst\_HRDATA}\label{mst_hrdata}
+
+\texttt{mst\_HRDATA} is the read data bus. Its size is determined by \texttt{HDATA\_SIZE}
+parameter. The connected slave drives it.
+
+\subsection{mst\_HWRITE}\label{mst_hwrite}
+
+\texttt{mst\_HWRITE} is the read/write signal. \texttt{HWRITE} asserted (`1') indicates a
+write transfer. It is driven to the connected slave.
+
+\subsection{mst\_HSIZE}\label{mst_hsize}
+
+\texttt{mst\_HSIZE} indicates the size of the current transfer. It is driven to
+the connected slave.
+
+\begin{longtable}[]{@{}cll@{}}
+\toprule
+HSIZE & Size & Description\tabularnewline
+\midrule
+\endhead
+\texttt{000} & 8bit    & Byte\tabularnewline
+\texttt{001} & 16bit   & Half Word\tabularnewline
+\texttt{010} & 32bit   & Word\tabularnewline
+\texttt{011} & 64bits  & Double Word\tabularnewline
+\texttt{100} & 128bit  & \tabularnewline
+\texttt{101} & 256bit  & \tabularnewline
+\texttt{110} & 512bit  & \tabularnewline
+\texttt{111} & 1024bit & \tabularnewline
+\bottomrule
+\caption{Transfer Size Values (HSIZE)}
+\end{longtable}
+
+
+\subsection{mst\_HBURST}\label{mst_hburst}
+
+The burst type indicates if the transfer is a single transfer or part of
+a burst. It is driven to the connected slave.
+
+\begin{longtable}[]{@{}cll@{}}
+\toprule
+HBURST & Type & Description\tabularnewline
+\midrule
+\endhead
+\texttt{000} & SINGLE & Single access\tabularnewline
+\texttt{001} & INCR & Continuous incremental burst\tabularnewline
+\texttt{010} & WRAP4 & 4-beat wrapping burst\tabularnewline
+\texttt{011} & INCR4 & 4-beat incrementing burst\tabularnewline
+\texttt{100} & WRAP8 & 8-beat wrapping burst\tabularnewline
+\texttt{101} & INCR8 & 8-beat incrementing burst\tabularnewline
+\texttt{110} & WRAP16 & 16-beat wrapping burst\tabularnewline
+\texttt{111} & INCR16 & 16-beat incrementing burst\tabularnewline
+\bottomrule
+\caption{Burst Types (HBURST)}
+\end{longtable}
+
+\subsection{mst\_HPROT}\label{mst_hprot}
+
+The protection signals provide information about the bus transfer. They
+are intended to implement some level of protection. It is driven to the
+connected slave.
+
+\begin{longtable}[]{@{}ccl@{}}
+\toprule
+Bit \# & Value & Description\tabularnewline
+\midrule
+\endhead
+3 & 1 & Cacheable region addressed\tabularnewline
+& 0 & Non-cacheable region addressed\tabularnewline
+2 & 1 & Bufferable\tabularnewline
+& 0 & Non-bufferable\tabularnewline
+1 & 1 & Privileged Access\tabularnewline
+& 0 & User Access\tabularnewline
+0 & 1 & Data Access\tabularnewline
+& 0 & Opcode fetch\tabularnewline
+\bottomrule
+\caption{Protection Signals (HPROT)}
+\end{longtable}
+
+\subsection{mst\_HREADYOUT}\label{mst_hreadyout}
+
+When a slave is addressed, the \texttt{mst\_HREADYOUT} indicates that the
+addressed slave finished the current transfer. The Interconnect IP
+routes the addressed slave's \texttt{HREADY} signal to the master.
+
+When no slave is address, the \texttt{mst\_HREADYOUT} signal is generated
+locally, inside the Interconnect.
+
+\subsection{mst\_HMASTLOCK}\label{mst_hmastlock}
+
+The master lock signal indicates if the current transfer is part of a
+locked sequence, commonly used for Read-Modify-Write cycles. While the
+\texttt{mst\_HMASTLOCK} is asserted, the Interconnect IP cannot switch the
+addressed slave to another master, even if that master has a higher
+priority. Instead the current master retains access to slave until it
+releases \texttt{mst\_HMASTLOCK}.
+
+\subsection{mst\_HREADY}\label{mst_hready}
+
+\texttt{mst\_HREADY} indicates the status of the local \texttt{HREADY} on the master's
+local bus. It is routed to the \texttt{HREADYOUT} port of the addressed slave.
+
+\subsection{mst\_HRESP}\label{mst_hresp}
+
+\texttt{mst\_HRESP} is the transfer response from the addressed slave, it can
+either be OKAY (`0') or ERROR (`1'). The Interconnect IP routes the
+addressed slave's \texttt{HRESP} port to \texttt{mst\_HRESP}.
+
+\section{Slave Interface}\label{slave-interface}
+
+The Slave Ports are regular AHB-Lite master interfaces.. All signals are
+supported. In addition each Slave Port has a non-standard
+\texttt{slv\_HREADYOUT}. See the AHB-Lite specifications for a complete
+description of the signals.
+
+\begin{longtable}[]{@{}lccl@{}}
+\toprule
+Port & Size & Direction & Description\tabularnewline
+\midrule
+\endhead
+\texttt{slv\_HSEL}      & 1           & Output & Bus Select\tabularnewline
+\texttt{slv\_HADDR}     & \texttt{HADDR\_SIZE} & Output & Address\tabularnewline
+\texttt{slv\_HWDATA}    & \texttt{HDATA\_SIZE} & Output & Write Data Bus\tabularnewline
+\texttt{slv\_HRDATA}    & \texttt{HDATA\_SIZE} & Input  & Read Data Bus\tabularnewline
+\texttt{slv\_HWRITE}    & 1           & Output & Write Select\tabularnewline
+\texttt{slv\_HSIZE}     & 3           & Output & Transfer size\tabularnewline
+\texttt{slv\_HBURST}    & 3           & Output & Transfer Burst Size\tabularnewline
+\texttt{slv\_HPROT}     & 4           & Output & Transfer Protection Level\tabularnewline
+\texttt{slv\_HTRANS}    & 2           & Input  & Transfer Type\tabularnewline
+\texttt{slv\_HMASTLOCK} & 1           & Output & Transfer Master Lock\tabularnewline
+\texttt{slv\_HREADY}    & 1           & Input  & Transfer Ready Input\tabularnewline
+\texttt{slv\_HRESP}     & 1           & Input  & Transfer Response\tabularnewline
+\bottomrule
+\caption{Data Interface Signals}
+\end{longtable}
+
+\subsection{slv\_HSEL}\label{slv_hsel}
+
+The Master Port only responds to other signals on its bus when \texttt{HSEL} is
+asserted (`1'). When \texttt{slv\_HSEL} is negated (`0') the Master Port
+considers the bus IDLE and negates \texttt{mst\_HREADYOUT} (`0').
+
+\subsection{slv\_HADDR}\label{slv_haddr}
+
+\texttt{slv\_HADDR} is the data address bus. Its size is determined by the
+\texttt{HADDR\_SIZE} parameter. The connected master drives \texttt{slv\_HADDR}.
+
+\subsection{slv \_HRDATA}\label{slv-_hrdata}
+
+\texttt{slv\_HRDATA} is the read data bus. Its size is determined by the
+\texttt{HDATA\_SIZE} parameter. It is driven to the connected master.
+
+\subsection{slv \_HWDATA}\label{slv-_hwdata}
+
+\texttt{slv\_HWDATA} is the write data bus. Its size is determined by the
+\texttt{HDATA\_SIZE} parameter. The connected master drives \texttt{slv\_HADDR}.
+
+\subsection{slv \_HWRITE}\label{slv-_hwrite}
+
+\texttt{slv\_HWRITE} is the read/write signal. \texttt{HWRITE} asserted (`1') indicates a
+write transfer. The connected master drives \texttt{slv\_HWRITE}.
+
+\subsection{slv\_HSIZE}\label{slv_hsize}
+
+\texttt{slv\_HSIZE} indicates the size of the current transfer. The connected
+master drives \texttt{slv\_HSIZE}.
+
+\begin{longtable}[]{@{}cll@{}}
+\toprule
+HSIZE & Size & Description\tabularnewline
+\midrule
+\endhead
+\texttt{000} & 8bit    & Byte\tabularnewline
+\texttt{001} & 16bit   & Half Word\tabularnewline
+\texttt{010} & 32bit   & Word\tabularnewline
+\texttt{011} & 64bits  & Double Word\tabularnewline
+\texttt{100} & 128bit  & \tabularnewline
+\texttt{101} & 256bit  & \tabularnewline
+\texttt{110} & 512bit  & \tabularnewline
+\texttt{111} & 1024bit & \tabularnewline
+\bottomrule
+\caption{Data Transfer Sizes}
+\end{longtable}
+
+\subsection{slv\_HBURST}\label{slv_hburst}
+
+The burst type indicates if the transfer is a single transfer or part of
+a burst. The connected master drives it.
+
+\begin{longtable}[]{@{}cll@{}}
+\toprule
+HBURST & Type & Description\tabularnewline
+\midrule
+\endhead
+\texttt{000} & Single & Single access\tabularnewline
+\texttt{001} & INCR   & Continuous incremental burst\tabularnewline
+\texttt{010} & WRAP4  & 4-beat wrapping burst\tabularnewline
+\texttt{011} & INCR4  & 4-beat incrementing burst\tabularnewline
+\texttt{100} & WRAP8  & 8-beat wrapping burst\tabularnewline
+\texttt{101} & INCR8  & 8-beat incrementing burst\tabularnewline
+\texttt{110} & WRAP16 & 16-beat wrapping burst\tabularnewline
+\texttt{111} & INCR16 & 16-beat incrementing burst\tabularnewline
+\bottomrule
+\caption{Burst Types (HBURST)}
+\end{longtable}
+
+\subsection{slv\_HPROT}\label{slv_hprot}
+
+The data protection signals provide information about the bus transfer.
+They are intended to implement some level of protection. The connected
+master drives \texttt{slv\_HPROT}.
+
+\begin{longtable}[]{@{}ccl@{}}
+\toprule
+Bit\# & Value & Description\tabularnewline
+\midrule
+\endhead
+3 & 1 & Cacheable region addressed\tabularnewline
+& 0 & Non-cacheable region addressed\tabularnewline
+2 & 1 & Bufferable\tabularnewline
+& 0 & Non-bufferable\tabularnewline
+1 & 1 & Privileged access. CPU is not in User Mode\tabularnewline
+& 0 & User access. CPU is in User Mode\tabularnewline
+0 & 1 & Data transfer, always `1'\tabularnewline
+\bottomrule
+\caption{Data Protection Signals}
+\end{longtable}
+
+\subsection{slv\_HTRANS}\label{slv_htrans}
+
+\texttt{slv\_HTRANS} indicates the type of the current data transfer.
+
+\begin{longtable}[]{@{}cll@{}}
+\toprule
+slv\_HTRANS & Type & Description\tabularnewline
+\midrule
+\endhead
+\texttt{00} & IDLE & No transfer required\tabularnewline
+\texttt{01} & BUSY & \emph{Not used}\tabularnewline
+\texttt{10} & NONSEQ & First transfer of an data burst\tabularnewline
+\texttt{11} & SEQ & Remaining transfers of an data burst\tabularnewline
+\bottomrule
+\caption{Data Transfer Type}
+\end{longtable}
+
+\subsection{slv\_HMASTLOCK}\label{slv_hmastlock}
+
+The master lock signal indicates if the current transfer is part of a
+locked sequence, commonly used for Read-Modify-Write cycles. The
+connected master drives \texttt{slv\_MASTLOCK}.
+
+\subsection{slv\_HREADYOUT}\label{slv_hreadyout}
+
+\begin{longtable}[]{@{}|lp{12cm}@{}}
+\textbf{Note:} & \\
+\endhead
+& \texttt{slv\_HREADYOUT} is not an AHB-Lite Master Signal\tabularnewline
+\end{longtable}
+
+The \texttt{slv\_HREADYOUT} signal reflects the state of the connected Master
+Port's \texttt{HREADY} port. It is provided to support local slaves connected
+directly to the Master's AHB-Lite bus. It is driven by the connected
+master's \texttt{HREADY} port.
+
+\subsection{slv\_HREADY}\label{slv_hready}
+
+\texttt{slv\_HREADY} indicates whether the addressed slave is ready to transfer
+data or not. When \texttt{slv\_HREADY} is negated (`0') the slave is not ready,
+forcing wait states. When \texttt{slv\_HREADY} is asserted (`0') the slave is
+ready and the transfer completed. It is driven to the connected master's
+\texttt{HREADYOUT} port.
+
+\subsection{slv\_HRESP}\label{slv_hresp}
+
+\texttt{slv\_HRESP} is the data transfer response, it can either be OKAY (`0') or
+ERROR (`1'). It is driven to the connected master.
