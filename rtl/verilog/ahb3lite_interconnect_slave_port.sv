@@ -114,10 +114,10 @@ module ahb3lite_interconnect_slave_port #(
   // Functions
   //
   function integer onehot2int;
-    input [SLAVES-1:0] onehot;
+    input [MASTERS-1:0] onehot;
 
     integer i;
-    for (i=0; i < SLAVES; i++) if (onehot[i]) onehot2int = i;
+    for (i=0; i < MASTERS; i++) if (onehot[i]) onehot2int = i;
   endfunction //onehot2int
 
 
