@@ -27,6 +27,41 @@
 //                                                                 //
 /////////////////////////////////////////////////////////////////////
 
+// +FHDR -  Semiconductor Reuse Standard File Header Section  -------
+// FILE NAME      : ahb3lite_interconnect_slave_port.sv
+// DEPARTMENT     :
+// AUTHOR         : rherveille
+// AUTHOR'S EMAIL :
+// ------------------------------------------------------------------
+// RELEASE HISTORY
+// VERSION DATE        AUTHOR      DESCRIPTION
+// 1.0     2017-03-29  rherveille  initial release
+// 1.1     2019-08-01  rherveille  Fixed onehot2int size
+// ------------------------------------------------------------------
+// KEYWORDS : AMBA AHB AHB3-Lite Interconnect Matrix
+// ------------------------------------------------------------------
+// PURPOSE  : AHB3Lite Interconnect Matrix, Slave Port
+// ------------------------------------------------------------------
+// PARAMETERS
+//  PARAM NAME        RANGE    DESCRIPTION              DEFAULT UNITS
+//  HADDR_SIZE        1+       Address bus size         8       bits
+//  HDATA_SIZE        1+       Data bus size            32      bits
+//  MASTERS           1+       Number of Master ports   3       ports
+//  SLAVES            1+       Number of Slave ports    8       ports
+// ------------------------------------------------------------------
+// REUSE ISSUES 
+//   Reset Strategy      : external asynchronous active low; HRESETn
+//   Clock Domains       : HCLK, rising edge
+//   Critical Timing     : 
+//   Test Features       : na
+//   Asynchronous I/F    : no
+//   Scan Methodology    : na
+//   Instantiations      : none
+//   Synthesizable (y/n) : Yes
+//   Other               :                                         
+// -FHDR-------------------------------------------------------------
+
+
 module ahb3lite_interconnect_slave_port #(
   parameter HADDR_SIZE  = 32,
   parameter HDATA_SIZE  = 32,
@@ -34,8 +69,8 @@ module ahb3lite_interconnect_slave_port #(
   parameter SLAVES      = 8   //number of master-ports
 )
 (
-  input                               HRESETn,
-                                      HCLK,
+  input                                     HRESETn,
+                                            HCLK,
 
   //AHB Slave Interfaces (receive data from AHB Masters)
   //AHB Masters conect to these ports
