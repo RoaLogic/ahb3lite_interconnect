@@ -27,32 +27,84 @@
 //                                                                 //
 /////////////////////////////////////////////////////////////////////
 
+// +FHDR -  Semiconductor Reuse Standard File Header Section  -------
+// FILE NAME      : ahb3lite_interconnect.sv
+// DEPARTMENT     :
+// AUTHOR         : rherveille
+// AUTHOR'S EMAIL :
+// ------------------------------------------------------------------
+// RELEASE HISTORY
+// VERSION DATE        AUTHOR      DESCRIPTION
+// 1.0     2017-03-29  rherveille  initial release
+// 1.1     2019-08-15  rherveille  added SLAVE_MASK parameter
+// ------------------------------------------------------------------
+// KEYWORDS : AMBA AHB AHB3-Lite Interconnect Matrix
+// ------------------------------------------------------------------
+// PURPOSE  : AHB3Lite Interconnect Matrix
+// ------------------------------------------------------------------
+// PARAMETERS
+//  PARAM NAME        RANGE    DESCRIPTION              DEFAULT UNITS
+//  HADDR_SIZE        1+       Address bus size         8       bits
+//  HDATA_SIZE        1+       Data bus size            32      bits
+//  MASTERS           1+       Number of Master ports   3       ports
+//  SLAVES            1+       Number of Slave ports    8       ports
+//  SLAVE_MASK                 Per Master Slave mask
+// ------------------------------------------------------------------
+// REUSE ISSUES 
+//   Reset Strategy      : external asynchronous active low; HRESETn
+//   Clock Domains       : HCLK, rising edge
+//   Critical Timing     : 
+//   Test Features       : na
+//   Asynchronous I/F    : no
+//   Scan Methodology    : na
+//   Instantiations      : ahb3lite_interconnect_master_port
+//                         ahb3lite_interconnect_slave_port
+//   Synthesizable (y/n) : Yes
+//   Other               :                                         
+// -FHDR-------------------------------------------------------------
+
 /*
  * Dynamic AHB switch
- * MASTERS: sets the number of AHB slave-ports on the switch
- *          AHB bus masters connect to these ports. There should only be 1 bus master per slave port
+ * MASTERS   : sets the number of AHB slave-ports on the switch
+ *             AHB bus masters connect to these ports. There should only be 1 bus master per slave port
  *
- *          HSEL is used to determine if the port is accessed. This allows a single AHB bus master to be connected to multiple switches. It is allowed to drive HSEL with a static/hardwired signal ('1').
+ *             HSEL is used to determine if the port is accessed. This allows a single AHB bus master to be connected to multiple switches. 
+ *             It is allowed to drive HSEL with a static/hardwired signal ('1'). This results in a smaller (less logic resources) and faster (larger slack) switch.
  *
- *          'priority' sets the priority of the port. This is used to determine what slave-port (AHB bus master) gets granted access to a master-port when multiple slave-ports want to access the same master-port. The slave-port with the highest priority is granted access.
- *          'priority' may be a static value or it may be a dynamic value where the priority can be set per AHB transfer. In the latter case 'priority' has the same requirements/restrictions as HSIZE/HBURST/HPROT, that is it must remain stable during a burst transfer.
- *          Hardwiring 'priority' results in a smaller (less logic resources) switch.
+ *             'priority' sets the priority of the port. This is used to determine what slave-port (AHB bus master) gets granted access to a master-port when multiple slave-ports want to access the same master-port. The slave-port with the highest priority is granted access.
+ *             'priority' may be a static value or it may be a dynamic value where the priority can be set per AHB transfer. In the latter case 'priority' has the same requirements/restrictions as HSIZE/HBURST/HPROT, that is it must remain stable during a burst transfer.
+ *             Hardwiring 'priority' results in a smaller (less logic resources) and faster (larger slack) switch.
  *
  *
- * SLAVES : sets the number of AHB master-ports on the switch
- *          AHB slaves connect to these ports. There may be multiple slaves connected to a master port.
- *          Additional address decoding (HSEL generation) is necessary in this case
+ * SLAVES    : sets the number of AHB master-ports on the switch
+ *             AHB slaves connect to these ports. There may be multiple slaves connected to a master port.
+ *             Additional address decoding (HSEL generation) is necessary in this case
  *
- *          'haddr_mask' and 'haddr_base' define when a master-port is addressed.
- *          'haddr_mask' determines the relevant bits for the address decoding and 'haddr_base' specifies the base offset.
- *          selected = (HADDR & haddr_mask) == (haddr_base & haddr_mask)
- *          'haddr_mask' and 'haddr_base' should be static signals. Hardwiring these signals results in a smaller (less logic resource) switch.
+ *             'haddr_mask' and 'haddr_base' define when a master-port is addressed.
+ *             'haddr_mask' determines the relevant bits for the address decoding and 'haddr_base' specifies the base offset.
+ *             selected = (HADDR & haddr_mask) == (haddr_base & haddr_mask)
+ *             'haddr_mask' and 'haddr_base' should be static signals. Hardwiring these signals results in a smaller (less logic resource) and faster (larger slack) switch.
+ *
+ * SLAVE_MASK: Indicates that a master can/will never access a slave
+ *             There is a MASK for each master with a bit for each slave. I.e. SLAVE_MASK is an array of MASTERS x SLAVES.
+ *             Setting a MASK bit to '0' indicates that master will never access the slave.
+ *             Setting a MASK bit to '1' indicates that master will/can access the slave.
+ *
+ *             example: MASTERS=3, SLAVES=2. 
+ *                       | 2 1 0
+ *                       |------
+ *                      1| 1 1 0    Slave[1] can only be accessed by masters 2 and 1. Master[0] never accesses Slave[1]
+ *                      0| 0 1 1    Slave[0] can only be accessed by masters 1 and 0. Master[2] never accesses Slave[0]
+ *                      SLAVE_MASK = '{2'b10, 2'b11, 2'b01}
+ *
  */
 module ahb3lite_interconnect #(
-  parameter HADDR_SIZE  = 32,
-  parameter HDATA_SIZE  = 32,
-  parameter MASTERS     = 3, //number of AHB Masters
-  parameter SLAVES      = 8  //number of AHB slaves
+  parameter              HADDR_SIZE           = 32,
+  parameter              HDATA_SIZE           = 32,
+  parameter              MASTERS              = 3, //number of AHB Masters
+  parameter              SLAVES               = 8, //number of AHB slaves
+
+  parameter [SLAVES-1:0] SLAVE_MASK [MASTERS] = '{MASTERS{ {SLAVES{1'b1}} }}
 )
 (
   //Common signals
@@ -161,7 +213,8 @@ generate
     .HADDR_SIZE     ( HADDR_SIZE             ),
     .HDATA_SIZE     ( HDATA_SIZE             ),
     .MASTERS        ( MASTERS                ),
-    .SLAVES         ( SLAVES                 ) )
+    .SLAVES         ( SLAVES                 ),
+    .SLAVE_MASK     ( SLAVE_MASK         [m] ) )
   master_port (
     .HRESETn        ( HRESETn                ),
     .HCLK           ( HCLK                   ),
