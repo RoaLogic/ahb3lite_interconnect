@@ -27,12 +27,47 @@
 //                                                                 //
 /////////////////////////////////////////////////////////////////////
 
+// +FHDR -  Semiconductor Reuse Standard File Header Section  -------
+// FILE NAME      : ahb3lite_interconnect_master_port.sv
+// DEPARTMENT     :
+// AUTHOR         : rherveille
+// AUTHOR'S EMAIL :
+// ------------------------------------------------------------------
+// RELEASE HISTORY
+// VERSION DATE        AUTHOR      DESCRIPTION
+// 1.0     2017-03-29  rherveille  initial release
+// 1.1     2019-08-15  rherveille  added SLAVE_MASK parameter
+// ------------------------------------------------------------------
+// KEYWORDS : AMBA AHB AHB3-Lite Interconnect Matrix
+// ------------------------------------------------------------------
+// PURPOSE  : AHB3Lite Interconnect Matrix
+// ------------------------------------------------------------------
+// PARAMETERS
+//  PARAM NAME        RANGE    DESCRIPTION              DEFAULT UNITS
+//  HADDR_SIZE        1+       Address bus size         8       bits
+//  HDATA_SIZE        1+       Data bus size            32      bits
+//  MASTERS           1+       Number of Master ports   3       ports
+//  SLAVES            1+       Number of Slave ports    8       ports
+//  SLAVE_MASK                 Slave mask
+// ------------------------------------------------------------------
+// REUSE ISSUES 
+//   Reset Strategy      : external asynchronous active low; HRESETn
+//   Clock Domains       : HCLK, rising edge
+//   Critical Timing     : 
+//   Test Features       : na
+//   Asynchronous I/F    : no
+//   Scan Methodology    : na
+//   Instantiations      : none
+//   Synthesizable (y/n) : Yes
+//   Other               :                                         
+// -FHDR-------------------------------------------------------------
  
 module ahb3lite_interconnect_master_port #(
-  parameter HADDR_SIZE  = 32,
-  parameter HDATA_SIZE  = 32,
-  parameter MASTERS     = 3, //number of AHB masters
-  parameter SLAVES      = 8  //number of AHB slaves
+  parameter              HADDR_SIZE = 32,
+  parameter              HDATA_SIZE = 32,
+  parameter              MASTERS    = 3, //number of AHB masters
+  parameter              SLAVES     = 8, //number of AHB slaves
+  parameter [SLAVES-1:0] SLAVE_MASK = {SLAVES{1'b1}}
 )
 (
   //Common signals
@@ -93,7 +128,7 @@ module ahb3lite_interconnect_master_port #(
   //
   // Variables
   //
-  enum logic [1:0] {NO_ACCESS,ACCESS_PENDING,ACCESS_GRANTED} access_state;
+  enum logic [2:0] {NO_ACCESS=3'b001,ACCESS_PENDING=3'b010,ACCESS_GRANTED=3'b100} access_state;
   logic                   no_access,
                           access_pending,
                           access_granted;
@@ -142,6 +177,8 @@ module ahb3lite_interconnect_master_port #(
   //
   // Module Body
   //
+
+initial $display("%m: SLAVE_MASK=%b", SLAVE_MASK);
 
 
   /*
@@ -197,12 +234,14 @@ module ahb3lite_interconnect_master_port #(
 
         ACCESS_GRANTED: if      (mst_HREADY && ~|current_HSEL                                ) access_state <= NO_ACCESS;
                         else if (mst_HREADY && ~|(current_HSEL & master_granted & slvHREADY) ) access_state <= ACCESS_PENDING;
+
+        default       : access_state <= NO_ACCESS; //something went wrong, should never end up here
       endcase
 
 
-  assign no_access      = access_state == NO_ACCESS;
-  assign access_pending = access_state == ACCESS_PENDING;
-  assign access_granted = access_state == ACCESS_GRANTED;
+  assign no_access      = access_state[0];
+  assign access_pending = access_state[1];
+  assign access_granted = access_state[2];
 
   /*
    * Generate burst counter
@@ -229,21 +268,19 @@ module ahb3lite_interconnect_master_port #(
   /*
    * Indicate that the slave may switch masters on the NEXT cycle
    */
-  always_comb
-    case (access_state)
-      NO_ACCESS     : can_switch = ~|(current_HSEL & master_granted);
-      ACCESS_PENDING: can_switch = ~|(pending_HSEL & master_granted); 
-      ACCESS_GRANTED: can_switch = ~mst_HSEL |
-                                   (mst_HSEL & ~mst_HMASTLOCK & mst_HREADY & 
-                                     ( (mst_HTRANS == HTRANS_IDLE                                              ) |
-                                       (mst_HTRANS == HTRANS_NONSEQ & mst_HBURST == HBURST_SINGLE              ) |
-                                       (mst_HTRANS == HTRANS_SEQ    & mst_HBURST != HBURST_INCR   & ~|burst_cnt) )
-                                    );
-    endcase
-
+  assign can_switch = ( no_access      & ~|(current_HSEL & master_granted) ) |
+                      ( access_pending & ~|(pending_HSEL & master_granted) ) |
+                      ( access_granted & ( ~mst_HSEL |
+                                           (mst_HSEL & ~mst_HMASTLOCK & mst_HREADY & 
+                                             ( (mst_HTRANS == HTRANS_IDLE                                              ) |
+                                               (mst_HTRANS == HTRANS_NONSEQ & mst_HBURST == HBURST_SINGLE              ) |
+                                               (mst_HTRANS == HTRANS_SEQ    & mst_HBURST != HBURST_INCR   & ~|burst_cnt) )
+                                            )
+                                         )
+                      );
 
   /*
-   * Decode slave-request; which AHB slave (master-port) to address?
+   * Decode slave-request; which AHB slave (slave-port) to address?
    *
    * Send out connection request to slave-port
    * Slave-port replies by asserting master_gnt
@@ -252,9 +289,9 @@ module ahb3lite_interconnect_master_port #(
 generate
   for (s=0; s<SLAVES; s++)
   begin: gen_HSEL
-      assign current_HSEL[s] = (mst_HTRANS != HTRANS_IDLE) & ( (mst_HADDR & slvHADDRmask[s]) == (slvHADDRbase[s] & slvHADDRmask[s]) );
-      assign pending_HSEL[s] = (regHTRANS  != HTRANS_IDLE) & ( (regHADDR  & slvHADDRmask[s]) == (slvHADDRbase[s] & slvHADDRmask[s]) );
-      assign slvHSEL[s] = access_pending ? (pending_HSEL[s]) : (mst_HSEL & current_HSEL[s]);
+      assign current_HSEL[s] = SLAVE_MASK[s] & (mst_HTRANS != HTRANS_IDLE) & ( (mst_HADDR & slvHADDRmask[s]) == (slvHADDRbase[s] & slvHADDRmask[s]) );
+      assign pending_HSEL[s] = SLAVE_MASK[s] & (regHTRANS  != HTRANS_IDLE) & ( (regHADDR  & slvHADDRmask[s]) == (slvHADDRbase[s] & slvHADDRmask[s]) );
+      assign slvHSEL     [s] = access_pending ? (pending_HSEL[s]) : (mst_HSEL & current_HSEL[s]);
   end
 endgenerate
 
