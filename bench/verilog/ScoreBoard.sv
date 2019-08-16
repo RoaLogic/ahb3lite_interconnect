@@ -53,7 +53,7 @@ class ScoreBoard #(type T=AHBBusTr) extends BaseScoreBoard;
   extern function new(BaseConfig cfg);
   extern virtual function void wrap_up();
   extern function void save_expected(T tr);
-  extern function int check_actual(T tr, int PortId);
+  extern function void check_actual(T tr, int PortId);
   extern function void display(string prefix="");
 endclass : ScoreBoard
 
@@ -115,7 +115,7 @@ endfunction : save_expected
 //-------------------------------------
 //Find transaction in transaction queue
 //and compare/check
-function int ScoreBoard::check_actual(T tr, int PortId);
+function void ScoreBoard::check_actual(T tr, int PortId);
   tr.display($sformatf("@%0t Scb-check ", $time));
 
   foreach (TrQueue[i])
