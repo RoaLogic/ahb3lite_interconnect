@@ -43,12 +43,14 @@
 // PURPOSE  : AHB3Lite Interconnect Matrix
 // ------------------------------------------------------------------
 // PARAMETERS
-//  PARAM NAME        RANGE    DESCRIPTION              DEFAULT UNITS
-//  HADDR_SIZE        1+       Address bus size         8       bits
-//  HDATA_SIZE        1+       Data bus size            32      bits
-//  MASTERS           1+       Number of Master ports   3       ports
-//  SLAVES            1+       Number of Slave ports    8       ports
-//  SLAVE_MASK                 Slave mask
+//  PARAM NAME          RANGE    DESCRIPTION              DEFAULT UNITS
+//  HADDR_SIZE          1+       Address bus size         8       bits
+//  HDATA_SIZE          1+       Data bus size            32      bits
+//  MASTERS             1+       Number of Master ports   3       ports
+//  SLAVES              1+       Number of Slave ports    8       ports
+//  SLAVE_MASK                   Slave mask 0:slave is never addressed
+//                                          1:slave can be addressed
+//  ERROR_ON_SLAVE_MASK 1+       ERROR when addressing masked slave
 // ------------------------------------------------------------------
 // REUSE ISSUES 
 //   Reset Strategy      : external asynchronous active low; HRESETn
@@ -63,11 +65,12 @@
 // -FHDR-------------------------------------------------------------
  
 module ahb3lite_interconnect_master_port #(
-  parameter              HADDR_SIZE = 32,
-  parameter              HDATA_SIZE = 32,
-  parameter              MASTERS    = 3, //number of AHB masters
-  parameter              SLAVES     = 8, //number of AHB slaves
-  parameter [SLAVES-1:0] SLAVE_MASK = {SLAVES{1'b1}}
+  parameter              HADDR_SIZE          = 32,
+  parameter              HDATA_SIZE          = 32,
+  parameter              MASTERS             = 3, //number of AHB masters
+  parameter              SLAVES              = 8, //number of AHB slaves
+  parameter [SLAVES-1:0] SLAVE_MASK          = {SLAVES{1'b1}},
+  parameter              ERROR_ON_SLAVE_MASK = ~SLAVE_MASK
 )
 (
   //Common signals
@@ -134,10 +137,12 @@ module ahb3lite_interconnect_master_port #(
                           access_granted;
 
 
-  logic [SLAVES     -1:0] current_HSEL,
-                          pending_HSEL;
+  logic [SLAVES     -1:0] current_HSEL,      //current-cycle addressed slave
+                          pending_HSEL,      //pending-cycle addressed slave
+                          error_masked_HSEL; //generate error when accessing masked slave
 
-  logic                   local_HREADYOUT;
+  logic                   local_HREADYOUT,
+                          local_HRESP;
 
   logic                   mux_sel;
   logic [SLAVES_BITS-1:0] slave_sel, slaves2int;
@@ -202,11 +207,22 @@ initial $display("%m: SLAVE_MASK=%b", SLAVE_MASK);
     end 
 
   /*
-   * Generate local HREADY response
+   * Generate local HREADY and HRESP
+   * Local means the master port replies to the connected master
+   *
+   * Always generate HREADY when IDLE, otherwise insert wait state
+   * HRESP is always OKAY, except when addressing masked slave
    */
   always @(posedge HCLK,negedge HRESETn)
-    if      (!HRESETn   ) local_HREADYOUT <= 1'b1;
-    else if ( mst_HREADY) local_HREADYOUT <= (mst_HTRANS == HTRANS_IDLE) | ~mst_HSEL;
+    if      (!HRESETn    ) local_HREADYOUT <= 1'b1;
+    else if ( local_HRESP) local_HREADYOUT <= 1'b1; //HRESP='1' 2nd cycle of ERROR-response
+    else if ( mst_HREADY ) local_HREADYOUT <= (mst_HTRANS == HTRANS_IDLE) | ~mst_HSEL;
+
+
+  always @(posedge HCLK,negedge HRESETn)
+    if      (!HRESETn   ) local_HRESP <= HRESP_OKAY;
+    else if ( mst_HREADY) local_HRESP <= |error_masked_HSEL ? HRESP_ERROR : HRESP_OKAY;
+
 
   /*
    * Access granted state machine
@@ -217,7 +233,9 @@ initial $display("%m: SLAVE_MASK=%b", SLAVE_MASK);
    *                 else the access is pending
    *
    * ACCESS_PENDING: Intermediate state to hold bus-command (HTRANS, ...)
+   *
    * ACCESS_GRANTED: while access requested and granted stay in this state
+   *                 else if access requested but not granted go to ACCESS_PENDING
    *                 else go to NO_ACCESS
    */
 
@@ -289,12 +307,25 @@ initial $display("%m: SLAVE_MASK=%b", SLAVE_MASK);
 generate
   for (s=0; s<SLAVES; s++)
   begin: gen_HSEL
-      assign current_HSEL[s] = SLAVE_MASK[s] & (mst_HTRANS != HTRANS_IDLE) & ( (mst_HADDR & slvHADDRmask[s]) == (slvHADDRbase[s] & slvHADDRmask[s]) );
-      assign pending_HSEL[s] = SLAVE_MASK[s] & (regHTRANS  != HTRANS_IDLE) & ( (regHADDR  & slvHADDRmask[s]) == (slvHADDRbase[s] & slvHADDRmask[s]) );
-      assign slvHSEL     [s] = access_pending ? (pending_HSEL[s]) : (mst_HSEL & current_HSEL[s]);
+      assign current_HSEL     [s] = SLAVE_MASK[s] & (mst_HTRANS != HTRANS_IDLE) &
+                                      ( (mst_HADDR & slvHADDRmask[s]) == (slvHADDRbase[s] & slvHADDRmask[s]) );
+      assign pending_HSEL     [s] = SLAVE_MASK[s] & (regHTRANS  != HTRANS_IDLE) &
+                                      ( (regHADDR  & slvHADDRmask[s]) == (slvHADDRbase[s] & slvHADDRmask[s]) );
+      assign slvHSEL          [s] = access_pending ? (pending_HSEL[s]) : (mst_HSEL & current_HSEL[s]);
+
+      //generate an error while addressing a masked slave
+      assign error_masked_HSEL[s] = ~SLAVE_MASK[s] & ERROR_ON_SLAVE_MASK[s] & mst_HSEL & (mst_HTRANS != HTRANS_IDLE) &
+                                       ( (mst_HADDR & slvHADDRmask[s]) == (slvHADDRbase[s] & slvHADDRmask[s]) );
   end
 endgenerate
 
+  always @(posedge HCLK) if (|error_masked_HSEL)
+    begin
+        $display ("ERROR: error_masked_HSEL(%b)", error_masked_HSEL);
+
+        #1000;
+        $finish;
+    end
 
   /*
    * Check if granted access
@@ -325,7 +356,7 @@ endgenerate
    */
   assign mst_HRDATA    =                  slvHRDATA[slave_sel];
   assign mst_HREADYOUT = access_granted ? slvHREADY[slave_sel] : local_HREADYOUT; //master's HREADYOUT is driven by slave's HREADY (slv_HREADY -> mst_HREADYOUT)
-  assign mst_HRESP     = access_granted ? slvHRESP [slave_sel] : HRESP_OKAY; 
+  assign mst_HRESP     = access_granted ? slvHRESP [slave_sel] : local_HRESP; 
 endmodule
 
 
