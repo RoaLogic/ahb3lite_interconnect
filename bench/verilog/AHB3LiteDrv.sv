@@ -84,7 +84,8 @@ endtask : initialize
 task AHB3LiteDrv::wait4hready();
   do
     @(master.cb_master);
-  while (master.cb_master.HREADY !== 1'b1);
+  while (master.cb_master.HREADY !== 1'b1 && master.cb_master.HRESP !== HRESP_ERROR);
+
 endtask : wait4hready
 
 
@@ -123,6 +124,16 @@ task AHB3LiteDrv::ahb_cmd(input AHBBusTr tr);
   //wait for HREADY
   wait4hready();
 
+  //Check HRESP
+  if (master.cb_master.HRESP == HRESP_ERROR)
+  begin
+      //finish error response from previous transaction
+      master.cb_master.HTRANS <= HTRANS_IDLE;
+
+      if (master.cb_master.HREADY !== 1)
+        @(master.cb_master);
+  end
+
   //first cycle of a (potential) burst
   master.cb_master.HSEL      <= 1'b1;
   master.cb_master.HTRANS    <= tr.TransferSize > 0 ? HTRANS_NONSEQ : HTRANS_IDLE;
@@ -143,6 +154,13 @@ task AHB3LiteDrv::ahb_cmd(input AHBBusTr tr);
           //wait for HREADY
           wait4hready();
 
+          //Check HRESP
+          if (master.cb_master.HRESP == HRESP_ERROR)
+          begin
+              master.cb_master.HTRANS <= HTRANS_IDLE;
+              return;
+          end
+
           master.cb_master.HTRANS <= HTRANS_SEQ;
 
           address = tr.AddressQueue[cnt++];
@@ -151,7 +169,6 @@ task AHB3LiteDrv::ahb_cmd(input AHBBusTr tr);
   end
   else
     master.cb_master.HADDR <= 'hx;
-
 
 endtask : ahb_cmd
 
@@ -165,6 +182,16 @@ task AHB3LiteDrv::ahb_data(input AHBBusTr tr);
 
   //Data transfer starts 1 bus-cycle after command/address
   wait4hready();
+
+  //Check HRESP
+  if (master.cb_master.HRESP == HRESP_ERROR)
+  begin
+      //finish error response from previous transaction
+      do
+        @(master.cb_master);
+      while (master.cb_master.HREADY === 1'b0);
+  end
+
 
   if (tr.TransferSize > 0)
   begin
@@ -181,6 +208,10 @@ task AHB3LiteDrv::ahb_data(input AHBBusTr tr);
           //Extra cycle for reading (read at the end of the cycle)
           wait4hready();
 
+          //Check HRESP
+          if (master.cb_master.HRESP == HRESP_ERROR)
+            tr.Error = 1;
+
           //set HWDATA='xxxx'
           master.cb_master.HWDATA <= 'hx;
       end
@@ -191,6 +222,13 @@ task AHB3LiteDrv::ahb_data(input AHBBusTr tr);
           //wait for HREADY
           wait4hready();
 
+          //Check HRESP
+          if (master.cb_master.HRESP == HRESP_ERROR)
+          begin
+              tr.Error = 1;
+              break;
+          end
+
           if (tr.Write)
           begin
               //write data
@@ -198,6 +236,15 @@ task AHB3LiteDrv::ahb_data(input AHBBusTr tr);
 
               foreach (data[i])
                 master.cb_master.HWDATA[(i + data_offset)*8 +: 8] <= data[i];
+
+              //check error response of last transfer
+              if (cnt == tr.TransferSize)
+              begin
+                  @(master.cb_master);
+
+                 if (master.cb_master.HRESP == HRESP_ERROR)
+                     tr.Error = 1;
+              end
           end
           else
           begin
