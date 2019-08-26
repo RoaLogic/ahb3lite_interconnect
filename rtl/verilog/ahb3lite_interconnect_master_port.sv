@@ -319,14 +319,6 @@ generate
   end
 endgenerate
 
-  always @(posedge HCLK) if (|error_masked_HSEL)
-    begin
-        $display ("ERROR: error_masked_HSEL(%b)", error_masked_HSEL);
-
-        #1000;
-        $finish;
-    end
-
   /*
    * Check if granted access
    */
