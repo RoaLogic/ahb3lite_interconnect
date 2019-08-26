@@ -52,6 +52,7 @@ class BusTr extends BaseTr;
   int          BytesPerTransfer;   //Bytes per transfer
   byte_array_t AddressQueue[$];    //Addresses
   byte_array_t DataQueue[$];       //Data
+  bit          Error;              //Error during transaction
 
   extern         function        new(input int unsigned AddressSize, DataSize);
   extern virtual function bit    compare  (input BaseTr to);
@@ -75,6 +76,7 @@ function BusTr::new(input int unsigned AddressSize, DataSize);
   //set data/addressbus sizes
   this.AddressSize = AddressSize;
   this.DataSize    = DataSize;
+  this.Error       = 0;
 endfunction : new
 
 
@@ -98,7 +100,8 @@ function bit BusTr::compare(input BaseTr to);
               (this.DataSize         == b.DataSize        ) &
               (this.Write            == b.Write           ) &
               (this.TransferSize     == b.TransferSize    ) &
-              (this.BytesPerTransfer == b.BytesPerTransfer);
+              (this.BytesPerTransfer == b.BytesPerTransfer) &
+              (this.Error            == b.Error           );
 
 
    //compare addresses
@@ -163,6 +166,7 @@ function BaseTr BusTr::copy (input BaseTr to);
   cp.Write            = this.Write;
   cp.TransferSize     = this.TransferSize;
   cp.BytesPerTransfer = this.BytesPerTransfer;
+  cp.Error            = this.Error;
 
   foreach (this.AddressQueue[i])
   begin
@@ -189,7 +193,7 @@ function void BusTr::display (input string prefix);
   byte address[],
        data[];
 
-  $display("%sTr-id:%0d, AddressSize=%0d DataSize=%0d Write=%0b TransferSize=%0d BytesPerTransfer=%0d", prefix, id, AddressSize, DataSize, Write, TransferSize, BytesPerTransfer);
+  $display("%sTr-id:%0d, AddressSize=%0d DataSize=%0d Write=%0b TransferSize=%0d BytesPerTransfer=%0d Error=%0d", prefix, id, AddressSize, DataSize, Write, TransferSize, BytesPerTransfer, Error);
 
   $write(" Address=");
   foreach (AddressQueue[j])
