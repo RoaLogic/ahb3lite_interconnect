@@ -39,11 +39,12 @@
 
 class ScoreBoard #(type T=AHBBusTr) extends BaseScoreBoard;
   T TrQueue[$],
-    ErrorTrQueue[$];
+    MismatchTrQueue[$];
 
   int matched_tr,
       mismatched_tr,
-      idle_tr;
+      idle_tr,
+      error_tr;
 
   extern function new(BaseConfig cfg);
   extern virtual function void wrap_up();
@@ -65,6 +66,7 @@ function ScoreBoard::new(BaseConfig cfg);
 
   matched_tr = 0;
   mismatched_tr = 0;
+  error_tr = 0;
 endfunction : new
 
 
@@ -85,12 +87,19 @@ function void ScoreBoard::wrap_up();
   $display("  Matched transaction: %0d", matched_tr);
   $display("  Mis-matched transactions: %0d", mismatched_tr);
   $display("  Idle transactions: %0d", idle_tr);
+  $display("  Error transactions: %0d", error_tr);
   $display("  Queue still contains %0d transactions", TrQueue.size() );
 
-  if (ErrorTrQueue.size())
+  if (TrQueue.size())
+  begin
+      $display("\n -- Remaining transactions -----");
+      foreach (TrQueue[i]) TrQueue[i].display();
+  end
+
+  if (MismatchTrQueue.size())
   begin
       $display("\n -- Mismatched transactions -----");
-      foreach (ErrorTrQueue[i]) ErrorTrQueue[i].display();
+      foreach (MismatchTrQueue[i]) MismatchTrQueue[i].display();
   end
 endfunction : wrap_up
 
@@ -100,7 +109,9 @@ endfunction : wrap_up
 function void ScoreBoard::save_expected(T tr);
   tr.display($sformatf("@%0t Scb-save ", $time));
 
-  if (tr.TransferSize == 0)
+  if (tr.Error)
+    error_tr++;
+  else if (tr.TransferSize == 0)
     idle_tr++;
   else
     TrQueue.push_back(tr);       //not an Idle transfer; push into transfer-queue
@@ -124,7 +135,7 @@ function void ScoreBoard::check_actual(T tr, int PortId);
 
   $display("@%0t: Match failed", $time);
   mismatched_tr++;
-  ErrorTrQueue.push_back(tr);
+  MismatchTrQueue.push_back(tr);
 endfunction : check_actual
 
 
