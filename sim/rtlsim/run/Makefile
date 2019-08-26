@@ -84,7 +84,7 @@ RTL_LIBS := $(RTLLIBS)
 INCDIRS:=$(INCDIRS)
 DEFINES:=$(DEFINES)
 
-LOG=$(TOP).log
+LOG=$(TB_TOP).log
 
 shell=/bin/sh
 
