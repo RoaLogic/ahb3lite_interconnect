@@ -210,7 +210,7 @@ module ahb3lite_interconnect_slave_port #(
    * 2. Round-Robin
    */
 
-  //get highest priority from selected masters
+  //get highest priority from requesting masters
   assign requested_priority_lvl = highest_requested_priority(mstHSEL,mstpriority);
 
   //get pending masters for the highest priority requested
