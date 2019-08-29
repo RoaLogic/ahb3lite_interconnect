@@ -69,44 +69,44 @@ module ahb3lite_interconnect_slave_port #(
   parameter SLAVES      = 8   //number of master-ports
 )
 (
-  input                                     HRESETn,
-                                            HCLK,
+  input                                        HRESETn,
+                                               HCLK,
 
   //AHB Slave Interfaces (receive data from AHB Masters)
   //AHB Masters conect to these ports
-  input      [MASTERS-1:0][            2:0] mstpriority,
-  input      [MASTERS-1:0]                  mstHSEL,
-  input      [MASTERS-1:0][HADDR_SIZE -1:0] mstHADDR,
-  input      [MASTERS-1:0][HDATA_SIZE -1:0] mstHWDATA,
-  output                  [HDATA_SIZE -1:0] mstHRDATA,
-  input      [MASTERS-1:0]                  mstHWRITE,
-  input      [MASTERS-1:0][            2:0] mstHSIZE,
-  input      [MASTERS-1:0][            2:0] mstHBURST,
-  input      [MASTERS-1:0][            3:0] mstHPROT,
-  input      [MASTERS-1:0][            1:0] mstHTRANS,
-  input      [MASTERS-1:0]                  mstHMASTLOCK,
-  input      [MASTERS-1:0]                  mstHREADY,         //HREADY input from master-bus
-  output                                    mstHREADYOUT,      //HREADYOUT output to master-bus
-  output                                    mstHRESP,
+  input      [MASTERS-1:0][$clog2(MASTERS-1):0] mstpriority,
+  input      [MASTERS-1:0]                      mstHSEL,
+  input      [MASTERS-1:0][HADDR_SIZE     -1:0] mstHADDR,
+  input      [MASTERS-1:0][HDATA_SIZE     -1:0] mstHWDATA,
+  output                  [HDATA_SIZE     -1:0] mstHRDATA,
+  input      [MASTERS-1:0]                      mstHWRITE,
+  input      [MASTERS-1:0][                2:0] mstHSIZE,
+  input      [MASTERS-1:0][                2:0] mstHBURST,
+  input      [MASTERS-1:0][                3:0] mstHPROT,
+  input      [MASTERS-1:0][                1:0] mstHTRANS,
+  input      [MASTERS-1:0]                      mstHMASTLOCK,
+  input      [MASTERS-1:0]                      mstHREADY,         //HREADY input from master-bus
+  output                                        mstHREADYOUT,      //HREADYOUT output to master-bus
+  output                                        mstHRESP,
 
   //AHB Master Interfaces (send data to AHB slaves)
   //AHB Slaves connect to these ports
-  output                                    slv_HSEL,
-  output     [HADDR_SIZE-1:0]               slv_HADDR,
-  output     [HDATA_SIZE-1:0]               slv_HWDATA,
-  input      [HDATA_SIZE-1:0]               slv_HRDATA,
-  output                                    slv_HWRITE,
-  output     [           2:0]               slv_HSIZE,
-  output     [           2:0]               slv_HBURST,
-  output     [           3:0]               slv_HPROT,
-  output     [           1:0]               slv_HTRANS,
-  output                                    slv_HMASTLOCK,
-  output                                    slv_HREADYOUT,
-  input                                     slv_HREADY,
-  input                                     slv_HRESP,
+  output                                        slv_HSEL,
+  output     [HADDR_SIZE-1:0]                   slv_HADDR,
+  output     [HDATA_SIZE-1:0]                   slv_HWDATA,
+  input      [HDATA_SIZE-1:0]                   slv_HRDATA,
+  output                                        slv_HWRITE,
+  output     [           2:0]                   slv_HSIZE,
+  output     [           2:0]                   slv_HBURST,
+  output     [           3:0]                   slv_HPROT,
+  output     [           1:0]                   slv_HTRANS,
+  output                                        slv_HMASTLOCK,
+  output                                        slv_HREADYOUT,
+  input                                         slv_HREADY,
+  input                                         slv_HRESP,
 
-  input      [MASTERS   -1:0]               can_switch,
-  output reg [MASTERS   -1:0]               granted_master
+  input      [MASTERS   -1:0]                   can_switch,
+  output reg [MASTERS   -1:0]                   granted_master
 );
   //////////////////////////////////////////////////////////////////
   //
@@ -121,18 +121,18 @@ module ahb3lite_interconnect_slave_port #(
   //
   // Variables
   //
-  logic [            2:0]              requested_priority_lvl;  //requested priority level
-  logic [MASTERS    -1:0]              priority_masters;        //all masters at this priority level
+  logic [$clog2(MASTERS-1):0]              requested_priority_lvl;  //requested priority level
+  logic [MASTERS        -1:0]              priority_masters;        //all masters at this priority level
 
-  logic [MASTERS    -1:0]              pending_master,          //next master waiting to be served
-                                       last_granted_master;     //for requested priority level
-  logic [            2:0][MASTERS-1:0] last_granted_masters;    //per priority level, for round-robin
+  logic [MASTERS        -1:0]              pending_master,          //next master waiting to be served
+                                           last_granted_master;     //for requested priority level
+  logic [$clog2(MASTERS-1):0][MASTERS-1:0] last_granted_masters;    //per priority level, for round-robin
 
   
-  logic [MASTER_BITS-1:0]              granted_master_idx,      //granted master as index
-                                       granted_master_idx_dly;  //deleayed granted master index (for HWDATA)
+  logic [MASTER_BITS    -1:0]              granted_master_idx,      //granted master as index
+                                           granted_master_idx_dly;  //deleayed granted master index (for HWDATA)
   
-  logic                                can_switch_master;       //Slave may switch to a new master
+  logic                                    can_switch_master;       //Slave may switch to a new master
 
   
   genvar m;
@@ -157,8 +157,8 @@ module ahb3lite_interconnect_slave_port #(
 
 
   function [2:0] highest_requested_priority (
-    input [MASTERS-1:0]      hsel,
-    input [MASTERS-1:0][2:0] priorities
+    input [MASTERS-1:0]                      hsel,
+    input [MASTERS-1:0][$clog2(MASTERS-1):0] priorities
   );
 
     highest_requested_priority = 0;
@@ -169,8 +169,8 @@ module ahb3lite_interconnect_slave_port #(
 
   function [MASTERS-1:0] requesters;
     input [MASTERS-1:0]      hsel;
-    input [MASTERS-1:0][2:0] priorities;
-    input              [2:0] priority_select;
+    input [MASTERS-1:0][$clog2(MASTERS-1):0] priorities;
+    input              [$clog2(MASTERS-1):0] priority_select;
 
     for (int n=0; n<MASTERS; n++)
       requesters[n] = (priorities[n] == priority_select) & hsel[n];
