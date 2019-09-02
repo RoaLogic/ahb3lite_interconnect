@@ -155,7 +155,7 @@ module ahb3lite_interconnect_master_port #(
   logic [            1:0] regHTRANS;
   logic                   regHWRITE;
   logic [            2:0] regHSIZE;
-  logic [            3:0] regHBURST;
+  logic [            2:0] regHBURST;
   logic [            3:0] regHPROT;
   logic                   regHMASTLOCK;
 
@@ -174,7 +174,9 @@ module ahb3lite_interconnect_master_port #(
     input [SLAVES-1:0] onehot;
 
     integer i;
-    for (i=0; i < SLAVES; i++) if (onehot[i]) onehot2int = i;
+
+    onehot2int = 0; //prevent latch behaviour
+    for (i=1; i < SLAVES; i++) if (onehot[i]) onehot2int = i;
   endfunction //onehot2int
 
 
