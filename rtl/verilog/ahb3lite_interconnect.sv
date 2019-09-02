@@ -99,12 +99,12 @@
  *
  */
 module ahb3lite_interconnect #(
-  parameter              HADDR_SIZE           = 32,
-  parameter              HDATA_SIZE           = 32,
-  parameter              MASTERS              = 3, //number of AHB Masters
-  parameter              SLAVES               = 8, //number of AHB slaves
+  parameter                  HADDR_SIZE           = 32,
+  parameter                  HDATA_SIZE           = 32,
+  parameter                  MASTERS              = 3, //number of AHB Masters
+  parameter                  SLAVES               = 8, //number of AHB slaves
 
-  parameter [SLAVES-1:0] SLAVE_MASK [MASTERS] = '{MASTERS{ {SLAVES{1'b1}} }}
+  parameter bit [SLAVES-1:0] SLAVE_MASK [MASTERS] = '{MASTERS{ {SLAVES{1'b1}} }}
 )
 (
   //Common signals
