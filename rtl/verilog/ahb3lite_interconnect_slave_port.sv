@@ -152,11 +152,13 @@ module ahb3lite_interconnect_slave_port #(
     input [MASTERS-1:0] onehot;
 
     integer i;
-    for (i=0; i < MASTERS; i++) if (onehot[i]) onehot2int = i;
+
+    onehot2int = 0; //prevent latch behaviour
+    for (i=1; i < MASTERS; i++) if (onehot[i]) onehot2int = i;
   endfunction //onehot2int
 
 
-  function [2:0] highest_requested_priority (
+  function [$clog2(MASTERS-1):0] highest_requested_priority (
     input [MASTERS-1:0]                      hsel,
     input [MASTERS-1:0][$clog2(MASTERS-1):0] priorities
   );
@@ -168,7 +170,7 @@ module ahb3lite_interconnect_slave_port #(
 
 
   function [MASTERS-1:0] requesters;
-    input [MASTERS-1:0]      hsel;
+    input [MASTERS-1:0]                      hsel;
     input [MASTERS-1:0][$clog2(MASTERS-1):0] priorities;
     input              [$clog2(MASTERS-1):0] priority_select;
 
@@ -222,7 +224,7 @@ module ahb3lite_interconnect_slave_port #(
   //get next master to serve
   assign pending_master = nxt_master(priority_masters,last_granted_master, granted_master);
 
-  //Master port signals when it can be switched
+  //Current active master port signals when it can be switched
   assign can_switch_master = can_switch [granted_master_idx];
 
   //select new master
