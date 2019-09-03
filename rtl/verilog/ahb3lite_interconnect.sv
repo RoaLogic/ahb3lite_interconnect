@@ -101,10 +101,13 @@
 module ahb3lite_interconnect #(
   parameter                  HADDR_SIZE           = 32,
   parameter                  HDATA_SIZE           = 32,
-  parameter                  MASTERS              = 3, //number of AHB Masters
-  parameter                  SLAVES               = 8, //number of AHB slaves
+  parameter                  MASTERS              = 10, //3, //number of AHB Masters
+  parameter                  SLAVES               = 5, //8, //number of AHB slaves
 
-  parameter bit [SLAVES-1:0] SLAVE_MASK [MASTERS] = '{MASTERS{ {SLAVES{1'b1}} }}
+  parameter bit [SLAVES-1:0] SLAVE_MASK [MASTERS] = '{MASTERS{ {SLAVES{1'b1}} }},
+
+  //actually localparam
+  parameter                  MASTER_BITS          = $clog2(MASTERS-1) +1
 )
 (
   //Common signals
@@ -113,40 +116,40 @@ module ahb3lite_interconnect #(
 
   //Master Ports; AHB masters connect to these
   // thus these are actually AHB Slave Interfaces
-  input  [$clog2(MASTERS-1):0] mst_priority  [MASTERS],
+  input  [MASTER_BITS-1:0] mst_priority  [MASTERS],
 
-  input                        mst_HSEL      [MASTERS],
-  input  [HADDR_SIZE     -1:0] mst_HADDR     [MASTERS],
-  input  [HDATA_SIZE     -1:0] mst_HWDATA    [MASTERS],
-  output [HDATA_SIZE     -1:0] mst_HRDATA    [MASTERS],
-  input                        mst_HWRITE    [MASTERS],
-  input  [                2:0] mst_HSIZE     [MASTERS],
-  input  [                2:0] mst_HBURST    [MASTERS],
-  input  [                3:0] mst_HPROT     [MASTERS],
-  input  [                1:0] mst_HTRANS    [MASTERS],
-  input                        mst_HMASTLOCK [MASTERS],
-  output                       mst_HREADYOUT [MASTERS],
-  input                        mst_HREADY    [MASTERS],
-  output                       mst_HRESP     [MASTERS],
+  input                    mst_HSEL      [MASTERS],
+  input  [HADDR_SIZE -1:0] mst_HADDR     [MASTERS],
+  input  [HDATA_SIZE -1:0] mst_HWDATA    [MASTERS],
+  output [HDATA_SIZE -1:0] mst_HRDATA    [MASTERS],
+  input                    mst_HWRITE    [MASTERS],
+  input  [            2:0] mst_HSIZE     [MASTERS],
+  input  [            2:0] mst_HBURST    [MASTERS],
+  input  [            3:0] mst_HPROT     [MASTERS],
+  input  [            1:0] mst_HTRANS    [MASTERS],
+  input                    mst_HMASTLOCK [MASTERS],
+  output                   mst_HREADYOUT [MASTERS],
+  input                    mst_HREADY    [MASTERS],
+  output                   mst_HRESP     [MASTERS],
 
   //Slave Ports; AHB Slaves connect to these
   //  thus these are actually AHB Master Interfaces
-  input  [HADDR_SIZE     -1:0] slv_addr_mask [SLAVES],
-  input  [HADDR_SIZE     -1:0] slv_addr_base [SLAVES],
+  input  [HADDR_SIZE -1:0] slv_addr_mask [SLAVES],
+  input  [HADDR_SIZE -1:0] slv_addr_base [SLAVES],
 
-  output                       slv_HSEL      [SLAVES],
-  output [HADDR_SIZE     -1:0] slv_HADDR     [SLAVES],
-  output [HDATA_SIZE     -1:0] slv_HWDATA    [SLAVES],
-  input  [HDATA_SIZE     -1:0] slv_HRDATA    [SLAVES],
-  output                       slv_HWRITE    [SLAVES],
-  output [                2:0] slv_HSIZE     [SLAVES],
-  output [                2:0] slv_HBURST    [SLAVES],
-  output [                3:0] slv_HPROT     [SLAVES],
-  output [                1:0] slv_HTRANS    [SLAVES],
-  output                       slv_HMASTLOCK [SLAVES],
-  output                       slv_HREADYOUT [SLAVES], //HREADYOUT to slave-decoder; generates HREADY to all connected slaves
-  input                        slv_HREADY    [SLAVES], //combinatorial HREADY from all connected slaves
-  input                        slv_HRESP     [SLAVES]
+  output                   slv_HSEL      [SLAVES],
+  output [HADDR_SIZE -1:0] slv_HADDR     [SLAVES],
+  output [HDATA_SIZE -1:0] slv_HWDATA    [SLAVES],
+  input  [HDATA_SIZE -1:0] slv_HRDATA    [SLAVES],
+  output                   slv_HWRITE    [SLAVES],
+  output [            2:0] slv_HSIZE     [SLAVES],
+  output [            2:0] slv_HBURST    [SLAVES],
+  output [            3:0] slv_HPROT     [SLAVES],
+  output [            1:0] slv_HTRANS    [SLAVES],
+  output                   slv_HMASTLOCK [SLAVES],
+  output                   slv_HREADYOUT [SLAVES], //HREADYOUT to slave-decoder; generates HREADY to all connected slaves
+  input                    slv_HREADY    [SLAVES], //combinatorial HREADY from all connected slaves
+  input                    slv_HRESP     [SLAVES]
 );
   //////////////////////////////////////////////////////////////////
   //
@@ -159,40 +162,40 @@ module ahb3lite_interconnect #(
   //
   // Variables
   //
-  logic [MASTERS-1:0]             [$clog2(MASTERS-1):0] frommstpriority;
-  logic [MASTERS-1:0][SLAVES -1:0]                      frommstHSEL;
-  logic [MASTERS-1:0]             [HADDR_SIZE     -1:0] frommstHADDR;
-  logic [MASTERS-1:0]             [HDATA_SIZE     -1:0] frommstHWDATA;
-  logic [MASTERS-1:0][SLAVES -1:0][HDATA_SIZE     -1:0] tomstHRDATA;
-  logic [MASTERS-1:0]                                   frommstHWRITE;
-  logic [MASTERS-1:0]             [                2:0] frommstHSIZE;
-  logic [MASTERS-1:0]             [                2:0] frommstHBURST;
-  logic [MASTERS-1:0]             [                3:0] frommstHPROT;
-  logic [MASTERS-1:0]             [                1:0] frommstHTRANS;
-  logic [MASTERS-1:0]                                   frommstHMASTLOCK;
-  logic [MASTERS-1:0]                                   frommstHREADYOUT,
-                                                        frommst_canswitch;
-  logic [MASTERS-1:0][SLAVES -1:0]                      tomstHREADY;
-  logic [MASTERS-1:0][SLAVES -1:0]                      tomstHRESP;
-  logic [MASTERS-1:0][SLAVES -1:0]                      tomstgrant;
+  logic [MASTERS-1:0]             [MASTER_BITS-1:0] frommstpriority;
+  logic [MASTERS-1:0][SLAVES -1:0]                  frommstHSEL;
+  logic [MASTERS-1:0]             [HADDR_SIZE -1:0] frommstHADDR;
+  logic [MASTERS-1:0]             [HDATA_SIZE -1:0] frommstHWDATA;
+  logic [MASTERS-1:0][SLAVES -1:0][HDATA_SIZE -1:0] tomstHRDATA;
+  logic [MASTERS-1:0]                               frommstHWRITE;
+  logic [MASTERS-1:0]             [            2:0] frommstHSIZE;
+  logic [MASTERS-1:0]             [            2:0] frommstHBURST;
+  logic [MASTERS-1:0]             [            3:0] frommstHPROT;
+  logic [MASTERS-1:0]             [            1:0] frommstHTRANS;
+  logic [MASTERS-1:0]                               frommstHMASTLOCK;
+  logic [MASTERS-1:0]                               frommstHREADYOUT,
+                                                    frommst_canswitch;
+  logic [MASTERS-1:0][SLAVES -1:0]                  tomstHREADY;
+  logic [MASTERS-1:0][SLAVES -1:0]                  tomstHRESP;
+  logic [MASTERS-1:0][SLAVES -1:0]                  tomstgrant;
 
 
-  logic [SLAVES -1:0][MASTERS-1:0][$clog2(MASTERS-1):0] toslvpriority;
-  logic [SLAVES -1:0][MASTERS-1:0]                      toslvHSEL;
-  logic [SLAVES -1:0][MASTERS-1:0][HADDR_SIZE     -1:0] toslvHADDR;
-  logic [SLAVES -1:0][MASTERS-1:0][HDATA_SIZE     -1:0] toslvHWDATA;
-  logic [SLAVES -1:0]             [HDATA_SIZE     -1:0] fromslvHRDATA;
-  logic [SLAVES -1:0][MASTERS-1:0]                      toslvHWRITE;
-  logic [SLAVES -1:0][MASTERS-1:0][                2:0] toslvHSIZE;
-  logic [SLAVES -1:0][MASTERS-1:0][                2:0] toslvHBURST;
-  logic [SLAVES -1:0][MASTERS-1:0][                3:0] toslvHPROT;
-  logic [SLAVES -1:0][MASTERS-1:0][                1:0] toslvHTRANS;
-  logic [SLAVES -1:0][MASTERS-1:0]                      toslvHMASTLOCK;
-  logic [SLAVES -1:0][MASTERS-1:0]                      toslvHREADY,
-                                                        toslv_canswitch;
-  logic [SLAVES -1:0]                                   fromslvHREADYOUT;
-  logic [SLAVES -1:0]                                   fromslvHRESP;
-  logic [SLAVES -1:0][MASTERS-1:0]                      fromslvgrant;
+  logic [SLAVES -1:0][MASTERS-1:0][MASTER_BITS-1:0] toslvpriority;
+  logic [SLAVES -1:0][MASTERS-1:0]                  toslvHSEL;
+  logic [SLAVES -1:0][MASTERS-1:0][HADDR_SIZE -1:0] toslvHADDR;
+  logic [SLAVES -1:0][MASTERS-1:0][HDATA_SIZE -1:0] toslvHWDATA;
+  logic [SLAVES -1:0]             [HDATA_SIZE -1:0] fromslvHRDATA;
+  logic [SLAVES -1:0][MASTERS-1:0]                  toslvHWRITE;
+  logic [SLAVES -1:0][MASTERS-1:0][            2:0] toslvHSIZE;
+  logic [SLAVES -1:0][MASTERS-1:0][            2:0] toslvHBURST;
+  logic [SLAVES -1:0][MASTERS-1:0][            3:0] toslvHPROT;
+  logic [SLAVES -1:0][MASTERS-1:0][            1:0] toslvHTRANS;
+  logic [SLAVES -1:0][MASTERS-1:0]                  toslvHMASTLOCK;
+  logic [SLAVES -1:0][MASTERS-1:0]                  toslvHREADY,
+                                                    toslv_canswitch;
+  logic [SLAVES -1:0]                               fromslvHREADYOUT;
+  logic [SLAVES -1:0]                               fromslvHRESP;
+  logic [SLAVES -1:0][MASTERS-1:0]                  fromslvgrant;
 
 
   genvar m,s;
