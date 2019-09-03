@@ -59,7 +59,8 @@ RTL_TOP  =
 RTL_VLOG = $(ROOT_DIR)/submodules/ahb3lite_pkg/rtl/verilog/ahb3lite_pkg.sv		\
 	   $(DUT_SRC_DIR)/ahb3lite_interconnect.sv			\
 	   $(DUT_SRC_DIR)/ahb3lite_interconnect_master_port.sv		\
-	   $(DUT_SRC_DIR)/ahb3lite_interconnect_slave_port.sv
+	   $(DUT_SRC_DIR)/ahb3lite_interconnect_slave_port.sv		\
+	   $(DUT_SRC_DIR)/ahb3lite_interconnect_slave_priority.sv
 RTL_VHDL =
 
 
