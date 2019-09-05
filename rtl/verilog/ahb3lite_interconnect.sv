@@ -223,6 +223,7 @@ generate
   ahb3lite_interconnect_master_port #(
     .HADDR_SIZE     ( HADDR_SIZE             ),
     .HDATA_SIZE     ( HDATA_SIZE             ),
+    .MASTERS        ( MASTERS                ),
     .SLAVES         ( SLAVES                 ),
     .SLAVE_MASK     ( SLAVE_MASK         [m] ) )
   master_port (
