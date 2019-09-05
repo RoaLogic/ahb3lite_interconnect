@@ -107,7 +107,7 @@ module ahb3lite_interconnect #(
   parameter bit [SLAVES-1:0] SLAVE_MASK [MASTERS] = '{MASTERS{ {SLAVES{1'b1}} }},
 
   //actually localparam
-  parameter                  MASTER_BITS          = $clog2(MASTERS-1) +1
+  parameter                  MASTER_BITS          = $clog2(MASTERS)
 )
 (
   //Common signals
@@ -207,6 +207,14 @@ module ahb3lite_interconnect #(
   //
   
   /*
+   * Sanity check
+   */
+//  initial
+//    for (int i=0; i<MASTERS; i++)
+//      if (mst_priority[i] >= MASTERS) $error("mst_priority[%0d]=%0d, value larger than allowed (%0d)", i, mst_priority[i], MASTERS-1);
+
+
+  /*
    * Hookup Master Interfaces
    */
 generate
@@ -215,7 +223,6 @@ generate
   ahb3lite_interconnect_master_port #(
     .HADDR_SIZE     ( HADDR_SIZE             ),
     .HDATA_SIZE     ( HDATA_SIZE             ),
-    .MASTERS        ( MASTERS                ),
     .SLAVES         ( SLAVES                 ),
     .SLAVE_MASK     ( SLAVE_MASK         [m] ) )
   master_port (
@@ -317,8 +324,7 @@ generate
   ahb3lite_interconnect_slave_port #(
     .HADDR_SIZE      ( HADDR_SIZE           ),
     .HDATA_SIZE      ( HDATA_SIZE           ),
-    .MASTERS         ( MASTERS              ),
-    .SLAVES          ( SLAVES               ) )
+    .MASTERS         ( MASTERS              ) )
   slave_port (
     .HRESETn         ( HRESETn              ),
     .HCLK            ( HCLK                 ),
