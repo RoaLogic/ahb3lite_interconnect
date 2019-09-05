@@ -46,7 +46,6 @@
 //  PARAM NAME          RANGE    DESCRIPTION              DEFAULT UNITS
 //  HADDR_SIZE          1+       Address bus size         8       bits
 //  HDATA_SIZE          1+       Data bus size            32      bits
-//  MASTERS             1+       Number of Master ports   3       ports
 //  SLAVES              1+       Number of Slave ports    8       ports
 //  SLAVE_MASK                   Slave mask 0:slave is never addressed
 //                                          1:slave can be addressed
@@ -67,7 +66,6 @@
 module ahb3lite_interconnect_master_port #(
   parameter              HADDR_SIZE          = 32,
   parameter              HDATA_SIZE          = 32,
-  parameter              MASTERS             = 3, //number of AHB masters
   parameter              SLAVES              = 8, //number of AHB slaves
   parameter [SLAVES-1:0] SLAVE_MASK          = {SLAVES{1'b1}},
   parameter              ERROR_ON_SLAVE_MASK = ~SLAVE_MASK
@@ -184,9 +182,6 @@ module ahb3lite_interconnect_master_port #(
   //
   // Module Body
   //
-
-initial $display("%m: SLAVE_MASK=%b", SLAVE_MASK);
-
 
   /*
    * Register Address Phase Signals
