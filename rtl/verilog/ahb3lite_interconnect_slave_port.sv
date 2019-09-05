@@ -67,7 +67,7 @@ module ahb3lite_interconnect_slave_port #(
   parameter MASTERS     = 3,  //number of slave-ports
 
   //actually localparam
-  parameter MASTER_BITS = $clog2(MASTERS-1) +1
+  parameter MASTER_BITS = $clog2(MASTERS)
 )
 (
   input                                        HRESETn,
@@ -275,7 +275,6 @@ module ahb3lite_interconnect_slave_port #(
 //    else if (!slv_HSEL  ) granted_master_idx <= pending_master_idx;
     else if ( slv_HREADY)
       if (can_switch_master) granted_master_idx <= pending_master_idx;
-//      else                   granted_master_idx <= onehot2int(granted_master);
 
 
   always @(posedge HCLK)
