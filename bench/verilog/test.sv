@@ -49,14 +49,14 @@ program automatic test
 virtual ahb3lite_if.master #(HADDR_SIZE,HDATA_SIZE) master[MASTERS];
 virtual ahb3lite_if.slave  #(HADDR_SIZE,HDATA_SIZE) slave [SLAVES ];
 
-logic [           2:0] mst_priority [MASTERS];
-logic [HADDR_SIZE-1:0] addr_base[SLAVES ],
-                       addr_mask[SLAVES ];
+logic [$clog2(MASTERS)-1:0] mst_priority [MASTERS];
+logic [HADDR_SIZE     -1:0] addr_base    [SLAVES ],
+                            addr_mask    [SLAVES ];
 
 Environment env;
 
 initial begin
-  foreach (mst_priority[i]) mst_priority[i] = $urandom(7);
+  foreach (mst_priority[i]) mst_priority[i] = $urandom_range(MASTERS-1,0);
   $root.testbench_top.mst_priority <= mst_priority;
 
   master = $root.testbench_top.ahb_master;
