@@ -66,9 +66,13 @@
 module ahb3lite_interconnect_master_port #(
   parameter              HADDR_SIZE          = 32,
   parameter              HDATA_SIZE          = 32,
-  parameter              SLAVES              = 8, //number of AHB slaves
+  parameter              MASTERS             = 3, //number of AHB Masters
+  parameter              SLAVES              = 8, //number of AHB Slaves
   parameter [SLAVES-1:0] SLAVE_MASK          = {SLAVES{1'b1}},
-  parameter              ERROR_ON_SLAVE_MASK = ~SLAVE_MASK
+  parameter              ERROR_ON_SLAVE_MASK = ~SLAVE_MASK,
+
+  //actually localparam
+  parameter MASTER_BITS = $clog2(MASTERS)
 )
 (
   //Common signals
@@ -77,21 +81,21 @@ module ahb3lite_interconnect_master_port #(
 
   //AHB Slave Interfaces (receive data from AHB Masters)
   //AHB Masters connect to these ports
-  input [            2:0]              mst_priority,
+  input  [MASTER_BITS-1:0]              mst_priority,
  
-  input                                mst_HSEL,
-  input  [HADDR_SIZE-1:0]              mst_HADDR,
-  input  [HDATA_SIZE-1:0]              mst_HWDATA,
-  output [HDATA_SIZE-1:0]              mst_HRDATA,
-  input                                mst_HWRITE,
-  input  [           2:0]              mst_HSIZE,
-  input  [           2:0]              mst_HBURST,
-  input  [           3:0]              mst_HPROT,
-  input  [           1:0]              mst_HTRANS,
-  input                                mst_HMASTLOCK,
-  output                               mst_HREADYOUT,
-  input                                mst_HREADY,
-  output                               mst_HRESP,
+  input                                 mst_HSEL,
+  input  [HADDR_SIZE -1:0]              mst_HADDR,
+  input  [HDATA_SIZE -1:0]              mst_HWDATA,
+  output [HDATA_SIZE -1:0]              mst_HRDATA,
+  input                                 mst_HWRITE,
+  input  [            2:0]              mst_HSIZE,
+  input  [            2:0]              mst_HBURST,
+  input  [            3:0]              mst_HPROT,
+  input  [            1:0]              mst_HTRANS,
+  input                                 mst_HMASTLOCK,
+  output                                mst_HREADYOUT,
+  input                                 mst_HREADY,
+  output                                mst_HRESP,
 
   //AHB Master Interfaces; send data to AHB slaves
   input              [HADDR_SIZE -1:0] slvHADDRmask [SLAVES],
@@ -112,7 +116,7 @@ module ahb3lite_interconnect_master_port #(
 
   //Internal signals
   output reg                           can_switch,
-  output             [            2:0] slvpriority,
+  output             [MASTER_BITS-1:0] slvpriority,
   input  [SLAVES-1:0]                  master_granted
 );
 
@@ -147,7 +151,7 @@ module ahb3lite_interconnect_master_port #(
 
   logic [            3:0] burst_cnt;
 
-  logic [            2:0] regpriority;
+  logic [MASTER_BITS-1:0] regpriority;
   logic [HADDR_SIZE -1:0] regHADDR;
   logic [HDATA_SIZE -1:0] regHWDATA;
   logic [            1:0] regHTRANS;
