@@ -49,7 +49,7 @@ module testbench_top;
   //
   genvar m, s;
 
-  logic [            2:0] mst_priority  [MASTERS];
+  logic [$clog2(MASTERS)-1:0] mst_priority  [MASTERS];
   logic [HADDR_SIZE -1:0] slv_addr_mask [SLAVES ];
   logic [HADDR_SIZE -1:0] slv_addr_base [SLAVES ];
 
@@ -187,7 +187,7 @@ endgenerate
     .SLAVES     ( SLAVES     ),
     .HADDR_SIZE ( HADDR_SIZE ),
     .HDATA_SIZE ( HDATA_SIZE ),
-    .SLAVE_MASK ( '{5'b11111,
+    .SLAVE_MASK ( '{5'b11111, //5'b00000,
                     5'b11111,
                     5'b11111}
                 )
