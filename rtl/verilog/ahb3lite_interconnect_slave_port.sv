@@ -186,6 +186,8 @@ module ahb3lite_interconnect_slave_port #(
   endfunction : highest_requested_priority
   */
 
+
+  //If every master has its own unique priority, this just becomes HSEL
   function [MASTERS-1:0] requesters;
     input [MASTERS-1:0]                  hsel;
     input [MASTERS-1:0][MASTER_BITS-1:0] priorities;
@@ -196,6 +198,7 @@ module ahb3lite_interconnect_slave_port #(
   endfunction : requesters
 
 
+/*
   function [MASTER_BITS-1:0] nxt_master;
     input [MASTERS    -1:0] pending_masters;  //pending masters for the requesed priority level
     input [MASTER_BITS-1:0] last_master;      //last granted master for the priority level
@@ -213,6 +216,35 @@ module ahb3lite_interconnect_slave_port #(
 
     for (int n = 0; n < MASTERS; n++)
       if (sr[n + offset]) return ((n + offset) % MASTERS);
+  endfunction : nxt_master
+*/
+
+
+  function [MASTER_BITS-1:0] nxt_master;
+    input [MASTERS    -1:0] pending_masters;  //pending masters for the requesed priority level
+    input [MASTER_BITS-1:0] last_master;      //last granted master for the priority level
+    input [MASTER_BITS-1:0] current_master;   //current granted master (indpendent of priority level)
+
+    int                   offset;
+    logic [MASTERS*2-1:0]                  mst_lst;     //list of requesting masters
+    logic [MASTERS*2-1:0][MASTER_BITS-1:0] mst_idx_lst; //list of master indexes
+
+
+    for (int n=0; n < MASTERS; n++)
+    begin
+        mst_idx_lst[n        ] = n;
+        mst_idx_lst[n+MASTERS] = n;
+    end
+
+    //default value, don't switch if not needed
+    nxt_master = current_master;
+	 
+    //implement round-robin
+    mst_lst     = {pending_masters,pending_masters} >> last_master;
+    mst_idx_lst = mst_idx_lst >> (last_master * MASTER_BITS);
+
+    for (int n = 1; n < MASTERS+1; n++)
+      if (mst_lst[n]) return mst_idx_lst[n];
   endfunction : nxt_master
 
 
