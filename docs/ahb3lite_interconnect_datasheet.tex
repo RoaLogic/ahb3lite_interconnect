@@ -1,5 +1,7 @@
-\documentclass[oneside,11pt]{book}
-% \usepackage{showframe}
+%
+% LaTeX Root for PDF/HTML Build
+%
+\documentclass[a4paper,oneside,11pt,openany]{book}
 
 % Document Setup
 \input{tex/preamble.tex}
@@ -9,28 +11,20 @@
 
 %\layout{}
 
-\maketitle
-
-\frontmatter
-
-\tableofcontents
+  \frontmatter
+  \maketitle
+  \tableofcontents
 
 %\listoftodos % Temporary list of ToDo items
 
-\mainmatter
+  \mainmatter
 
-\input{tex/introduction.tex}
-
-\input{tex/specification.tex}
-
-\input{tex/configuration.tex}
-
-\input{tex/interfaces.tex}
-
-\input{tex/resources.tex}
-
-\input{tex/references.tex}
-	
-\input{tex/history.tex}
+  \input{tex/introduction.tex}
+  \input{tex/specification.tex}
+  \input{tex/configuration.tex}
+  \input{tex/interfaces.tex}
+  \input{tex/resources.tex}
+  \input{tex/references.tex}
+  \input{tex/history.tex}
 
 \end{document}

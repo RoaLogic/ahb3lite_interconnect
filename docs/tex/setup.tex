@@ -1,13 +1,17 @@
 % Load Roalogic Title Page Generator
 \usepackage{pkg/roalogictitle}
 
+\graphicspath{ {./assets/img/} }
+
 % Document Variables
 
 \title{AHB-Lite Multilayer Interconnect}
+\heading{AHB-Lite Multilayer Interconnect}
 \author{Roa Logic}
-\date{October, 2017}
+\date{16-Sep-2019}
+\version{1.1}
 \doctype{Datasheet}
-\project{http://roalogic.github.io/plic}
+\project{https://roalogic.github.io/ahb3lite\_interconnect}
 \author{Paul Hardy}
 
  % Set page headers/footer
@@ -16,6 +20,6 @@
 % \fancyhead[LE,RO]{\thepage}
 % \fancyhead[RE,LO]{AHB-Lite Multilayer Interconnect}
 % \fancyfoot[CE,CO]{\textcircled{c} Roa Logic}
-\fancyhead[L]{\thepage}
-\fancyhead[R]{AHB-Lite Multilayer Interconnect}
-\fancyfoot[C]{\textcircled{c} Roa Logic}
+\fancyhead[L]{\theheading\space(v\theversion)}
+\fancyhead[R]{\includegraphics[width=50px,trim=0 25px 0 0]{assets/img/RoaLogicHeader.eps}}
+\fancyfoot[C]{\thepage}
