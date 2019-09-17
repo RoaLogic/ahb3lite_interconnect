@@ -49,6 +49,7 @@
 //  MASTERS           1+       Number of Master ports   3       ports
 //  SLAVES            1+       Number of Slave ports    8       ports
 //  SLAVE_MASK                 Per Master Slave mask
+//  ERROR_ON_SLAVE_MASK        Per Master error response on masked slave
 // ------------------------------------------------------------------
 // REUSE ISSUES 
 //   Reset Strategy      : external asynchronous active low; HRESETn
@@ -65,46 +66,66 @@
 
 /*
  * Dynamic AHB switch
- * MASTERS   : sets the number of AHB slave-ports on the switch
- *             AHB bus masters connect to these ports. There should only be 1 bus master per slave port
+ * MASTERS:
+ *   sets the number of AHB slave-ports on the switch
+ *   AHB bus masters connect to these ports. There should only be 1 bus master per slave port
  *
- *             HSEL is used to determine if the port is accessed. This allows a single AHB bus master to be connected to multiple switches. 
- *             It is allowed to drive HSEL with a static/hardwired signal ('1'). This results in a smaller (less logic resources) and faster (larger slack) switch.
+ *   HSEL is used to determine if the port is accessed. This allows a single AHB bus master to be connected to multiple switches. 
+ *   It is allowed to drive HSEL with a static/hardwired signal ('1'). This results in a smaller (less logic resources) and faster (larger slack) switch.
  *
- *             'priority' sets the priority of the port. This is used to determine what slave-port (AHB bus master) gets granted access to a master-port when multiple slave-ports want to access the same master-port. The slave-port with the highest priority is granted access.
- *             'priority' may be a static value or it may be a dynamic value where the priority can be set per AHB transfer. In the latter case 'priority' has the same requirements/restrictions as HSIZE/HBURST/HPROT, that is it must remain stable during a burst transfer.
- *             Hardwiring 'priority' results in a smaller (less logic resources) and faster (larger slack) switch.
+ *   'priority' sets the priority of the port. This is used to determine what slave-port (AHB bus master) gets granted access to a master-port when multiple slave-ports want to access the same master-port. The slave-port with the highest priority is granted access.
+ *   'priority' may be a static value or it may be a dynamic value where the priority can be set per AHB transfer. In the latter case 'priority' has the same requirements/restrictions as HSIZE/HBURST/HPROT, that is it must remain stable during a burst transfer.
+ *   Hardwiring 'priority' results in a smaller (less logic resources) and faster (larger slack) switch.
  *
  *
- * SLAVES    : sets the number of AHB master-ports on the switch
- *             AHB slaves connect to these ports. There may be multiple slaves connected to a master port.
- *             Additional address decoding (HSEL generation) is necessary in this case
+ * SLAVES:
+ *   sets the number of AHB master-ports on the switch
+ *   AHB slaves connect to these ports. There may be multiple slaves connected to a master port.
+ *   Additional address decoding (HSEL generation) is necessary in this case
  *
- *             'haddr_mask' and 'haddr_base' define when a master-port is addressed.
- *             'haddr_mask' determines the relevant bits for the address decoding and 'haddr_base' specifies the base offset.
- *             selected = (HADDR & haddr_mask) == (haddr_base & haddr_mask)
- *             'haddr_mask' and 'haddr_base' should be static signals. Hardwiring these signals results in a smaller (less logic resource) and faster (larger slack) switch.
+ *   'haddr_mask' and 'haddr_base' define when a master-port is addressed.
+ *   'haddr_mask' determines the relevant bits for the address decoding and 'haddr_base' specifies the base offset.
+ *   selected = (HADDR & haddr_mask) == (haddr_base & haddr_mask)
+ *   'haddr_mask' and 'haddr_base' should be static signals. Hardwiring these signals results in a smaller (less logic resource) and faster (larger slack) switch.
  *
- * SLAVE_MASK: Indicates that a master can/will never access a slave
- *             There is a MASK for each master with a bit for each slave. I.e. SLAVE_MASK is an array of MASTERS x SLAVES.
- *             Setting a MASK bit to '0' indicates that master will never access the slave.
- *             Setting a MASK bit to '1' indicates that master will/can access the slave.
+ * SLAVE_MASK:
+ *   Indicates that a master can/will never access a slave
+ *   There is a MASK for each master with a bit for each slave. I.e. SLAVE_MASK is an array of MASTERS x SLAVES.
+ *   Setting a MASK bit to '0' indicates that master will never access the slave.
+ *   Setting a MASK bit to '1' indicates that master will/can access the slave.
  *
- *             example: MASTERS=3, SLAVES=2. 
- *                       | 2 1 0
- *                       |------
- *                      1| 1 1 0    Slave[1] can only be accessed by masters 2 and 1. Master[0] never accesses Slave[1]
- *                      0| 0 1 1    Slave[0] can only be accessed by masters 1 and 0. Master[2] never accesses Slave[0]
- *                      SLAVE_MASK = '{2'b10, 2'b11, 2'b01}
+ *   example: MASTERS=3, SLAVES=2. 
+ *          | 2 1 0
+ *          |------
+ *         1| 1 1 0    Slave[1] can only be accessed by masters 2 and 1. Master[0] never accesses Slave[1]
+ *         0| 0 1 1    Slave[0] can only be accessed by masters 1 and 0. Master[2] never accesses Slave[0]
+ *         SLAVE_MASK = '{2'b10, 2'b11, 2'b01}
+ *
+ * ERROR_ON_SLAVE_MASK:
+ *   Indicates that an AHB transaction error response is generated when addressing a masked Slave
+ *   When a Master tries to access a Slave that is masked for that Master, the Master Port generates an AHB transaction error response when ERROR_ON_SLAVE_MASK for that Master/Slave combination is set to '1'. If ERROR_ON_SLAVE_MASK is set to '0' (for a Master/Slave combo), the Master Port does not generate an error transaction response.
+ *   In either case the Master Port will always transfer the Slave Ports transaction response when addressing a non-masked slave.
+ *   ERROR_ON_SLAVE_MASK uses the same array form as SLAVE_MASK.
+ *
+ *   example; SLAVE_MASK = '{2'b10, 2'b11, 2'b01}, ERROR_ON_SLAVE_MASK = '{2'b11, 2'b11, 2'b00}
+ *     When Master[2] accesses Slave[1], the parameter is ignored, because SLAVE_MASK='1' (i.e. not masked)
+ *     When Master[2] accesses Slave[0], the Master Port generates a transaction error, because SLAVE_MASK='0' and ERROR_ON_SLAVE_MASK='1'
+ *     For Master[1] the Master Port never generates a transaction error, because SLAVE_MASK=2'b11.
+ *     When Master[0] accesses Slave[1], the Master Port does not generate a transaction error, because ERROR_ON_SLAVE_MASK='0'
+ *     When Master[0] accesses Slave[0], the parameter is ignored, because SLAVE_MASK='1'
+ *
+ *   WARNING: when SLAVE_MASK='0' and ERROR_ON_SLAVE_MASK='0', the master must ensure not to address the masked slave, because that will cause deadlock on the master AHB bus, where the master waits indefinitely for a response that never comes.
  *
  */
 module ahb3lite_interconnect #(
-  parameter                  HADDR_SIZE           = 32,
-  parameter                  HDATA_SIZE           = 32,
-  parameter                  MASTERS              = 10, //3, //number of AHB Masters
-  parameter                  SLAVES               = 5, //8, //number of AHB slaves
+  parameter                  HADDR_SIZE                   = 32,
+  parameter                  HDATA_SIZE                   = 32,
+  parameter                  MASTERS                      = 10, //3, //number of AHB Masters
+  parameter                  SLAVES                       = 5, //8, //number of AHB slaves
 
-  parameter bit [SLAVES-1:0] SLAVE_MASK [MASTERS] = '{MASTERS{ {SLAVES{1'b1}} }},
+  parameter bit [SLAVES-1:0] SLAVE_MASK         [MASTERS] = '{MASTERS{ {SLAVES{1'b1}} }},
+  parameter bit [SLAVES-1:0] ERROR_ON_SLAVE_MASK[MASTERS] = '{MASTERS{ {SLAVES{1'b1}} }},
+
 
   //actually localparam
   parameter                  MASTER_BITS          = $clog2(MASTERS)
@@ -207,67 +228,60 @@ module ahb3lite_interconnect #(
   //
   
   /*
-   * Sanity check
-   */
-//  initial
-//    for (int i=0; i<MASTERS; i++)
-//      if (mst_priority[i] >= MASTERS) $error("mst_priority[%0d]=%0d, value larger than allowed (%0d)", i, mst_priority[i], MASTERS-1);
-
-
-  /*
    * Hookup Master Interfaces
    */
 generate
   for (m=0;m < MASTERS; m++)
   begin: gen_master_ports
   ahb3lite_interconnect_master_port #(
-    .HADDR_SIZE     ( HADDR_SIZE             ),
-    .HDATA_SIZE     ( HDATA_SIZE             ),
-    .MASTERS        ( MASTERS                ),
-    .SLAVES         ( SLAVES                 ),
-    .SLAVE_MASK     ( SLAVE_MASK         [m] ) )
+    .HADDR_SIZE          ( HADDR_SIZE             ),
+    .HDATA_SIZE          ( HDATA_SIZE             ),
+    .MASTERS             ( MASTERS                ),
+    .SLAVES              ( SLAVES                 ),
+    .SLAVE_MASK          ( SLAVE_MASK         [m] ),
+    .ERROR_ON_SLAVE_MASK ( ERROR_ON_SLAVE_MASK[m] ) )
   master_port (
-    .HRESETn        ( HRESETn                ),
-    .HCLK           ( HCLK                   ),
+    .HRESETn             ( HRESETn                ),
+    .HCLK                ( HCLK                   ),
 	 
     //AHB Slave Interfaces (receive data from AHB Masters)
     //AHB Masters conect to these ports
-    .mst_priority   ( mst_priority       [m] ),
-    .mst_HSEL       ( mst_HSEL           [m] ),
-    .mst_HADDR      ( mst_HADDR          [m] ),
-    .mst_HWDATA     ( mst_HWDATA         [m] ),
-    .mst_HRDATA     ( mst_HRDATA         [m] ),
-    .mst_HWRITE     ( mst_HWRITE         [m] ),
-    .mst_HSIZE      ( mst_HSIZE          [m] ),
-    .mst_HBURST     ( mst_HBURST         [m] ),
-    .mst_HPROT      ( mst_HPROT          [m] ),
-    .mst_HTRANS     ( mst_HTRANS         [m] ),
-    .mst_HMASTLOCK  ( mst_HMASTLOCK      [m] ),
-    .mst_HREADYOUT  ( mst_HREADYOUT      [m] ),
-    .mst_HREADY     ( mst_HREADY         [m] ),
-    .mst_HRESP      ( mst_HRESP          [m] ),
+    .mst_priority        ( mst_priority       [m] ),
+    .mst_HSEL            ( mst_HSEL           [m] ),
+    .mst_HADDR           ( mst_HADDR          [m] ),
+    .mst_HWDATA          ( mst_HWDATA         [m] ),
+    .mst_HRDATA          ( mst_HRDATA         [m] ),
+    .mst_HWRITE          ( mst_HWRITE         [m] ),
+    .mst_HSIZE           ( mst_HSIZE          [m] ),
+    .mst_HBURST          ( mst_HBURST         [m] ),
+    .mst_HPROT           ( mst_HPROT          [m] ),
+    .mst_HTRANS          ( mst_HTRANS         [m] ),
+    .mst_HMASTLOCK       ( mst_HMASTLOCK      [m] ),
+    .mst_HREADYOUT       ( mst_HREADYOUT      [m] ),
+    .mst_HREADY          ( mst_HREADY         [m] ),
+    .mst_HRESP           ( mst_HRESP          [m] ),
     
     //AHB Master Interfaces (send data to AHB slaves)
     //AHB Slaves connect to these ports
-    .slvHADDRmask   ( slv_addr_mask          ),
-    .slvHADDRbase   ( slv_addr_base          ),
-    .slvpriority    ( frommstpriority    [m] ),
-    .slvHSEL        ( frommstHSEL        [m] ),
-    .slvHADDR       ( frommstHADDR       [m] ),
-    .slvHWDATA      ( frommstHWDATA      [m] ),
-    .slvHRDATA      ( tomstHRDATA        [m] ),
-    .slvHWRITE      ( frommstHWRITE      [m] ),
-    .slvHSIZE       ( frommstHSIZE       [m] ),
-    .slvHBURST      ( frommstHBURST      [m] ),
-    .slvHPROT       ( frommstHPROT       [m] ),
-    .slvHTRANS      ( frommstHTRANS      [m] ),
-    .slvHMASTLOCK   ( frommstHMASTLOCK   [m] ),
-    .slvHREADY      ( tomstHREADY        [m] ),
-    .slvHREADYOUT   ( frommstHREADYOUT   [m] ),
-    .slvHRESP       ( tomstHRESP         [m] ),
+    .slvHADDRmask        ( slv_addr_mask          ),
+    .slvHADDRbase        ( slv_addr_base          ),
+    .slvpriority         ( frommstpriority    [m] ),
+    .slvHSEL             ( frommstHSEL        [m] ),
+    .slvHADDR            ( frommstHADDR       [m] ),
+    .slvHWDATA           ( frommstHWDATA      [m] ),
+    .slvHRDATA           ( tomstHRDATA        [m] ),
+    .slvHWRITE           ( frommstHWRITE      [m] ),
+    .slvHSIZE            ( frommstHSIZE       [m] ),
+    .slvHBURST           ( frommstHBURST      [m] ),
+    .slvHPROT            ( frommstHPROT       [m] ),
+    .slvHTRANS           ( frommstHTRANS      [m] ),
+    .slvHMASTLOCK        ( frommstHMASTLOCK   [m] ),
+    .slvHREADY           ( tomstHREADY        [m] ),
+    .slvHREADYOUT        ( frommstHREADYOUT   [m] ),
+    .slvHRESP            ( tomstHRESP         [m] ),
 
-    .can_switch     ( frommst_canswitch  [m] ),
-    .master_granted ( tomstgrant         [m] ) );
+    .can_switch          ( frommst_canswitch  [m] ),
+    .master_granted      ( tomstgrant         [m] ) );
     end
 endgenerate
 
