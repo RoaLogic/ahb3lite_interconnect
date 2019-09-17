@@ -80,7 +80,7 @@ The number of Master Ports is specified by the `MASTERS` parameter.
 
 ### Slave Port
 
-An AHB-Lite Bus Slave connects to a Slave Port of the Multi-layer Interconnect. The Slave Port is implemented as a regular AHB3-ite Master Interface thereby allowing support for complex bus structures such as shown below:
+An AHB-Lite Bus Slave connects to a Slave Port of the Multi-layer Interconnect. The Slave Port is implemented as a regular AHB3-Lite Master Interface thereby allowing support for complex bus structures such as shown below:
 
 ![Connectivity Example for 2 Bus Masters, 6 Slaves<span data-label="fig:ahb-lite-switch-sys3"></span>](assets/img/ahb-lite-switch-sys3.png)
 
@@ -134,14 +134,14 @@ The Roa Logic AHB-Lite Multi-layer Interconnect is a highly configurable Interco
 
 ### Core Parameters
 
-| Parameter                      |   Type  |  Default | Description                           |
-|:-------------------------------|:-------:|:--------:|:--------------------------------------|
-| `HADDR_SIZE`                   | Integer |    32    | Address Bus Size                      |
-| `HDATA_SIZE`                   | Integer |    32    | Data Bus Size                         |
-| `MASTERS`                      | Integer |     3    | Number of Master Ports                |
-| `SLAVES`                       | Integer |     8    | Number of Slave Ports                 |
-| `SLAVE_MASK[MASTERS]`          |  Vector | `SLAVES` | Mask Slaves accessible by each Master |
-| `ERROR_ON_SLAVE_MASK[MASTERS]` |  Vector | `SLAVES` | Mask Slaves accessible by each Master |
+| Parameter                      |   Type  |  Default | Description                              |
+|:-------------------------------|:-------:|:--------:|:-----------------------------------------|
+| `HADDR_SIZE`                   | Integer |    32    | Address Bus Size                         |
+| `HDATA_SIZE`                   | Integer |    32    | Data Bus Size                            |
+| `MASTERS`                      | Integer |     3    | Number of Master Ports                   |
+| `SLAVES`                       | Integer |     8    | Number of Slave Ports                    |
+| `SLAVE_MASK[MASTERS]`          |  Array  | All ’1’s | Mask Slaves accessible by each Master    |
+| `ERROR_ON_SLAVE_MASK[MASTERS]` |  Array  | All ’1’s | Enable Error Reporting for masked Slaves |
 
 #### HADDR\_SIZE
 
@@ -161,7 +161,7 @@ The `SLAVES` parameter specifies the number of Slave Ports on the Interconnect F
 
 #### SLAVE\_MASK\[ \]
 
-The `SLAVE_MASK[]` parameter indicates if a master may access a slave. Defining which master may access individual slave (rather than allowing all masters to access all slaves) may significantly reduce the logic area of the interconnect and improve overall performance.
+The `SLAVE_MASK[]` parameter determines if a master may access a slave. Defining which master may access individual slaves (rather than allowing all masters to access all slaves) may significantly reduce the logic area of the interconnect and improve overall performance.
 
 There is one `SLAVE_MASK` parameter per master, each `SLAVES` bits wide. i.e. `SLAVE_MASK[]` is an array of dimensions `MASTERS` x `SLAVES`.
 
@@ -169,11 +169,11 @@ Setting a `SLAVE_MASK[]` bit to ’0’ indicates that master cannot access the 
 
 #### ERROR\_ON\_SLAVE\_MASK\[ \]
 
-The `ERROR_ON_SLAVE_MASK[]` parameter enables error reporting when a master attempts to access a masked slave device, with any error will be generated as an AHB error response.
+The `ERROR_ON_SLAVE_MASK[]` parameter enables generating an AHB error response when the master attempts to access a masked slave port
 
 There is one `ERROR_ON_SLAVE_MASK` parameter per master, each `SLAVES` bits wide. i.e. `ERROR_ON_SLAVE_MASK[]` is an array of dimensions `MASTERS` x `SLAVES`.
 
-Setting a `ERROR_ON_SLAVE_MASK[]` bit to ’0’ indicates that an error will not be generated if master is masked from accessing the corresponding slave. Conversely, setting a `ERROR_ON_SLAVE_MASK[]` bit to ’1’ indicates that an error will be generated if master is masked from accessing the corresponding slave - this is the default setting.
+Setting a `ERROR_ON_SLAVE_MASK[]` bit to ’0’ indicates that an AHB Error response will not be generated if master is masked from accessing the corresponding slave. Conversely, setting a `ERROR_ON_SLAVE_MASK[]` bit to ’1’ indicates that an AHB Error response will be generated if master is masked from accessing the corresponding slave - this is the default setting.
 
 ## Interfaces
 
@@ -228,11 +228,11 @@ The AHB-Lite Multi-layer Interconnect implements 1 or more interfaces to AHB-Lit
 
 `mst_priority[]` defines the priority of each master. The width of the bus is calculated as clog<sub>2</sub>(`MASTERS`). For example, for a system with 4 masters the width of `mst_priority[]` will be 2 bits.
 
-Lowest priority is 0, highest priority is clog<sub>2</sub>(`MASTERS`) - 1
+Lowest priority is 0, highest priority is `MASTERS - 1`.
 
 #### mst\_HSEL\[ \]
 
-The Master Port only responds to other signals on its bus when `mst_HSEL[]` is asserted (‘1’). When `mst_HSEL[]` is negated (‘0’) the Master Port considers the bus IDLE and negates `mst_HREADYOUT[]` (‘0’).
+The Master Port only responds to other signals on its bus when `mst_HSEL[]` is asserted (‘1’). When `mst_HSEL[]` is negated (‘0’) the Master Port considers the bus IDLE and asserts `mst_HREADYOUT[]` (‘no’).
 
 #### mst\_HTRANS\[ \]
 
@@ -318,11 +318,11 @@ The master lock signal indicates if the current transfer is part of a locked seq
 
 #### mst\_HREADY\[ \]
 
-`mst_HREADY[]` indicates the status of the local `HREADY` on the master’s local bus. It is routed to the `HREADYOUT` port of the addressed slave.
+`mst_HREADY[]` indicates the status of the local `HREADY` on the master’s local bus. It is routed to the `HREADYOUT` port of the connected slave.
 
 #### mst\_HRESP\[ \]
 
-`mst_HRESP[]` is the transfer response from the addressed slave, it can either be OKAY (‘0’) or ERROR (‘1’). The Interconnect IP routes the addressed slave’s `HRESP` port to `mst_HRESP[]`.
+`mst_HRESP[]` is the transfer response from the addressed slave, it can either be OKAY (‘0’) or ERROR (‘1’). The Interconnect IP routes the connected slave’s `HRESP` port to `mst_HRESP[]`.
 
 ### Slave Interface
 
@@ -362,7 +362,7 @@ See section ’Address Space Configuration’ for specific examples. See section
 
 #### slv\_HSEL\[ \]
 
-The Master Port only responds to other signals on its bus when `slv_HSEL[]` is asserted (‘1’). When `slv_HSEL[]` is negated (‘0’) the Master Port considers the bus IDLE and negates `mst_HREADYOUT[]` (‘0’).
+The Slave Port only responds to other signals on its bus when `slv_HSEL[]` is asserted (‘1’). When `slv_HSEL[]` is negated (‘0’) the Slave Port considers the bus IDLE and negates `mst_HREADYOUT[]` (‘0’).
 
 #### slv\_HADDR\[ \]
 
@@ -443,7 +443,7 @@ The master lock signal indicates if the current transfer is part of a locked seq
 
 The `slv_HREADYOUT[]` signal reflects the state of the connected Master Port’s `HREADY` port. It is provided to support local slaves connected directly to the Master’s AHB-Lite bus. It is driven by the connected master’s `HREADY` port.
 
-**Note:** `slv_HREADYOUT[]` is not an AHB-Lite Master Signal.
+**Note:** `slv_HREADYOUT[]` is not an AHB-Lite Signal.
 
 #### slv\_HREADY\[ \]
 

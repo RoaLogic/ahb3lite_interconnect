@@ -88,13 +88,13 @@ Port & Size & Direction & Description\tabularnewline
 
 \texttt{mst\_priority[\,]} defines the priority of each master. The width of the bus is calculated as clog\textsubscript{2}(\texttt{MASTERS}). For example, for a system with 4 masters the width of \texttt{mst\_priority[\,]} will be 2 bits.
 
-Lowest priority is 0, highest priority is clog\textsubscript{2}(\texttt{MASTERS}) - 1
+Lowest priority is 0, highest priority is \texttt{MASTERS - 1}.
 
 \subsection{mst\_HSEL[ ]}\label{mst_hsel}
 
 The Master Port only responds to other signals on its bus when \texttt{mst\_HSEL[\,]} is
 asserted (`1'). When \texttt{mst\_HSEL[\,]} is negated (`0') the Master Port
-considers the bus IDLE and negates \texttt{mst\_HREADYOUT[\,]} (`0').
+considers the bus IDLE and asserts \texttt{mst\_HREADYOUT[\,]} (`no').
 
 \subsection{mst\_HTRANS[ ]}\label{mst_htrans}
 
@@ -226,13 +226,13 @@ releases \texttt{mst\_HMASTLOCK[\,]}.
 \subsection{mst\_HREADY[ ]}\label{mst_hready}
 
 \texttt{mst\_HREADY[\,]} indicates the status of the local \texttt{HREADY} on the master's
-local bus. It is routed to the \texttt{HREADYOUT} port of the addressed slave.
+local bus. It is routed to the \texttt{HREADYOUT} port of the connected slave.
 
 \subsection{mst\_HRESP[ ]}\label{mst_hresp}
 
 \texttt{mst\_HRESP[\,]} is the transfer response from the addressed slave, it can
 either be OKAY (`0') or ERROR (`1'). The Interconnect IP routes the
-addressed slave's \texttt{HRESP} port to \texttt{mst\_HRESP[\,]}.
+connected slave's \texttt{HRESP} port to \texttt{mst\_HRESP[\,]}.
 
 \section{Slave Interface}\label{slave-interface}
 
@@ -296,8 +296,8 @@ Setting a bit of \texttt{slv\_addr\_mask[\,]} to '0' enables the corresponding a
 
 \subsection{slv\_HSEL[ ]}\label{slv_hsel}
 
-The Master Port only responds to other signals on its bus when \texttt{slv\_HSEL[\,]} is
-asserted (`1'). When \texttt{slv\_HSEL[\,]} is negated (`0') the Master Port
+The Slave Port only responds to other signals on its bus when \texttt{slv\_HSEL[\,]} is
+asserted (`1'). When \texttt{slv\_HSEL[\,]} is negated (`0') the Slave Port
 considers the bus IDLE and negates \texttt{mst\_HREADYOUT[\,]} (`0').
 
 \subsection{slv\_HADDR[ ]}\label{slv_haddr}
@@ -416,7 +416,7 @@ Port's \texttt{HREADY} port. It is provided to support local slaves connected
 directly to the Master's AHB-Lite bus. It is driven by the connected
 master's \texttt{HREADY} port.
 
-\textbf{Note:} \texttt{slv\_HREADYOUT[\,]} is not an AHB-Lite Master Signal.
+\textbf{Note:} \texttt{slv\_HREADYOUT[\,]} is not an AHB-Lite Signal.
 
 \subsection{slv\_HREADY[ ]}\label{slv_hready}
 
