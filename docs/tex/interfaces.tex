@@ -94,7 +94,8 @@ Lowest priority is 0, highest priority is \texttt{MASTERS - 1}.
 
 The Master Port only responds to other signals on its bus when \texttt{mst\_HSEL[\,]} is
 asserted (`1'). When \texttt{mst\_HSEL[\,]} is negated (`0') the Master Port
-considers the bus IDLE and asserts \texttt{mst\_HREADYOUT[\,]} (`no').
+considers the bus IDLE and the Masters connected to the Master Port must assert their
+\texttt{HREADYOUT} (`1').
 
 \subsection{mst\_HTRANS[ ]}\label{mst_htrans}
 
@@ -211,7 +212,7 @@ When a slave is addressed, the \texttt{mst\_HREADYOUT[\,]} indicates that the
 addressed slave finished the current transfer. The Interconnect IP
 routes the addressed slave's \texttt{HREADY} signal to the master.
 
-When no slave is address, the \texttt{mst\_HREADYOUT[\,]} signal is generated
+When no slave is addressed, the \texttt{mst\_HREADYOUT[\,]} signal is generated
 locally, inside the Interconnect.
 
 \subsection{mst\_HMASTLOCK[ ]}\label{mst_hmastlock}
@@ -230,7 +231,7 @@ local bus. It is routed to the \texttt{HREADYOUT} port of the connected slave.
 
 \subsection{mst\_HRESP[ ]}\label{mst_hresp}
 
-\texttt{mst\_HRESP[\,]} is the transfer response from the addressed slave, it can
+\texttt{mst\_HRESP[\,]} is the transfer response from the connected slave, it can
 either be OKAY (`0') or ERROR (`1'). The Interconnect IP routes the
 connected slave's \texttt{HRESP} port to \texttt{mst\_HRESP[\,]}.
 
@@ -298,7 +299,8 @@ Setting a bit of \texttt{slv\_addr\_mask[\,]} to '0' enables the corresponding a
 
 The Slave Port only responds to other signals on its bus when \texttt{slv\_HSEL[\,]} is
 asserted (`1'). When \texttt{slv\_HSEL[\,]} is negated (`0') the Slave Port
-considers the bus IDLE and negates \texttt{mst\_HREADYOUT[\,]} (`0').
+considers the bus IDLE and the slaves connected to the Slave Port must assert their
+\texttt{HREADYOUT} (`1').
 
 \subsection{slv\_HADDR[ ]}\label{slv_haddr}
 

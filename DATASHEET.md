@@ -169,11 +169,11 @@ Setting a `SLAVE_MASK[]` bit to ’0’ indicates that master cannot access the 
 
 #### ERROR\_ON\_SLAVE\_MASK\[ \]
 
-The `ERROR_ON_SLAVE_MASK[]` parameter enables generating an AHB error response when the master attempts to access a masked slave port
+The `ERROR_ON_SLAVE_MASK[]` parameter enables generating an AHB error response when the master attempts to access a masked Slave Port
 
 There is one `ERROR_ON_SLAVE_MASK` parameter per master, each `SLAVES` bits wide. i.e. `ERROR_ON_SLAVE_MASK[]` is an array of dimensions `MASTERS` x `SLAVES`.
 
-Setting a `ERROR_ON_SLAVE_MASK[]` bit to ’0’ indicates that an AHB Error response will not be generated if master is masked from accessing the corresponding slave. Conversely, setting a `ERROR_ON_SLAVE_MASK[]` bit to ’1’ indicates that an AHB Error response will be generated if master is masked from accessing the corresponding slave - this is the default setting.
+Setting an `ERROR_ON_SLAVE_MASK[]` bit to ’0’ indicates that an AHB error response will not be generated if the master is masked from accessing the corresponding slave. Conversely, setting a `ERROR_ON_SLAVE_MASK[]` bit to ’1’ indicates that an AHB error response will be generated if the master is masked from accessing the corresponding slave - this is the default setting.
 
 ## Interfaces
 
@@ -232,7 +232,7 @@ Lowest priority is 0, highest priority is `MASTERS - 1`.
 
 #### mst\_HSEL\[ \]
 
-The Master Port only responds to other signals on its bus when `mst_HSEL[]` is asserted (‘1’). When `mst_HSEL[]` is negated (‘0’) the Master Port considers the bus IDLE and asserts `mst_HREADYOUT[]` (‘no’).
+The Master Port only responds to other signals on its bus when `mst_HSEL[]` is asserted (‘1’). When `mst_HSEL[]` is negated (‘0’) the Master Port considers the bus IDLE and the Masters connected to the Master Port must assert their `HREADYOUT` (‘1’).
 
 #### mst\_HTRANS\[ \]
 
@@ -310,7 +310,7 @@ The protection signals provide information about the bus transfer. They are inte
 
 When a slave is addressed, the `mst_HREADYOUT[]` indicates that the addressed slave finished the current transfer. The Interconnect IP routes the addressed slave’s `HREADY` signal to the master.
 
-When no slave is address, the `mst_HREADYOUT[]` signal is generated locally, inside the Interconnect.
+When no slave is addressed, the `mst_HREADYOUT[]` signal is generated locally, inside the Interconnect.
 
 #### mst\_HMASTLOCK\[ \]
 
@@ -322,7 +322,7 @@ The master lock signal indicates if the current transfer is part of a locked seq
 
 #### mst\_HRESP\[ \]
 
-`mst_HRESP[]` is the transfer response from the addressed slave, it can either be OKAY (‘0’) or ERROR (‘1’). The Interconnect IP routes the connected slave’s `HRESP` port to `mst_HRESP[]`.
+`mst_HRESP[]` is the transfer response from the connected slave, it can either be OKAY (‘0’) or ERROR (‘1’). The Interconnect IP routes the connected slave’s `HRESP` port to `mst_HRESP[]`.
 
 ### Slave Interface
 
@@ -362,7 +362,7 @@ See section ’Address Space Configuration’ for specific examples. See section
 
 #### slv\_HSEL\[ \]
 
-The Slave Port only responds to other signals on its bus when `slv_HSEL[]` is asserted (‘1’). When `slv_HSEL[]` is negated (‘0’) the Slave Port considers the bus IDLE and negates `mst_HREADYOUT[]` (‘0’).
+The Slave Port only responds to other signals on its bus when `slv_HSEL[]` is asserted (‘1’). When `slv_HSEL[]` is negated (‘0’) the Slave Port considers the bus IDLE and the slaves connected to the Slave Port must assert their `HREADYOUT` (‘1’).
 
 #### slv\_HADDR\[ \]
 

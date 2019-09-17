@@ -61,12 +61,12 @@ Conversely, setting a \texttt{SLAVE\_MASK[\,]} bit to '1' indicates that master 
 \subsection{ERROR\_ON\_SLAVE\_MASK[ ]}\label{error_on_slave_mask}
 
 The \texttt{ERROR\_ON\_SLAVE\_MASK[\,]} parameter enables generating an AHB error response when the
-master attempts to access a masked slave port
+master attempts to access a masked Slave Port
 
 There is one \texttt{ERROR\_ON\_SLAVE\_MASK} parameter per master, each \texttt{SLAVES} bits wide.
 i.e. \texttt{ERROR\_ON\_SLAVE\_MASK[\,]} is an array of dimensions \texttt{MASTERS} x \texttt{SLAVES}.
 
-Setting a \texttt{ERROR\_ON\_SLAVE\_MASK[\,]} bit to '0' indicates that an AHB Error response will not be generated
-if master is masked from accessing the corresponding slave.
-Conversely, setting a \texttt{ERROR\_ON\_SLAVE\_MASK[\,]} bit to '1' indicates that an AHB Error response will
-be generated if master is masked from accessing the corresponding slave - this is the default setting.
+Setting an \texttt{ERROR\_ON\_SLAVE\_MASK[\,]} bit to '0' indicates that an AHB error response will not be generated
+if the master is masked from accessing the corresponding slave.
+Conversely, setting a \texttt{ERROR\_ON\_SLAVE\_MASK[\,]} bit to '1' indicates that an AHB error response will
+be generated if the master is masked from accessing the corresponding slave - this is the default setting.
