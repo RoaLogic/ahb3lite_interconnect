@@ -169,7 +169,7 @@ Setting a `SLAVE_MASK[]` bit to ’0’ indicates that master cannot access the 
 
 #### ERROR\_ON\_SLAVE\_MASK\[ \]
 
-The `ERROR_ON_SLAVE_MASK[]` parameter enables generating an AHB error response when the master attempts to access a masked Slave Port
+The `ERROR_ON_SLAVE_MASK[]` parameter enables generating an AHB error response when the master attempts to access a masked Slave Port.
 
 There is one `ERROR_ON_SLAVE_MASK` parameter per master, each `SLAVES` bits wide. i.e. `ERROR_ON_SLAVE_MASK[]` is an array of dimensions `MASTERS` x `SLAVES`.
 
@@ -232,7 +232,7 @@ Lowest priority is 0, highest priority is `MASTERS - 1`.
 
 #### mst\_HSEL\[ \]
 
-The Master Port only responds to other signals on its bus when `mst_HSEL[]` is asserted (‘1’). When `mst_HSEL[]` is negated (‘0’) the Master Port considers the bus IDLE and the Masters connected to the Master Port must assert their `HREADYOUT` (‘1’).
+The Master Port only responds to other signals on its bus when `mst_HSEL[]` is asserted (‘1’). When `mst_HSEL[]` is negated (‘0’) the Master Port considers the bus IDLE and negates `HREADYOUT[]` (‘0’).
 
 #### mst\_HTRANS\[ \]
 
@@ -362,7 +362,7 @@ See section ’Address Space Configuration’ for specific examples. See section
 
 #### slv\_HSEL\[ \]
 
-The Slave Port only responds to other signals on its bus when `slv_HSEL[]` is asserted (‘1’). When `slv_HSEL[]` is negated (‘0’) the Slave Port considers the bus IDLE and the slaves connected to the Slave Port must assert their `HREADYOUT` (‘1’).
+Slaves connected to the Slave Port must only respond to other signals on the bus when `slv_HSEL[]` is asserted (‘1’). When `slv_HSEL[]` is negated (‘0’) the interface is idle and the connected Slaves must assert their `HREADYOUT` (‘1’).
 
 #### slv\_HADDR\[ \]
 

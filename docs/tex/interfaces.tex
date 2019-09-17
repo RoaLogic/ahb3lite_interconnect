@@ -94,8 +94,7 @@ Lowest priority is 0, highest priority is \texttt{MASTERS - 1}.
 
 The Master Port only responds to other signals on its bus when \texttt{mst\_HSEL[\,]} is
 asserted (`1'). When \texttt{mst\_HSEL[\,]} is negated (`0') the Master Port
-considers the bus IDLE and the Masters connected to the Master Port must assert their
-\texttt{HREADYOUT} (`1').
+considers the bus IDLE and negates \texttt{HREADYOUT[\,]} (`0').
 
 \subsection{mst\_HTRANS[ ]}\label{mst_htrans}
 
@@ -297,10 +296,9 @@ Setting a bit of \texttt{slv\_addr\_mask[\,]} to '0' enables the corresponding a
 
 \subsection{slv\_HSEL[ ]}\label{slv_hsel}
 
-The Slave Port only responds to other signals on its bus when \texttt{slv\_HSEL[\,]} is
-asserted (`1'). When \texttt{slv\_HSEL[\,]} is negated (`0') the Slave Port
-considers the bus IDLE and the slaves connected to the Slave Port must assert their
-\texttt{HREADYOUT} (`1').
+Slaves connected to the Slave Port must only respond to other signals on the bus when
+\texttt{slv\_HSEL[\,]} is asserted (`1'). When \texttt{slv\_HSEL[\,]} is negated (`0') the
+interface is idle and the connected Slaves must assert their \texttt{HREADYOUT} (`1').
 
 \subsection{slv\_HADDR[ ]}\label{slv_haddr}
 
