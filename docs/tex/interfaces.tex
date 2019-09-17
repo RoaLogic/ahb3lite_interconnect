@@ -88,7 +88,7 @@ Port & Size & Direction & Description\tabularnewline
 
 \texttt{mst\_priority[\,]} defines the priority of each master. The width of the bus is calculated as clog\textsubscript{2}(\texttt{MASTERS}). For example, for a system with 4 masters the width of \texttt{mst\_priority[\,]} will be 2 bits.
 
-Highest priority is 0, lowest priority is clog\textsubscript{2}(\texttt{MASTERS}) - 1
+Lowest priority is 0, highest priority is clog\textsubscript{2}(\texttt{MASTERS}) - 1
 
 \subsection{mst\_HSEL[ ]}\label{mst_hsel}
 
