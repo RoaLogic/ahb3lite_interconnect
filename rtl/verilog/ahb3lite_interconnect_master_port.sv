@@ -69,7 +69,7 @@ module ahb3lite_interconnect_master_port #(
   parameter              MASTERS             = 3, //number of AHB Masters
   parameter              SLAVES              = 8, //number of AHB Slaves
   parameter [SLAVES-1:0] SLAVE_MASK          = {SLAVES{1'b1}},
-  parameter              ERROR_ON_SLAVE_MASK = ~SLAVE_MASK,
+  parameter [SLAVES-1:0] ERROR_ON_SLAVE_MASK = ~SLAVE_MASK,
 
   //actually localparam
   parameter MASTER_BITS = $clog2(MASTERS)
