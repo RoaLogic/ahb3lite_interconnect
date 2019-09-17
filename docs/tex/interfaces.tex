@@ -31,7 +31,7 @@ of \texttt{HCLK}. All Master and Slave ports must operate at the same \texttt{HC
 
 \section{Master Interfaces}\label{master-interfaces}
 
-The Master Ports are regular AMB3-Lite slave interfaces. All signals are
+The Master Ports are regular AHB3-Lite slave interfaces. All signals are
 supported. See the AHB-Lite specifications for a complete description of
 the signals.
 
@@ -45,7 +45,7 @@ arrays reflecting the number of masters supported.
 Port & Size & Direction & Description\tabularnewline
 \midrule
 \endhead
-\texttt{mst\_priority[MASTERS]}  & clog\textsubscript{2}(\texttt{MASTERS}) & Input & Master Priority Levels\tabularnewline
+\texttt{mst\_priority}  & clog\textsubscript{2}(\texttt{MASTERS}) & Input & Master Priority Levels\tabularnewline
 \bottomrule
 \caption{Master Interface Customisation Port}
 \end{longtable}
@@ -67,38 +67,38 @@ argument shall be treated as an unsigned value, and an argument value of
 Port & Size & Direction & Description\tabularnewline
 \midrule
 \endhead
-\texttt{mst\_HSEL[MASTERS]}      & 1                     & Input  & Bus Select\tabularnewline
-\texttt{mst\_HTRANS[MASTERS]}    & 2                     & Input  & Transfer Type\tabularnewline
-\texttt{mst\_HADDR[MASTERS]}     & \texttt{HADDR\_SIZE}  & Input  & Address Bus\tabularnewline
-\texttt{mst\_HWDATA[MASTERS]}    & \texttt{HDATA\_SIZE}  & Input  & Write Data Bus\tabularnewline
-\texttt{mst\_HRDATA[MASTERS]}    & \texttt{HDATA\_SIZE}  & Output & Read Data Bus\tabularnewline
-\texttt{mst\_HWRITE[MASTERS]}    & 1                     & Input  & Write Select\tabularnewline
-\texttt{mst\_HSIZE[MASTERS]}     & 3                     & Input  & Transfer Size\tabularnewline
-\texttt{mst\_HBURST[MASTERS]}    & 3                     & Input  & Transfer Burst Size\tabularnewline
-\texttt{mst\_HPROT[MASTERS]}     & 4                     & Input  & Transfer Protection Level\tabularnewline
-\texttt{mst\_HMASTLOCK[MASTERS]} & 1                     & Input  & Transfer Master Lock\tabularnewline
-\texttt{mst\_HREADYOUT[MASTERS]} & 1                     & Output & Transfer Ready Output\tabularnewline
-\texttt{mst\_HREADY[MASTERS]}    & 1                     & Input  & Transfer Ready Input\tabularnewline
-\texttt{mst\_HRESP[MASTERS]}     & 1                     & Input  & Transfer Response\tabularnewline
+\texttt{mst\_HSEL}      & 1                     & Input  & Bus Select\tabularnewline
+\texttt{mst\_HTRANS}    & 2                     & Input  & Transfer Type\tabularnewline
+\texttt{mst\_HADDR}     & \texttt{HADDR\_SIZE}  & Input  & Address Bus\tabularnewline
+\texttt{mst\_HWDATA}    & \texttt{HDATA\_SIZE}  & Input  & Write Data Bus\tabularnewline
+\texttt{mst\_HRDATA}    & \texttt{HDATA\_SIZE}  & Output & Read Data Bus\tabularnewline
+\texttt{mst\_HWRITE}    & 1                     & Input  & Write Select\tabularnewline
+\texttt{mst\_HSIZE}     & 3                     & Input  & Transfer Size\tabularnewline
+\texttt{mst\_HBURST}    & 3                     & Input  & Transfer Burst Size\tabularnewline
+\texttt{mst\_HPROT}     & 4                     & Input  & Transfer Protection Level\tabularnewline
+\texttt{mst\_HMASTLOCK} & 1                     & Input  & Transfer Master Lock\tabularnewline
+\texttt{mst\_HREADYOUT} & 1                     & Output & Transfer Ready Output\tabularnewline
+\texttt{mst\_HREADY}    & 1                     & Input  & Transfer Ready Input\tabularnewline
+\texttt{mst\_HRESP}     & 1                     & Input  & Transfer Response\tabularnewline
 \bottomrule
 \caption{Master Interface AHB-Lite Port}
 \end{longtable}
 
-\subsection{mst\_priority[ ]}\label{mst_priority}
+\subsection{mst\_priority}\label{mst_priority}
 
-\texttt{mst\_priority[\,]} defines the priority of each master. The width of the bus is calculated as clog\textsubscript{2}(\texttt{MASTERS}). For example, for a system with 4 masters the width of \texttt{mst\_priority[\,]} will be 2 bits.
+\texttt{mst\_priority} defines the priority of each master. The width of the bus is calculated as clog\textsubscript{2}(\texttt{MASTERS}). For example, for a system with 4 masters the width of \texttt{mst\_priority} will be 2 bits.
 
 Lowest priority is 0, highest priority is \texttt{MASTERS - 1}.
 
-\subsection{mst\_HSEL[ ]}\label{mst_hsel}
+\subsection{mst\_HSEL}\label{mst_hsel}
 
-The Master Port only responds to other signals on its bus when \texttt{mst\_HSEL[\,]} is
-asserted (`1'). When \texttt{mst\_HSEL[\,]} is negated (`0') the Master Port
-considers the bus IDLE and negates \texttt{HREADYOUT[\,]} (`0').
+The Master Port only responds to other signals on its bus when \texttt{mst\_HSEL} is
+asserted (`1'). When \texttt{mst\_HSEL} is negated (`0') the Master Port
+considers the bus IDLE and negates \texttt{HREADYOUT} (`0').
 
-\subsection{mst\_HTRANS[ ]}\label{mst_htrans}
+\subsection{mst\_HTRANS}\label{mst_htrans}
 
-\texttt{mst\_HTRANS[ ]} indicates the type of the current transfer. It is driven to
+\texttt{mst\_HTRANS} indicates the type of the current transfer. It is driven to
 the connected slave.
 
 \begin{longtable}[]{@{}clp{9cm}@{}}
@@ -117,29 +117,29 @@ transfer\tabularnewline
 \end{longtable}
 
 
-\subsection{mst\_HADDR[ ]}\label{mst_haddr}
+\subsection{mst\_HADDR}\label{mst_haddr}
 
-\texttt{mst\_HADDR[\,]} is the address bus. Its size is determined by the \texttt{HADDR\_SIZE}
+\texttt{mst\_HADDR} is the address bus. Its size is determined by the \texttt{HADDR\_SIZE}
 parameter. It is driven to the connected slave.
 
-\subsection{mst\_HWDATA[ ]}\label{mst_hwdata}
+\subsection{mst\_HWDATA}\label{mst_hwdata}
 
-\texttt{mst\_HWDATA[\,]} is the write data bus. Its size is determined by the
+\texttt{mst\_HWDATA} is the write data bus. Its size is determined by the
 \texttt{HDATA\_SIZE} parameter. It is driven to the connected slave.
 
-\subsection{mst\_HRDATA[ ]}\label{mst_hrdata}
+\subsection{mst\_HRDATA}\label{mst_hrdata}
 
-\texttt{mst\_HRDATA[\,]} is the read data bus. Its size is determined by \texttt{HDATA\_SIZE}
+\texttt{mst\_HRDATA} is the read data bus. Its size is determined by \texttt{HDATA\_SIZE}
 parameter. The connected slave drives it.
 
-\subsection{mst\_HWRITE[ ]}\label{mst_hwrite}
+\subsection{mst\_HWRITE}\label{mst_hwrite}
 
-\texttt{mst\_HWRITE[\,]} is the read/write signal. \texttt{mst\_HWRITE[\,]} asserted (`1') indicates a
+\texttt{mst\_HWRITE} is the read/write signal. \texttt{mst\_HWRITE} asserted (`1') indicates a
 write transfer. It is driven to the connected slave.
 
-\subsection{mst\_HSIZE[ ]}\label{mst_hsize}
+\subsection{mst\_HSIZE}\label{mst_hsize}
 
-\texttt{mst\_HSIZE[\,]} indicates the size of the current transfer. It is driven to
+\texttt{mst\_HSIZE} indicates the size of the current transfer. It is driven to
 the connected slave.
 
 \begin{longtable}[]{@{}ccl@{}}
@@ -160,7 +160,7 @@ HSIZE & Size & Description\tabularnewline
 \end{longtable}
 
 
-\subsection{mst\_HBURST[ ]}\label{mst_hburst}
+\subsection{mst\_HBURST}\label{mst_hburst}
 
 The burst type indicates if the transfer is a single transfer or part of
 a burst. It is driven to the connected slave.
@@ -182,7 +182,7 @@ HBURST & Type & Description\tabularnewline
 \caption{Burst Types (HBURST)}
 \end{longtable}
 
-\subsection{mst\_HPROT[ ]}\label{mst_hprot}
+\subsection{mst\_HPROT}\label{mst_hprot}
 
 The protection signals provide information about the bus transfer. They
 are intended to implement some level of protection. It is driven to the
@@ -205,34 +205,34 @@ Bit \# & Value & Description\tabularnewline
 \caption{Protection Signals (HPROT)}
 \end{longtable}
 
-\subsection{mst\_HREADYOUT[ ]}\label{mst_hreadyout}
+\subsection{mst\_HREADYOUT}\label{mst_hreadyout}
 
-When a slave is addressed, the \texttt{mst\_HREADYOUT[\,]} indicates that the
+When a slave is addressed, the \texttt{mst\_HREADYOUT} indicates that the
 addressed slave finished the current transfer. The Interconnect IP
 routes the addressed slave's \texttt{HREADY} signal to the master.
 
-When no slave is addressed, the \texttt{mst\_HREADYOUT[\,]} signal is generated
+When no slave is addressed, the \texttt{mst\_HREADYOUT} signal is generated
 locally, inside the Interconnect.
 
-\subsection{mst\_HMASTLOCK[ ]}\label{mst_hmastlock}
+\subsection{mst\_HMASTLOCK}\label{mst_hmastlock}
 
 The master lock signal indicates if the current transfer is part of a
 locked sequence, commonly used for Read-Modify-Write cycles. While the
-\texttt{mst\_HMASTLOCK[\,]} is asserted, the Interconnect IP cannot switch the
+\texttt{mst\_HMASTLOCK} is asserted, the Interconnect IP cannot switch the
 addressed slave to another master, even if that master has a higher
 priority. Instead the current master retains access to slave until it
-releases \texttt{mst\_HMASTLOCK[\,]}.
+releases \texttt{mst\_HMASTLOCK}.
 
-\subsection{mst\_HREADY[ ]}\label{mst_hready}
+\subsection{mst\_HREADY}\label{mst_hready}
 
-\texttt{mst\_HREADY[\,]} indicates the status of the local \texttt{HREADY} on the master's
+\texttt{mst\_HREADY} indicates the status of the local \texttt{HREADY} on the master's
 local bus. It is routed to the \texttt{HREADYOUT} port of the connected slave.
 
-\subsection{mst\_HRESP[ ]}\label{mst_hresp}
+\subsection{mst\_HRESP}\label{mst_hresp}
 
-\texttt{mst\_HRESP[\,]} is the transfer response from the connected slave, it can
+\texttt{mst\_HRESP} is the transfer response from the connected slave, it can
 either be OKAY (`0') or ERROR (`1'). The Interconnect IP routes the
-connected slave's \texttt{HRESP} port to \texttt{mst\_HRESP[\,]}.
+connected slave's \texttt{HRESP} port to \texttt{mst\_HRESP}.
 
 \section{Slave Interface}\label{slave-interface}
 
@@ -250,8 +250,8 @@ arrays reflecting the number of slaves supported.
 Port & Size & Direction & Description\tabularnewline
 \midrule
 \endhead
-\texttt{slv\_addr\_base[SLAVES]} & \texttt{HADDR\_SIZE} & Input  & Slave Base Address\tabularnewline
-\texttt{slv\_addr\_mask[SLAVES]} & \texttt{HADDR\_SIZE} & Input  & Slave Address Space Mask\tabularnewline
+\texttt{slv\_addr\_base} & \texttt{HADDR\_SIZE} & Input  & Slave Base Address\tabularnewline
+\texttt{slv\_addr\_mask} & \texttt{HADDR\_SIZE} & Input  & Slave Address Space Mask\tabularnewline
 \bottomrule
 \caption{Slave Interface Customisation Port}
 \end{longtable}
@@ -261,32 +261,32 @@ Port & Size & Direction & Description\tabularnewline
 Port & Size & Direction & Description\tabularnewline
 \midrule
 \endhead
-\texttt{slv\_HSEL[SLAVES]}       & 1                    & Output & Bus Select\tabularnewline
-\texttt{slv\_HADDR[SLAVES]}      & \texttt{HADDR\_SIZE} & Output & Address\tabularnewline
-\texttt{slv\_HWDATA[SLAVES]}     & \texttt{HDATA\_SIZE} & Output & Write Data Bus\tabularnewline
-\texttt{slv\_HRDATA[SLAVES]}     & \texttt{HDATA\_SIZE} & Input  & Read Data Bus\tabularnewline
-\texttt{slv\_HWRITE[SLAVES]}     & 1                    & Output & Write Select\tabularnewline
-\texttt{slv\_HSIZE[SLAVES]}      & 3                    & Output & Transfer size\tabularnewline
-\texttt{slv\_HBURST[SLAVES]}     & 3                    & Output & Transfer Burst Size\tabularnewline
-\texttt{slv\_HPROT[SLAVES]}      & 4                    & Output & Transfer Protection Level\tabularnewline
-\texttt{slv\_HTRANS[SLAVES]}     & 2                    & Input  & Transfer Type\tabularnewline
-\texttt{slv\_HMASTLOCK[SLAVES]}  & 1                    & Output & Transfer Master Lock\tabularnewline
-\texttt{slv\_HREADY[SLAVES]}     & 1                    & Input  & Transfer Ready Input\tabularnewline
-\texttt{slv\_HRESP[SLAVES]}      & 1                    & Input  & Transfer Response\tabularnewline
+\texttt{slv\_HSEL}       & 1                    & Output & Bus Select\tabularnewline
+\texttt{slv\_HADDR}      & \texttt{HADDR\_SIZE} & Output & Address\tabularnewline
+\texttt{slv\_HWDATA}     & \texttt{HDATA\_SIZE} & Output & Write Data Bus\tabularnewline
+\texttt{slv\_HRDATA}     & \texttt{HDATA\_SIZE} & Input  & Read Data Bus\tabularnewline
+\texttt{slv\_HWRITE}     & 1                    & Output & Write Select\tabularnewline
+\texttt{slv\_HSIZE}      & 3                    & Output & Transfer size\tabularnewline
+\texttt{slv\_HBURST}     & 3                    & Output & Transfer Burst Size\tabularnewline
+\texttt{slv\_HPROT}      & 4                    & Output & Transfer Protection Level\tabularnewline
+\texttt{slv\_HTRANS}     & 2                    & Input  & Transfer Type\tabularnewline
+\texttt{slv\_HMASTLOCK}  & 1                    & Output & Transfer Master Lock\tabularnewline
+\texttt{slv\_HREADY}     & 1                    & Input  & Transfer Ready Input\tabularnewline
+\texttt{slv\_HRESP}      & 1                    & Input  & Transfer Response\tabularnewline
 \bottomrule
 \caption{Slave Interface AHB-Lite Port}
 \end{longtable}
 
-\subsection{slv\_addr\_base[ ]}\label{slv_addr_base}
+\subsection{slv\_addr\_base}\label{slv_addr_base}
 
-\texttt{slv\_addr\_base[\,]} is a \texttt{SLAVES} sized array of addresses, each
+\texttt{slv\_addr\_base} is a \texttt{SLAVES} sized array of addresses, each
 \texttt{HADDR\_SIZE} bits wide, defining the base address of each attached slave device.
 
-\subsection{slv\_addr\_mask[ ]}\label{slv_addr_mask}
-\texttt{slv\_addr\_mask[\,]} is a \texttt{SLAVES} sized array of \texttt{HADDR\_SIZE} bit wide
-signals. Each \texttt{slv\_addr\_base[\,]} address is masked with the corresponding
-\texttt{slv\_addr\_mask[\,]} value to define the addressable memory space of the attached slave.
-Setting a bit of \texttt{slv\_addr\_mask[\,]} to '0' enables the corresponding address bit.
+\subsection{slv\_addr\_mask}\label{slv_addr_mask}
+\texttt{slv\_addr\_mask} is a \texttt{SLAVES} sized array of \texttt{HADDR\_SIZE} bit wide
+signals. Each \texttt{slv\_addr\_base} address is masked with the corresponding
+\texttt{slv\_addr\_mask} value to define the addressable memory space of the attached slave.
+Setting a bit of \texttt{slv\_addr\_mask} to '0' enables the corresponding address bit.
 
 \ifdefined\MARKDOWN
   See section 'Address Space Configuration' for specific examples.
@@ -294,36 +294,36 @@ Setting a bit of \texttt{slv\_addr\_mask[\,]} to '0' enables the corresponding a
   See section \ref{address-space-configuration} for specific examples.
 \fi
 
-\subsection{slv\_HSEL[ ]}\label{slv_hsel}
+\subsection{slv\_HSEL}\label{slv_hsel}
 
 Slaves connected to the Slave Port must only respond to other signals on the bus when
-\texttt{slv\_HSEL[\,]} is asserted (`1'). When \texttt{slv\_HSEL[\,]} is negated (`0') the
+\texttt{slv\_HSEL} is asserted (`1'). When \texttt{slv\_HSEL} is negated (`0') the
 interface is idle and the connected Slaves must assert their \texttt{HREADYOUT} (`1').
 
-\subsection{slv\_HADDR[ ]}\label{slv_haddr}
+\subsection{slv\_HADDR}\label{slv_haddr}
 
-\texttt{slv\_HADDR[\,]} is the data address bus. Its size is determined by the
-\texttt{HADDR\_SIZE} parameter. The connected master drives \texttt{slv\_HADDR[\,]}.
+\texttt{slv\_HADDR} is the data address bus. Its size is determined by the
+\texttt{HADDR\_SIZE} parameter. The connected master drives \texttt{slv\_HADDR}.
 
-\subsection{slv\_HRDATA[ ]}\label{slv_hrdata}
+\subsection{slv\_HRDATA}\label{slv_hrdata}
 
-\texttt{slv\_HRDATA[ ]} is the read data bus. Its size is determined by the
+\texttt{slv\_HRDATA} is the read data bus. Its size is determined by the
 \texttt{HDATA\_SIZE} parameter. It is driven to the connected master.
 
-\subsection{slv\_HWDATA[ ]}\label{slv_hwdata}
+\subsection{slv\_HWDATA}\label{slv_hwdata}
 
-\texttt{slv\_HWDATA[\,]} is the write data bus. Its size is determined by the
-\texttt{HDATA\_SIZE} parameter. The connected master drives \texttt{slv\_HADDR[\,]}.
+\texttt{slv\_HWDATA} is the write data bus. Its size is determined by the
+\texttt{HDATA\_SIZE} parameter. The connected master drives \texttt{slv\_HADDR}.
 
-\subsection{slv\_HWRITE[ ]}\label{slv_hwrite}
+\subsection{slv\_HWRITE}\label{slv_hwrite}
 
-\texttt{slv\_HWRITE[\,]} is the read/write signal. \texttt{slv\_HWRITE[\,]} asserted (`1') indicates a
-write transfer. The connected master drives \texttt{slv\_HWRITE[\,]}.
+\texttt{slv\_HWRITE} is the read/write signal. \texttt{slv\_HWRITE} asserted (`1') indicates a
+write transfer. The connected master drives \texttt{slv\_HWRITE}.
 
-\subsection{slv\_HSIZE[ ]}\label{slv_hsize}
+\subsection{slv\_HSIZE}\label{slv_hsize}
 
-\texttt{slv\_HSIZE[\,]} indicates the size of the current transfer. The connected
-master drives \texttt{slv\_HSIZE[\,]}.
+\texttt{slv\_HSIZE} indicates the size of the current transfer. The connected
+master drives \texttt{slv\_HSIZE}.
 
 \begin{longtable}[]{@{}ccl@{}}
 \toprule
@@ -342,7 +342,7 @@ HSIZE & Size & Description\tabularnewline
 \caption{Data Transfer Sizes}
 \end{longtable}
 
-\subsection{slv\_HBURST[ ]}\label{slv_hburst}
+\subsection{slv\_HBURST}\label{slv_hburst}
 
 The burst type indicates if the transfer is a single transfer or part of
 a burst. The connected master drives it.
@@ -364,11 +364,11 @@ HBURST & Type & Description\tabularnewline
 \caption{Burst Types (HBURST)}
 \end{longtable}
 
-\subsection{slv\_HPROT[ ]}\label{slv_hprot}
+\subsection{slv\_HPROT}\label{slv_hprot}
 
 The data protection signals provide information about the bus transfer.
 They are intended to implement some level of protection. The connected
-master drives \texttt{slv\_HPROT[\,]}.
+master drives \texttt{slv\_HPROT}.
 
 \begin{longtable}[]{@{}ccl@{}}
 \toprule
@@ -386,9 +386,9 @@ Bit\# & Value & Description\tabularnewline
 \caption{Data Protection Signals}
 \end{longtable}
 
-\subsection{slv\_HTRANS[ ]}\label{slv_htrans}
+\subsection{slv\_HTRANS}\label{slv_htrans}
 
-\texttt{slv\_HTRANS[\,]} indicates the type of the current data transfer.
+\texttt{slv\_HTRANS} indicates the type of the current data transfer.
 
 \begin{longtable}[]{@{}ccl@{}}
 \toprule
@@ -403,30 +403,30 @@ slv\_HTRANS & Type & Description\tabularnewline
 \caption{Data Transfer Type}
 \end{longtable}
 
-\subsection{slv\_HMASTLOCK[ ]}\label{slv_hmastlock}
+\subsection{slv\_HMASTLOCK}\label{slv_hmastlock}
 
 The master lock signal indicates if the current transfer is part of a
 locked sequence, commonly used for Read-Modify-Write cycles. The
-connected master drives \texttt{slv\_MASTLOCK[\,]}.
+connected master drives \texttt{slv\_MASTLOCK}.
 
-\subsection{slv\_HREADYOUT[ ]}\label{slv_hreadyout}
+\subsection{slv\_HREADYOUT}\label{slv_hreadyout}
 
-The \texttt{slv\_HREADYOUT[\,]} signal reflects the state of the connected Master
+The \texttt{slv\_HREADYOUT} signal reflects the state of the connected Master
 Port's \texttt{HREADY} port. It is provided to support local slaves connected
 directly to the Master's AHB-Lite bus. It is driven by the connected
 master's \texttt{HREADY} port.
 
-\textbf{Note:} \texttt{slv\_HREADYOUT[\,]} is not an AHB-Lite Signal.
+\textbf{Note:} \texttt{slv\_HREADYOUT} is not an AHB-Lite Signal.
 
-\subsection{slv\_HREADY[ ]}\label{slv_hready}
+\subsection{slv\_HREADY}\label{slv_hready}
 
-\texttt{slv\_HREADY[\,]} indicates whether the addressed slave is ready to transfer
-data or not. When \texttt{slv\_HREADY[\,]} is negated (`0') the slave is not ready,
-forcing wait states. When \texttt{slv\_HREADY[\,]} is asserted (`0') the slave is
+\texttt{slv\_HREADY} indicates whether the addressed slave is ready to transfer
+data or not. When \texttt{slv\_HREADY} is negated (`0') the slave is not ready,
+forcing wait states. When \texttt{slv\_HREADY} is asserted (`0') the slave is
 ready and the transfer completed. It is driven to the connected master's
 \texttt{HREADYOUT} port.
 
-\subsection{slv\_HRESP[ ]}\label{slv_hresp}
+\subsection{slv\_HRESP}\label{slv_hresp}
 
-\texttt{slv\_HRESP[\,]} is the data transfer response, it can either be OKAY (`0') or
+\texttt{slv\_HRESP} is the data transfer response, it can either be OKAY (`0') or
 ERROR (`1'). It is driven to the connected master.
