@@ -232,7 +232,7 @@ Lowest priority is 0, highest priority is `MASTERS - 1`.
 
 #### mst\_HSEL
 
-The Master Port only responds to other signals on its bus when `mst_HSEL` is asserted (‘1’). When `mst_HSEL` is negated (‘0’) the Master Port considers the bus IDLE and negates `HREADYOUT` (‘0’).
+The Master Port only responds to other signals on its bus when `mst_HSEL` is asserted (‘1’). When `mst_HSEL` is negated (‘0’) the Master Port considers the bus IDLE and asserts `HREADYOUT` (‘1’).
 
 #### mst\_HTRANS
 

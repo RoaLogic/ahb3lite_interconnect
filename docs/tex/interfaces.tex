@@ -94,7 +94,7 @@ Lowest priority is 0, highest priority is \texttt{MASTERS - 1}.
 
 The Master Port only responds to other signals on its bus when \texttt{mst\_HSEL} is
 asserted (`1'). When \texttt{mst\_HSEL} is negated (`0') the Master Port
-considers the bus IDLE and negates \texttt{HREADYOUT} (`0').
+considers the bus IDLE and asserts \texttt{HREADYOUT} (`1').
 
 \subsection{mst\_HTRANS}\label{mst_htrans}
 
