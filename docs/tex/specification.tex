@@ -37,8 +37,6 @@ Slave-4
 	\label{fig:ahb-lite-switch-sys2}
 \end{figure}
 
-
-
 To access a Slave, the Interconnect first checks if the designated Slave
 Port is available. If it is available the Slave Port immediately
 switches to the requesting Master. If the Slave Port is occupied due to
@@ -132,17 +130,17 @@ relevant least significant bits (LSBs) only.
 \subsubsection{Example 1}\label{example-1}
 
 \begin{verbatim}
-slave\_addr\_base = 32'h1000\_0000
-slave\_addr\_mask = 32'hF000\_0000
-Address-range = 32'h1000\_0000 to 32'h1FFF\_FFFF
+slave_addr_base = 32'h1000_0000
+slave_addr_mask = 32'hF000_0000
+Address-range = 32'h1000_0000 to 32'h1FFF_FFFF
 \end{verbatim}
 
 \subsubsection{Example 2}\label{example-2}
 
 \begin{verbatim}
-slave\_addr\_base = 32'h4000\_0000
-slave\_addr\_mask = 32'hE000\_0000
-Address-range = 32'h4000\_0000 to 32'h5FFF\_FFFF
+slave_addr_base = 32'h4000_0000
+slave_addr_mask = 32'hE000_0000
+Address-range = 32'h4000_0000 to 32'h5FFF_FFFF
 \end{verbatim}
 
 \subsection{Slave Port HREADYOUT and HREADY
