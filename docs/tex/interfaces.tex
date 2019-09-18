@@ -29,38 +29,17 @@ core is put into its initial reset state.
 of the system clock. All AHB bus timings are related to the rising edge
 of \texttt{HCLK}. All Master and Slave ports must operate at the same \texttt{HCLK} clock.
 
-\section{Master Interfaces}\label{master-interfaces}
+\section{Master Interface}\label{master-interface}
 
 The Master Ports are regular AHB3-Lite slave interfaces. All signals are
 supported. See the AHB-Lite specifications for a complete description of
-the signals.
+the signals. In addition, a custom master priority port is included per interface to enable
+prioritisation when multiple masters attempt to simultaneously access the same slave. This
+prioritisation may be defined statically or dynamically changed during operation.
 
 The AHB-Lite Multi-layer Interconnect implements 1 or more interfaces to AHB-Lite masters
 as defined by the \texttt{MASTERS} parameter. Therefore the following signals are all
 arrays reflecting the number of masters supported.
-
-%\newpage
-\begin{longtable}[]{@{}lccl@{}}
-\toprule
-Port & Size & Direction & Description\tabularnewline
-\midrule
-\endhead
-\texttt{mst\_priority}  & clog\textsubscript{2}(\texttt{MASTERS}) & Input & Master Priority Levels\tabularnewline
-\bottomrule
-\caption{Master Interface Customisation Port}
-\end{longtable}
-
-\textbf{Note:} clog\textsubscript{2}() refers to the System Verilog function by
-the same name, defined below, and is used to determine the required bitwidth of a
-bus required to represent the defined range of values:
-
-\begin{quote}
-\emph{The system function \$clog2 shall return the ceiling of the log
-base 2 of the argument (the log rounded up to an integer value). The
-argument can be an integer or an arbitrary sized vector value. The
-argument shall be treated as an unsigned value, and an argument value of
-0 shall produce a result of 0.}
-\end{quote}
 
 \begin{longtable}[]{@{}lccl@{}}
 \toprule
@@ -84,11 +63,28 @@ Port & Size & Direction & Description\tabularnewline
 \caption{Master Interface AHB-Lite Port}
 \end{longtable}
 
-\subsection{mst\_priority}\label{mst_priority}
+%\newpage
+\begin{longtable}[]{@{}lccl@{}}
+\toprule
+Port & Size & Direction & Description\tabularnewline
+\midrule
+\endhead
+\texttt{mst\_priority}  & clog\textsubscript{2}(\texttt{MASTERS}) & Input & Master Priority Levels\tabularnewline
+\bottomrule
+\caption{Master Interface Custom Port}
+\end{longtable}
 
-\texttt{mst\_priority} defines the priority of each master. The width of the bus is calculated as clog\textsubscript{2}(\texttt{MASTERS}). For example, for a system with 4 masters the width of \texttt{mst\_priority} will be 2 bits.
+\textbf{Note:} clog\textsubscript{2}() refers to the System Verilog function by
+the same name, defined below, and is used to determine the required bitwidth of a
+bus required to represent the defined range of values:
 
-Lowest priority is 0, highest priority is \texttt{MASTERS - 1}.
+\begin{quote}
+\emph{The system function \$clog2 shall return the ceiling of the log
+base 2 of the argument (the log rounded up to an integer value). The
+argument can be an integer or an arbitrary sized vector value. The
+argument shall be treated as an unsigned value, and an argument value of
+0 shall produce a result of 0.}
+\end{quote}
 
 \subsection{mst\_HSEL}\label{mst_hsel}
 
@@ -233,6 +229,14 @@ local bus. It is routed to the \texttt{HREADYOUT} port of the connected slave.
 \texttt{mst\_HRESP} is the transfer response from the connected slave, it can
 either be OKAY (`0') or ERROR (`1'). The Interconnect IP routes the
 connected slave's \texttt{HRESP} port to \texttt{mst\_HRESP}.
+
+\subsection{mst\_priority}\label{mst_priority}
+
+\texttt{mst\_priority} is a custom port per master interface and defines the priority
+of the attached master. The width of the bus is calculated as clog\textsubscript{2}(\texttt{MASTERS}), with the lowest priority value defined as 0 and the  highest priority being \texttt{MASTERS-1}.
+
+For example, for a system with 4 masters the width of \texttt{mst\_priority} will be
+2 bits to enable each master to have a unique prioritisation level, with lowest priority being 0 and highest priority being 3.
 
 \section{Slave Interface}\label{slave-interface}
 

@@ -18,7 +18,7 @@ Author: Roa Logic
 
 The Roa Logic AHB-Lite Multi-layer Interconnect is a fully parameterized soft IP High Performance, Low Latency Interconnect Fabric for AHB-Lite. It allows a virtually unlimited number of AHB-Lite Bus Masters and Slaves to be connected without the need of bus arbitration to be implemented by the Bus Masters. Instead, Slave Side Arbitration is implemented for each Slave Port within the core.
 
-![Multi-layer Interconnect Usage Example<span data-label="fig:ahb-lite-switch-sys"></span>](assets/img/ahb-lite-switch-sys.png)
+![Multi–layer Interconnect Usage Example<span data-label="fig:ahb-lite-switch-sys"></span>](assets/img/ahb-lite-switch-sys.png)
 
 The Multi-layer Interconnect supports priority based and Round-Robin based arbitration when multiple Bus Masters request access to the same Slave Port. Typically arbitration completes within 1 clock cycle.
 
@@ -194,19 +194,11 @@ When the active low asynchronous `HRESETn` input is asserted (‘0’), the core
 
 `HCLK` is the system clock. All internal logic operates at the rising edge of the system clock. All AHB bus timings are related to the rising edge of `HCLK`. All Master and Slave ports must operate at the same `HCLK` clock.
 
-### Master Interfaces
+### Master Interface
 
-The Master Ports are regular AHB3-Lite slave interfaces. All signals are supported. See the AHB-Lite specifications for a complete description of the signals.
+The Master Ports are regular AHB3-Lite slave interfaces. All signals are supported. See the AHB-Lite specifications for a complete description of the signals. In addition, a custom master priority port is included per interface to enable prioritisation when multiple masters attempt to simultaneously access the same slave. This prioritisation may be defined statically or dynamically changed during operation.
 
 The AHB-Lite Multi-layer Interconnect implements 1 or more interfaces to AHB-Lite masters as defined by the `MASTERS` parameter. Therefore the following signals are all arrays reflecting the number of masters supported.
-
-| Port           |             Size            | Direction | Description            |
-|:---------------|:---------------------------:|:---------:|:-----------------------|
-| `mst_priority` | clog<sub>2</sub>(`MASTERS`) |   Input   | Master Priority Levels |
-
-**Note:** clog<sub>2</sub>() refers to the System Verilog function by the same name, defined below, and is used to determine the required bitwidth of a bus required to represent the defined range of values:
-
-> *The system function $clog2 shall return the ceiling of the log base 2 of the argument (the log rounded up to an integer value). The argument can be an integer or an arbitrary sized vector value. The argument shall be treated as an unsigned value, and an argument value of 0 shall produce a result of 0.*
 
 | Port            |     Size     | Direction | Description               |
 |:----------------|:------------:|:---------:|:--------------------------|
@@ -224,11 +216,13 @@ The AHB-Lite Multi-layer Interconnect implements 1 or more interfaces to AHB-Lit
 | `mst_HREADY`    |       1      |   Input   | Transfer Ready Input      |
 | `mst_HRESP`     |       1      |   Input   | Transfer Response         |
 
-#### mst\_priority
+| Port           |             Size            | Direction | Description            |
+|:---------------|:---------------------------:|:---------:|:-----------------------|
+| `mst_priority` | clog<sub>2</sub>(`MASTERS`) |   Input   | Master Priority Levels |
 
-`mst_priority` defines the priority of each master. The width of the bus is calculated as clog<sub>2</sub>(`MASTERS`). For example, for a system with 4 masters the width of `mst_priority` will be 2 bits.
+**Note:** clog<sub>2</sub>() refers to the System Verilog function by the same name, defined below, and is used to determine the required bitwidth of a bus required to represent the defined range of values:
 
-Lowest priority is 0, highest priority is `MASTERS - 1`.
+> *The system function $clog2 shall return the ceiling of the log base 2 of the argument (the log rounded up to an integer value). The argument can be an integer or an arbitrary sized vector value. The argument shall be treated as an unsigned value, and an argument value of 0 shall produce a result of 0.*
 
 #### mst\_HSEL
 
@@ -324,6 +318,12 @@ The master lock signal indicates if the current transfer is part of a locked seq
 
 `mst_HRESP` is the transfer response from the connected slave, it can either be OKAY (‘0’) or ERROR (‘1’). The Interconnect IP routes the connected slave’s `HRESP` port to `mst_HRESP`.
 
+#### mst\_priority
+
+`mst_priority` is a custom port per master interface and defines the priority of the attached master. The width of the bus is calculated as clog<sub>2</sub>(`MASTERS`), with the lowest priority value defined as 0 and the highest priority being `MASTERS-1`.
+
+For example, for a system with 4 masters the width of `mst_priority` will be 2 bits to enable each master to have a unique prioritisation level, with lowest priority being 0 and highest priority being 3.
+
 ### Slave Interface
 
 The Slave Ports are regular AHB-Lite master interfaces.. All signals are supported. In addition each Slave Port has a non-standard `slv_HREADYOUT`. See the AHB-Lite specifications for a complete description of the signals.
@@ -358,7 +358,7 @@ The AHB-Lite Multi-layer Interconnect implements 1 or more interfaces to AHB-Lit
 
 `slv_addr_mask` is a `SLAVES` sized array of `HADDR_SIZE` bit wide signals. Each `slv_addr_base` address is masked with the corresponding `slv_addr_mask` value to define the addressable memory space of the attached slave. Setting a bit of `slv_addr_mask` to ’0’ enables the corresponding address bit.
 
-See section ’Address Space Configuration’ for specific examples. See section \[address-space-configuration\] for specific examples.
+See section ’Address Space Configuration’ for specific examples.
 
 #### slv\_HSEL
 
