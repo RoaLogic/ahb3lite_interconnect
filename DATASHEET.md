@@ -134,14 +134,14 @@ The Roa Logic AHB-Lite Multi-layer Interconnect is a highly configurable Interco
 
 ### Core Parameters
 
-| Parameter                      |   Type  |  Default | Description                              |
-|:-------------------------------|:-------:|:--------:|:-----------------------------------------|
-| `HADDR_SIZE`                   | Integer |    32    | Address Bus Size                         |
-| `HDATA_SIZE`                   | Integer |    32    | Data Bus Size                            |
-| `MASTERS`                      | Integer |     3    | Number of Master Ports                   |
-| `SLAVES`                       | Integer |     8    | Number of Slave Ports                    |
-| `SLAVE_MASK[MASTERS]`          |  Array  | All ’1’s | Mask Slaves accessible by each Master    |
-| `ERROR_ON_SLAVE_MASK[MASTERS]` |  Array  | All ’1’s | Enable Error Reporting for masked Slaves |
+| Parameter                      |   Type  |      Default      | Description                              |
+|:-------------------------------|:-------:|:-----------------:|:-----------------------------------------|
+| `HADDR_SIZE`                   | Integer |         32        | Address Bus Size                         |
+| `HDATA_SIZE`                   | Integer |         32        | Data Bus Size                            |
+| `MASTERS`                      | Integer |         3         | Number of Master Ports                   |
+| `SLAVES`                       | Integer |         8         | Number of Slave Ports                    |
+| `SLAVE_MASK[MASTERS]`          |  Array  |      All ’1’s     | Mask Slaves accessible by each Master    |
+| `ERROR_ON_SLAVE_MASK[MASTERS]` |  Array  | inv(`SLAVE_MASK`) | Enable Error Reporting for masked Slaves |
 
 #### HADDR\_SIZE
 
@@ -173,7 +173,9 @@ The `ERROR_ON_SLAVE_MASK[]` parameter enables generating an AHB error response w
 
 There is one `ERROR_ON_SLAVE_MASK` parameter per master, each `SLAVES` bits wide. i.e. `ERROR_ON_SLAVE_MASK[]` is an array of dimensions `MASTERS` x `SLAVES`.
 
-Setting an `ERROR_ON_SLAVE_MASK[]` bit to ’0’ indicates that an AHB error response will not be generated if the master is masked from accessing the corresponding slave. Conversely, setting a `ERROR_ON_SLAVE_MASK[]` bit to ’1’ indicates that an AHB error response will be generated if the master is masked from accessing the corresponding slave - this is the default setting.
+Setting an `ERROR_ON_SLAVE_MASK[]` bit to ’0’ indicates that an AHB error response will not be generated if the master is masked from accessing the corresponding slave. Conversely, setting a `ERROR_ON_SLAVE_MASK[]` bit to ’1’ indicates that an AHB error response will be generated if the master is masked from accessing the corresponding slave.
+
+The default value of `ERROR_ON_SLAVE_MASK[]` is the bitwise inverse of `SLAVE_MASK[]` - i.e. inv(`SLAVE_MASK[]`). If `SLAVE_MASK[]` is assigned a value, then `ERROR_ON_SLAVE_MASK[]` is by default inv(`SLAVE_MASK[]`).
 
 ## Interfaces
 
