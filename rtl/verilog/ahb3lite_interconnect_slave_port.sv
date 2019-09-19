@@ -199,6 +199,7 @@ module ahb3lite_interconnect_slave_port #(
 
 
 /*
+ * too slow and too big ...
   function [MASTER_BITS-1:0] nxt_master;
     input [MASTERS    -1:0] pending_masters;  //pending masters for the requesed priority level
     input [MASTER_BITS-1:0] last_master;      //last granted master for the priority level
@@ -221,9 +222,9 @@ module ahb3lite_interconnect_slave_port #(
 
 
   function [MASTER_BITS-1:0] nxt_master;
-    input [MASTERS    -1:0] pending_masters;  //pending masters for the requesed priority level
-    input [MASTER_BITS-1:0] last_master;      //last granted master for the priority level
-    input [MASTER_BITS-1:0] current_master;   //current granted master (indpendent of priority level)
+    input [MASTERS    -1:0] pending_masters;            //pending masters for the requesed priority level
+    input [MASTER_BITS-1:0] last_master;                //last granted master for the priority level
+    input [MASTER_BITS-1:0] current_master;             //current granted master (indpendent of priority level)
 
     int                   offset;
     logic [MASTERS*2-1:0]                  mst_lst;     //list of requesting masters
@@ -232,8 +233,8 @@ module ahb3lite_interconnect_slave_port #(
 
     for (int n=0; n < MASTERS; n++)
     begin
-        mst_idx_lst[n        ] = n;
-        mst_idx_lst[n+MASTERS] = n;
+        mst_idx_lst[n        ] = n[MASTER_BITS-1:0];
+        mst_idx_lst[n+MASTERS] = n[MASTER_BITS-1:0];
     end
 
     //default value, don't switch if not needed
@@ -279,14 +280,15 @@ module ahb3lite_interconnect_slave_port #(
   //get next master to serve
   assign pending_master_idx = nxt_master(priority_masters,last_granted_master_idx, granted_master_idx);
 
-  //Current active master port signals when it can be switched
-  assign can_switch_master = can_switch [granted_master_idx];
+  //Switch masters when
+  // 1. Current active master port signals it can be switched
+  // 2. Current active master isn't actually addressing this slave
+  assign can_switch_master = can_switch[granted_master_idx] | ~mstHSEL[granted_master_idx];
 
 
   //select new master
   always @(posedge HCLK, negedge HRESETn)
     if      (!HRESETn       ) granted_master <= 'h1;
-//    else if (!slv_HSEL      ) granted_master <= pending_master;
     else if ( slv_HREADY    )
       if (can_switch_master) granted_master <= (1 << pending_master_idx);
 
@@ -294,7 +296,6 @@ module ahb3lite_interconnect_slave_port #(
   //store current master (for this priority level)
   always @(posedge HCLK, negedge HRESETn)
     if      (!HRESETn       ) last_granted_masters <= 'h1;
-//    else if (!slv_HSEL      ) last_granted_masters[requested_priority_lvl] <= pending_master;
     else if ( slv_HREADY)
       if (can_switch_master) last_granted_masters[requested_priority_lvl] <= pending_master_idx;
 
@@ -304,7 +305,6 @@ module ahb3lite_interconnect_slave_port #(
    */
   always @(posedge HCLK, negedge HRESETn)
     if      (!HRESETn   ) granted_master_idx <= 'h0;
-//    else if (!slv_HSEL  ) granted_master_idx <= pending_master_idx;
     else if ( slv_HREADY)
       if (can_switch_master) granted_master_idx <= pending_master_idx;
 
