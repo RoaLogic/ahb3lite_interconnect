@@ -120,12 +120,11 @@
 module ahb3lite_interconnect #(
   parameter                  HADDR_SIZE                   = 32,
   parameter                  HDATA_SIZE                   = 32,
-  parameter                  MASTERS                      = 10, //3, //number of AHB Masters
-  parameter                  SLAVES                       = 5, //8, //number of AHB slaves
+  parameter                  MASTERS                      = 3, //number of AHB Masters
+  parameter                  SLAVES                       = 8, //number of AHB slaves
 
   parameter bit [SLAVES-1:0] SLAVE_MASK         [MASTERS] = '{MASTERS{ {SLAVES{1'b1}} }},
-  parameter bit [SLAVES-1:0] ERROR_ON_SLAVE_MASK[MASTERS] = '{MASTERS{ {SLAVES{1'b1}} }},
-
+  parameter bit [SLAVES-1:0] ERROR_ON_SLAVE_MASK[MASTERS] = invert_slave_mask(),
 
   //actually localparam
   parameter                  MASTER_BITS          = $clog2(MASTERS)
@@ -177,6 +176,17 @@ module ahb3lite_interconnect #(
   // Constants
   //
   import ahb3lite_pkg::*;
+
+  typedef bit [SLAVES-1:0] slave_mask_t [MASTERS];
+
+  //////////////////////////////////////////////////////////////////
+  //
+  // Functions
+  //
+  function slave_mask_t invert_slave_mask;
+    for (int i=0; i < MASTERS; i++)
+      invert_slave_mask[i] = ~SLAVE_MASK[i];
+  endfunction : invert_slave_mask
 
 
   //////////////////////////////////////////////////////////////////
