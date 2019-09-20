@@ -457,16 +457,15 @@ The `slv_HREADYOUT` signal reflects the state of the connected Master Port’s `
 
 ## Resources
 
-Below are some example implementations for various platforms.
+Below are some example implementations when targeting the Altera Cyclone-V family of FPGAs. All implementations are push button, no effort has been undertaken to reduce area or improve performance.
 
-All implementations are push button, no effort has been undertaken to reduce area or improve performance.
+| ↓ Res/Config → | 10x5 |  8x5 |  8x3 |  5x3 |  3x5 |  3x8 |  5x8 | 5x10 |
+|:---------------|:----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|
+| ALM            | 6438 | 4272 | 2927 | 1934 | 1753 | 2644 | 4522 | 5703 |
+| Registers      | 1220 |  926 |  842 |  533 |  338 |  377 |  668 |  725 |
+| Fmax (MHz)     |  47  |  61  |  68  |  71  |  109 |  104 |  66  |  63  |
 
-| Platform | DFF | Logic Cells | Memory | Performance (MHz) |
-|:---------|:---:|:-----------:|:------:|:-----------------:|
-| lfxp3c-5 |  34 |     103     |    0   |       226MHz      |
-|          |     |             |        |                   |
-|          |     |             |        |                   |
-|          |     |             |        |                   |
+**NOTE:** Config in the above table refers to the `MASTERS` x `SLAVES` configuration of the interconnect.
 
 ## Revision History
 
