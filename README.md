@@ -1,9 +1,3 @@
----
-Title: AHB-Lite Multilayer Switch
-Category: Product Brief
-Author: Roa Logic
----
-
 # AHB-Lite Multilayer Switch
 
 The Roa Logic AHB-Lite Multi-layer Interconnect is a fully parameterized High Performance, Low Latency Interconnect Fabric soft IP for AHB-Lite. It allows a virtually unlimited number of AHB-Lite Bus Masters and Slaves to be connected without the need of bus arbitration to be implemented by the Bus Masters. Instead, Slave Side Arbitration is implemented for each Slave Port within the core.
@@ -37,4 +31,4 @@ Released under the RoaLogic [Non-Commercial License](/LICENSE.md)
 
 ## Dependencies
 
-This release requires the ahb3lite package found here https://github.com/RoaLogic/ahb3lite_pkg
+This release requires the ahb3lite package found here: [https://github.com/RoaLogic/ahb3lite_pkg](https://github.com/RoaLogic/ahb3lite_pkg)
