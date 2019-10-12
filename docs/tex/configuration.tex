@@ -10,15 +10,18 @@ and configuration options are described in this section.
 
 \section{Core Parameters}\label{core-parameters}
 
-\begin{longtable}[]{@{}lccl@{}}
+\begin{longtable}[]{@{}lccp{5cm}@{}}
 \toprule
 Parameter & Type & Default & Description\tabularnewline
 \midrule
 \endhead
-\texttt{HADDR\_SIZE} & Integer & 32 & Address Bus Size\tabularnewline
-\texttt{HDATA\_SIZE} & Integer & 32 & Data Bus Size\tabularnewline
-\texttt{MASTERS}     & Integer & 3  & Number of Master Ports\tabularnewline
-\texttt{SLAVES}      & Integer & 8  & Number of Slave Ports\tabularnewline
+\texttt{HADDR\_SIZE}           & Integer & 32     & Address Bus Size\tabularnewline
+\texttt{HDATA\_SIZE}           & Integer & 32     & Data Bus Size\tabularnewline
+\texttt{MASTERS}               & Integer & 3      & Number of Master Ports\tabularnewline
+\texttt{SLAVES}                & Integer & 8      & Number of Slave Ports\tabularnewline
+\texttt{SLAVE\_MASK[MASTERS]}  & Array  & All '1's & Mask Slaves accessible by each Master\tabularnewline
+\texttt{ERROR\_ON\_SLAVE\_MASK[MASTERS]} & Array & inv(\texttt{SLAVE\_MASK}) & Enable Error Reporting for masked Slaves\tabularnewline
+
 \bottomrule
 \caption{Core Parameters}
 \end{longtable}
@@ -42,3 +45,30 @@ Interconnect fabric.
 
 The \texttt{SLAVES} parameter specifies the number of Slave Ports on the
 Interconnect Fabric.
+
+\subsection{SLAVE\_MASK[ ]}\label{slave_mask}
+
+The \texttt{SLAVE\_MASK[\,]} parameter determines if a master may access a slave. Defining which
+master may access individual slaves (rather than allowing all masters to access all slaves) may
+significantly reduce the logic area of the interconnect and improve overall performance.
+
+There is one \texttt{SLAVE\_MASK} parameter per master, each \texttt{SLAVES} bits wide.
+i.e. \texttt{SLAVE\_MASK[\,]} is an array of dimensions \texttt{MASTERS} x \texttt{SLAVES}.
+
+Setting a \texttt{SLAVE\_MASK[\,]} bit to '0' indicates that master cannot access the slave.
+Conversely, setting a \texttt{SLAVE\_MASK[\,]} bit to '1' indicates that master may access the slave.
+
+\subsection{ERROR\_ON\_SLAVE\_MASK[ ]}\label{error_on_slave_mask}
+
+The \texttt{ERROR\_ON\_SLAVE\_MASK[\,]} parameter enables generating an AHB error response when the
+master attempts to access a masked Slave Port.
+
+There is one \texttt{ERROR\_ON\_SLAVE\_MASK} parameter per master, each \texttt{SLAVES} bits wide.
+i.e. \texttt{ERROR\_ON\_SLAVE\_MASK[\,]} is an array of dimensions \texttt{MASTERS} x \texttt{SLAVES}.
+
+Setting an \texttt{ERROR\_ON\_SLAVE\_MASK[\,]} bit to '0' indicates that an AHB error response will not be generated
+if the master is masked from accessing the corresponding slave.
+Conversely, setting a \texttt{ERROR\_ON\_SLAVE\_MASK[\,]} bit to '1' indicates that an AHB error response will
+be generated if the master is masked from accessing the corresponding slave.
+
+The default value of \texttt{ERROR\_ON\_SLAVE\_MASK[\,]} is the bitwise inverse of \texttt{SLAVE\_MASK[\,]} - i.e. inv(\texttt{SLAVE\_MASK[\,]}). If \texttt{SLAVE\_MASK[\,]} is assigned a value, then \texttt{ERROR\_ON\_SLAVE\_MASK[\,]} is by default inv(\texttt{SLAVE\_MASK[\,]}).

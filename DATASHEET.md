@@ -18,7 +18,7 @@ Author: Roa Logic
 
 The Roa Logic AHB-Lite Multi-layer Interconnect is a fully parameterized soft IP High Performance, Low Latency Interconnect Fabric for AHB-Lite. It allows a virtually unlimited number of AHB-Lite Bus Masters and Slaves to be connected without the need of bus arbitration to be implemented by the Bus Masters. Instead, Slave Side Arbitration is implemented for each Slave Port within the core.
 
-![Multi-layer Interconnect Usage Example<span data-label="fig:ahb-lite-switch-sys"></span>](assets/img/ahb-lite-switch-sys.png)
+![Multi–layer Interconnect Usage Example<span data-label="fig:ahb-lite-switch-sys"></span>](assets/img/ahb-lite-switch-sys.png)
 
 The Multi-layer Interconnect supports priority based and Round-Robin based arbitration when multiple Bus Masters request access to the same Slave Port. Typically arbitration completes within 1 clock cycle.
 
@@ -62,7 +62,7 @@ The Slave Port always retains the connection to the Master until another Master 
 
 #### Master Priority
 
-Each Master Port has a 3-bit priority level port (`mst_priority[2:0]`).
+Each Master Port has a priority level port (`mst_priority[]`).
 
 When multiple Masters with different priority levels request access to the same Slave Port, access is always granted to the Master with the highest priority level. If a new Master requests access while a transaction is already in progress, access will be granted according to its priority, ahead of any waiting lower priority Masters. If Masters have the same priority level, then access is granted based on a Round-Robin scheme.
 
@@ -80,7 +80,7 @@ The number of Master Ports is specified by the `MASTERS` parameter.
 
 ### Slave Port
 
-An AHB-Lite Bus Slave connects to a Slave Port of the Multi-layer Interconnect. The Slave Port is implemented as a regular AHB3-ite Master Interface thereby allowing support for complex bus structures such as shown below:
+An AHB-Lite Bus Slave connects to a Slave Port of the Multi-layer Interconnect. The Slave Port is implemented as a regular AHB3-Lite Master Interface thereby allowing support for complex bus structures such as shown below:
 
 ![Connectivity Example for 2 Bus Masters, 6 Slaves<span data-label="fig:ahb-lite-switch-sys3"></span>](assets/img/ahb-lite-switch-sys3.png)
 
@@ -98,15 +98,15 @@ The slave port will output the full address, i.e. all `HADDR_SIZE` bits, on its 
 
 ##### Example 1
 
-    slave\_addr\_base = 32'h1000\_0000
-    slave\_addr\_mask = 32'hF000\_0000
-    Address-range = 32'h1000\_0000 to 32'h1FFF\_FFFF
+    slave_addr_base = 32'h1000_0000
+    slave_addr_mask = 32'hF000_0000
+    Address-range = 32'h1000_0000 to 32'h1FFF_FFFF
 
 ##### Example 2
 
-    slave\_addr\_base = 32'h4000\_0000
-    slave\_addr\_mask = 32'hE000\_0000
-    Address-range = 32'h4000\_0000 to 32'h5FFF\_FFFF
+    slave_addr_base = 32'h4000_0000
+    slave_addr_mask = 32'hE000_0000
+    Address-range = 32'h4000_0000 to 32'h5FFF_FFFF
 
 #### Slave Port HREADYOUT and HREADY Routing
 
@@ -134,12 +134,14 @@ The Roa Logic AHB-Lite Multi-layer Interconnect is a highly configurable Interco
 
 ### Core Parameters
 
-| Parameter    |   Type  | Default | Description            |
-|:-------------|:-------:|:-------:|:-----------------------|
-| `HADDR_SIZE` | Integer |    32   | Address Bus Size       |
-| `HDATA_SIZE` | Integer |    32   | Data Bus Size          |
-| `MASTERS`    | Integer |    3    | Number of Master Ports |
-| `SLAVES`     | Integer |    8    | Number of Slave Ports  |
+| Parameter                      |   Type  |      Default      | Description                              |
+|:-------------------------------|:-------:|:-----------------:|:-----------------------------------------|
+| `HADDR_SIZE`                   | Integer |         32        | Address Bus Size                         |
+| `HDATA_SIZE`                   | Integer |         32        | Data Bus Size                            |
+| `MASTERS`                      | Integer |         3         | Number of Master Ports                   |
+| `SLAVES`                       | Integer |         8         | Number of Slave Ports                    |
+| `SLAVE_MASK[MASTERS]`          |  Array  |      All ’1’s     | Mask Slaves accessible by each Master    |
+| `ERROR_ON_SLAVE_MASK[MASTERS]` |  Array  | inv(`SLAVE_MASK`) | Enable Error Reporting for masked Slaves |
 
 #### HADDR\_SIZE
 
@@ -156,6 +158,24 @@ The `MASTERS` parameter specifies the number of Master Ports on the Interconnect
 #### SLAVES
 
 The `SLAVES` parameter specifies the number of Slave Ports on the Interconnect Fabric.
+
+#### SLAVE\_MASK\[ \]
+
+The `SLAVE_MASK[]` parameter determines if a master may access a slave. Defining which master may access individual slaves (rather than allowing all masters to access all slaves) may significantly reduce the logic area of the interconnect and improve overall performance.
+
+There is one `SLAVE_MASK` parameter per master, each `SLAVES` bits wide. i.e. `SLAVE_MASK[]` is an array of dimensions `MASTERS` x `SLAVES`.
+
+Setting a `SLAVE_MASK[]` bit to ’0’ indicates that master cannot access the slave. Conversely, setting a `SLAVE_MASK[]` bit to ’1’ indicates that master may access the slave.
+
+#### ERROR\_ON\_SLAVE\_MASK\[ \]
+
+The `ERROR_ON_SLAVE_MASK[]` parameter enables generating an AHB error response when the master attempts to access a masked Slave Port.
+
+There is one `ERROR_ON_SLAVE_MASK` parameter per master, each `SLAVES` bits wide. i.e. `ERROR_ON_SLAVE_MASK[]` is an array of dimensions `MASTERS` x `SLAVES`.
+
+Setting an `ERROR_ON_SLAVE_MASK[]` bit to ’0’ indicates that an AHB error response will not be generated if the master is masked from accessing the corresponding slave. Conversely, setting a `ERROR_ON_SLAVE_MASK[]` bit to ’1’ indicates that an AHB error response will be generated if the master is masked from accessing the corresponding slave.
+
+The default value of `ERROR_ON_SLAVE_MASK[]` is the bitwise inverse of `SLAVE_MASK[]` - i.e. inv(`SLAVE_MASK[]`). If `SLAVE_MASK[]` is assigned a value, then `ERROR_ON_SLAVE_MASK[]` is by default inv(`SLAVE_MASK[]`).
 
 ## Interfaces
 
@@ -176,9 +196,11 @@ When the active low asynchronous `HRESETn` input is asserted (‘0’), the core
 
 `HCLK` is the system clock. All internal logic operates at the rising edge of the system clock. All AHB bus timings are related to the rising edge of `HCLK`. All Master and Slave ports must operate at the same `HCLK` clock.
 
-### Master Interfaces
+### Master Interface
 
-The Master Ports are regular AMB3-Lite slave interfaces. All signals are supported. See the AHB-Lite specifications for a complete description of the signals.
+The Master Ports are regular AHB3-Lite slave interfaces. All signals are supported. See the AHB-Lite specifications for a complete description of the signals. In addition, a custom master priority port is included per interface to enable prioritisation when multiple masters attempt to simultaneously access the same slave. This prioritisation may be defined statically or dynamically changed during operation.
+
+The AHB-Lite Multi-layer Interconnect implements 1 or more interfaces to AHB-Lite masters as defined by the `MASTERS` parameter. Therefore the following signals are all arrays reflecting the number of masters supported.
 
 | Port            |     Size     | Direction | Description               |
 |:----------------|:------------:|:---------:|:--------------------------|
@@ -196,9 +218,17 @@ The Master Ports are regular AMB3-Lite slave interfaces. All signals are support
 | `mst_HREADY`    |       1      |   Input   | Transfer Ready Input      |
 | `mst_HRESP`     |       1      |   Input   | Transfer Response         |
 
+| Port           |             Size            | Direction | Description            |
+|:---------------|:---------------------------:|:---------:|:-----------------------|
+| `mst_priority` | clog<sub>2</sub>(`MASTERS`) |   Input   | Master Priority Levels |
+
+**Note:** clog<sub>2</sub>() refers to the System Verilog function by the same name, defined below, and is used to determine the required bitwidth of a bus required to represent the defined range of values:
+
+> *The system function $clog2 shall return the ceiling of the log base 2 of the argument (the log rounded up to an integer value). The argument can be an integer or an arbitrary sized vector value. The argument shall be treated as an unsigned value, and an argument value of 0 shall produce a result of 0.*
+
 #### mst\_HSEL
 
-The Master Port only responds to other signals on its bus when `HSEL` is asserted (‘1’). When `mst_HSEL` is negated (‘0’) the Master Port considers the bus IDLE and negates `mst_HREADYOUT` (‘0’).
+The Master Port only responds to other signals on its bus when `mst_HSEL` is asserted (‘1’). When `mst_HSEL` is negated (‘0’) the Master Port considers the bus IDLE and asserts `HREADYOUT` (‘1’).
 
 #### mst\_HTRANS
 
@@ -225,35 +255,35 @@ The Master Port only responds to other signals on its bus when `HSEL` is asserte
 
 #### mst\_HWRITE
 
-`mst_HWRITE` is the read/write signal. `HWRITE` asserted (‘1’) indicates a write transfer. It is driven to the connected slave.
+`mst_HWRITE` is the read/write signal. `mst_HWRITE` asserted (‘1’) indicates a write transfer. It is driven to the connected slave.
 
 #### mst\_HSIZE
 
 `mst_HSIZE` indicates the size of the current transfer. It is driven to the connected slave.
 
-| HSIZE | Size    | Description |
-|:-----:|:--------|:------------|
-| `000` | 8bit    | Byte        |
-| `001` | 16bit   | Half Word   |
-| `010` | 32bit   | Word        |
-| `011` | 64bits  | Double Word |
-| `100` | 128bit  |             |
-| `101` | 256bit  |             |
-| `110` | 512bit  |             |
+| HSIZE |   Size  | Description |
+|:-----:|:-------:|:------------|
+| `000` |   8bit  | Byte        |
+| `001` |  16bit  | Half Word   |
+| `010` |  32bit  | Word        |
+| `011` |  64bits | Double Word |
+| `100` |  128bit |             |
+| `101` |  256bit |             |
+| `110` |  512bit |             |
 | `111` | 1024bit |             |
 
 #### mst\_HBURST
 
 The burst type indicates if the transfer is a single transfer or part of a burst. It is driven to the connected slave.
 
-| HBURST | Type   | Description                  |
-|:------:|:-------|:-----------------------------|
+| HBURST |  Type  | Description                  |
+|:------:|:------:|:-----------------------------|
 |  `000` | SINGLE | Single access                |
-|  `001` | INCR   | Continuous incremental burst |
-|  `010` | WRAP4  | 4-beat wrapping burst        |
-|  `011` | INCR4  | 4-beat incrementing burst    |
-|  `100` | WRAP8  | 8-beat wrapping burst        |
-|  `101` | INCR8  | 8-beat incrementing burst    |
+|  `001` |  INCR  | Continuous incremental burst |
+|  `010` |  WRAP4 | 4-beat wrapping burst        |
+|  `011` |  INCR4 | 4-beat incrementing burst    |
+|  `100` |  WRAP8 | 8-beat wrapping burst        |
+|  `101` |  INCR8 | 8-beat incrementing burst    |
 |  `110` | WRAP16 | 16-beat wrapping burst       |
 |  `111` | INCR16 | 16-beat incrementing burst   |
 
@@ -276,7 +306,7 @@ The protection signals provide information about the bus transfer. They are inte
 
 When a slave is addressed, the `mst_HREADYOUT` indicates that the addressed slave finished the current transfer. The Interconnect IP routes the addressed slave’s `HREADY` signal to the master.
 
-When no slave is address, the `mst_HREADYOUT` signal is generated locally, inside the Interconnect.
+When no slave is addressed, the `mst_HREADYOUT` signal is generated locally, inside the Interconnect.
 
 #### mst\_HMASTLOCK
 
@@ -284,15 +314,28 @@ The master lock signal indicates if the current transfer is part of a locked seq
 
 #### mst\_HREADY
 
-`mst_HREADY` indicates the status of the local `HREADY` on the master’s local bus. It is routed to the `HREADYOUT` port of the addressed slave.
+`mst_HREADY` indicates the status of the local `HREADY` on the master’s local bus. It is routed to the `HREADYOUT` port of the connected slave.
 
 #### mst\_HRESP
 
-`mst_HRESP` is the transfer response from the addressed slave, it can either be OKAY (‘0’) or ERROR (‘1’). The Interconnect IP routes the addressed slave’s `HRESP` port to `mst_HRESP`.
+`mst_HRESP` is the transfer response from the connected slave, it can either be OKAY (‘0’) or ERROR (‘1’). The Interconnect IP routes the connected slave’s `HRESP` port to `mst_HRESP`.
+
+#### mst\_priority
+
+`mst_priority` is a custom port per master interface and defines the priority of the attached master. The width of the bus is calculated as clog<sub>2</sub>(`MASTERS`), with the lowest priority value defined as 0 and the highest priority being `MASTERS-1`.
+
+For example, for a system with 4 masters the width of `mst_priority` will be 2 bits to enable each master to have a unique prioritisation level, with lowest priority being 0 and highest priority being 3.
 
 ### Slave Interface
 
 The Slave Ports are regular AHB-Lite master interfaces.. All signals are supported. In addition each Slave Port has a non-standard `slv_HREADYOUT`. See the AHB-Lite specifications for a complete description of the signals.
+
+The AHB-Lite Multi-layer Interconnect implements 1 or more interfaces to AHB-Lite slaves as defined by the `SLAVES` parameter. Therefore the following signals are all arrays reflecting the number of slaves supported.
+
+| Port            |     Size     | Direction | Description              |
+|:----------------|:------------:|:---------:|:-------------------------|
+| `slv_addr_base` | `HADDR_SIZE` |   Input   | Slave Base Address       |
+| `slv_addr_mask` | `HADDR_SIZE` |   Input   | Slave Address Space Mask |
 
 | Port            |     Size     | Direction | Description               |
 |:----------------|:------------:|:---------:|:--------------------------|
@@ -309,53 +352,63 @@ The Slave Ports are regular AHB-Lite master interfaces.. All signals are support
 | `slv_HREADY`    |       1      |   Input   | Transfer Ready Input      |
 | `slv_HRESP`     |       1      |   Input   | Transfer Response         |
 
+#### slv\_addr\_base
+
+`slv_addr_base` is a `SLAVES` sized array of addresses, each `HADDR_SIZE` bits wide, defining the base address of each attached slave device.
+
+#### slv\_addr\_mask
+
+`slv_addr_mask` is a `SLAVES` sized array of `HADDR_SIZE` bit wide signals. Each `slv_addr_base` address is masked with the corresponding `slv_addr_mask` value to define the addressable memory space of the attached slave. Setting a bit of `slv_addr_mask` to ’0’ enables the corresponding address bit.
+
+See section ’Address Space Configuration’ for specific examples.
+
 #### slv\_HSEL
 
-The Master Port only responds to other signals on its bus when `HSEL` is asserted (‘1’). When `slv_HSEL` is negated (‘0’) the Master Port considers the bus IDLE and negates `mst_HREADYOUT` (‘0’).
+Slaves connected to the Slave Port must only respond to other signals on the bus when `slv_HSEL` is asserted (‘1’). When `slv_HSEL` is negated (‘0’) the interface is idle and the connected Slaves must assert their `HREADYOUT` (‘1’).
 
 #### slv\_HADDR
 
 `slv_HADDR` is the data address bus. Its size is determined by the `HADDR_SIZE` parameter. The connected master drives `slv_HADDR`.
 
-#### slv \_HRDATA
+#### slv\_HRDATA
 
 `slv_HRDATA` is the read data bus. Its size is determined by the `HDATA_SIZE` parameter. It is driven to the connected master.
 
-#### slv \_HWDATA
+#### slv\_HWDATA
 
 `slv_HWDATA` is the write data bus. Its size is determined by the `HDATA_SIZE` parameter. The connected master drives `slv_HADDR`.
 
-#### slv \_HWRITE
+#### slv\_HWRITE
 
-`slv_HWRITE` is the read/write signal. `HWRITE` asserted (‘1’) indicates a write transfer. The connected master drives `slv_HWRITE`.
+`slv_HWRITE` is the read/write signal. `slv_HWRITE` asserted (‘1’) indicates a write transfer. The connected master drives `slv_HWRITE`.
 
 #### slv\_HSIZE
 
 `slv_HSIZE` indicates the size of the current transfer. The connected master drives `slv_HSIZE`.
 
-| HSIZE | Size    | Description |
-|:-----:|:--------|:------------|
-| `000` | 8bit    | Byte        |
-| `001` | 16bit   | Half Word   |
-| `010` | 32bit   | Word        |
-| `011` | 64bits  | Double Word |
-| `100` | 128bit  |             |
-| `101` | 256bit  |             |
-| `110` | 512bit  |             |
+| HSIZE |   Size  | Description |
+|:-----:|:-------:|:------------|
+| `000` |   8bit  | Byte        |
+| `001` |  16bit  | Half Word   |
+| `010` |  32bit  | Word        |
+| `011` |  64bits | Double Word |
+| `100` |  128bit |             |
+| `101` |  256bit |             |
+| `110` |  512bit |             |
 | `111` | 1024bit |             |
 
 #### slv\_HBURST
 
 The burst type indicates if the transfer is a single transfer or part of a burst. The connected master drives it.
 
-| HBURST | Type   | Description                  |
-|:------:|:-------|:-----------------------------|
+| HBURST |  Type  | Description                  |
+|:------:|:------:|:-----------------------------|
 |  `000` | Single | Single access                |
-|  `001` | INCR   | Continuous incremental burst |
-|  `010` | WRAP4  | 4-beat wrapping burst        |
-|  `011` | INCR4  | 4-beat incrementing burst    |
-|  `100` | WRAP8  | 8-beat wrapping burst        |
-|  `101` | INCR8  | 8-beat incrementing burst    |
+|  `001` |  INCR  | Continuous incremental burst |
+|  `010` |  WRAP4 | 4-beat wrapping burst        |
+|  `011` |  INCR4 | 4-beat incrementing burst    |
+|  `100` |  WRAP8 | 8-beat wrapping burst        |
+|  `101` |  INCR8 | 8-beat incrementing burst    |
 |  `110` | WRAP16 | 16-beat wrapping burst       |
 |  `111` | INCR16 | 16-beat incrementing burst   |
 
@@ -377,12 +430,12 @@ The data protection signals provide information about the bus transfer. They are
 
 `slv_HTRANS` indicates the type of the current data transfer.
 
-| slv\_HTRANS | Type   | Description                          |
-|:-----------:|:-------|:-------------------------------------|
-|     `00`    | IDLE   | No transfer required                 |
-|     `01`    | BUSY   | *Not used*                           |
+| slv\_HTRANS |  Type  | Description                          |
+|:-----------:|:------:|:-------------------------------------|
+|     `00`    |  IDLE  | No transfer required                 |
+|     `01`    |  BUSY  | *Not used*                           |
 |     `10`    | NONSEQ | First transfer of an data burst      |
-|     `11`    | SEQ    | Remaining transfers of an data burst |
+|     `11`    |   SEQ  | Remaining transfers of an data burst |
 
 #### slv\_HMASTLOCK
 
@@ -390,11 +443,9 @@ The master lock signal indicates if the current transfer is part of a locked seq
 
 #### slv\_HREADYOUT
 
-| **Note:** |                                                  |
-|:----------|:-------------------------------------------------|
-|           | `slv_HREADYOUT` is not an AHB-Lite Master Signal |
-
 The `slv_HREADYOUT` signal reflects the state of the connected Master Port’s `HREADY` port. It is provided to support local slaves connected directly to the Master’s AHB-Lite bus. It is driven by the connected master’s `HREADY` port.
+
+**Note:** `slv_HREADYOUT` is not an AHB-Lite Signal.
 
 #### slv\_HREADY
 
@@ -406,24 +457,23 @@ The `slv_HREADYOUT` signal reflects the state of the connected Master Port’s `
 
 ## Resources
 
-Below are some example implementations for various platforms.
+Below are some example implementations when targeting the Altera Cyclone-V family of FPGAs. All implementations are push button, no effort has been undertaken to reduce area or improve performance.
 
-All implementations are push button, no effort has been undertaken to reduce area or improve performance.
+| ↓ Res/Config → | 10x5 |  8x5 |  8x3 |  5x3 |  3x5 |  3x8 |  5x8 | 5x10 |
+|:---------------|:----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|
+| ALM            | 6438 | 4272 | 2927 | 1934 | 1753 | 2644 | 4522 | 5703 |
+| Registers      | 1220 |  926 |  842 |  533 |  338 |  377 |  668 |  725 |
+| Fmax (MHz)     |  47  |  61  |  68  |  71  |  109 |  104 |  66  |  63  |
 
-| Platform | DFF | Logic Cells | Memory | Performance (MHz) |
-|:---------|:---:|:-----------:|:------:|:-----------------:|
-| lfxp3c-5 |  34 |     103     |    0   |       226MHz      |
-|          |     |             |        |                   |
-|          |     |             |        |                   |
-|          |     |             |        |                   |
+**NOTE:** Config in the above table refers to the `MASTERS` x `SLAVES` configuration of the interconnect.
 
 ## Revision History
 
-|   **Date**  | **Rev.** | **Comments**    |
-|:-----------:|:--------:|:----------------|
-| 13-Oct-2017 |    1.0   | Initial Release |
-|             |          |                 |
-|             |          |                 |
-|             |          |                 |
+|   **Date**  | **Rev.** | **Comments**                            |
+|:-----------:|:--------:|:----------------------------------------|
+| 13-Oct-2017 |    1.0   | Initial Release                         |
+| 16-Sep-2019 |    1.1   | Updated to add `SLAVE_MASK[]` Parameter |
+|             |          |                                         |
+|             |          |                                         |
 
 [1] The number of Bus Masters and Slaves is physically limited by the timing requirements.
