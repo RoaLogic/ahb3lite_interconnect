@@ -1,46 +1,78 @@
-/////////////////////////////////////////////////////////////////
-//                                                             //
-//    ██████╗  ██████╗  █████╗                                 //
-//    ██╔══██╗██╔═══██╗██╔══██╗                                //
-//    ██████╔╝██║   ██║███████║                                //
-//    ██╔══██╗██║   ██║██╔══██║                                //
-//    ██║  ██║╚██████╔╝██║  ██║                                //
-//    ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝                                //
-//          ██╗      ██████╗  ██████╗ ██╗ ██████╗              //
-//          ██║     ██╔═══██╗██╔════╝ ██║██╔════╝              //
-//          ██║     ██║   ██║██║  ███╗██║██║                   //
-//          ██║     ██║   ██║██║   ██║██║██║                   //
-//          ███████╗╚██████╔╝╚██████╔╝██║╚██████╗              //
-//          ╚══════╝ ╚═════╝  ╚═════╝ ╚═╝ ╚═════╝              //
-//                                                             //
-//    AHB3-Lite Interconnect Switch (Multi-Layer Switch)       //
-//    Master Port (AHB slave)                                  //
-//                                                             //
-/////////////////////////////////////////////////////////////////
-//                                                             //
-//             Copyright (C) 2016 ROA Logic BV                 //
-//             www.roalogic.com                                //
-//                                                             //
-//    Unless specifically agreed in writing, this software is  //
-//  licensed under the RoaLogic Non-Commercial License         //
-//  version-1.0 (the "License"), a copy of which is included   //
-//  with this file or may be found on the RoaLogic website     //
-//  http://www.roalogic.com. You may not use the file except   //
-//  in compliance with the License.                            //
-//                                                             //
-//    THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY        //
-//  EXPRESS OF IMPLIED WARRANTIES OF ANY KIND.                 //
-//  See the License for permissions and limitations under the  //
-//  License.                                                   //
-//                                                             //
-/////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+//   ,------.                    ,--.                ,--.          //
+//   |  .--. ' ,---.  ,--,--.    |  |    ,---. ,---. `--' ,---.    //
+//   |  '--'.'| .-. |' ,-.  |    |  |   | .-. | .-. |,--.| .--'    //
+//   |  |\  \ ' '-' '\ '-'  |    |  '--.' '-' ' '-' ||  |\ `--.    //
+//   `--' '--' `---'  `--`--'    `-----' `---' `-   /`--' `---'    //
+//                                             `---'               //
+//    AHB3-Lite Interconnect Switch (Multi-Layer Switch)           //
+//    Master Port (AHB Slave)                                      //
+//                                                                 //
+/////////////////////////////////////////////////////////////////////
+//                                                                 //
+//             Copyright (C) 2016-2018 ROA Logic BV                //
+//             www.roalogic.com                                    //
+//                                                                 //
+//     Unless specifically agreed in writing, this software is     //
+//   licensed under the RoaLogic Non-Commercial License            //
+//   version-1.0 (the "License"), a copy of which is included      //
+//   with this file or may be found on the RoaLogic website        //
+//   http://www.roalogic.com. You may not use the file except      //
+//   in compliance with the License.                               //
+//                                                                 //
+//     THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY           //
+//   EXPRESS OF IMPLIED WARRANTIES OF ANY KIND.                    //
+//   See the License for permissions and limitations under the     //
+//   License.                                                      //
+//                                                                 //
+/////////////////////////////////////////////////////////////////////
 
+// +FHDR -  Semiconductor Reuse Standard File Header Section  -------
+// FILE NAME      : ahb3lite_interconnect_master_port.sv
+// DEPARTMENT     :
+// AUTHOR         : rherveille
+// AUTHOR'S EMAIL :
+// ------------------------------------------------------------------
+// RELEASE HISTORY
+// VERSION DATE        AUTHOR      DESCRIPTION
+// 1.0     2017-03-29  rherveille  initial release
+// 1.1     2019-08-15  rherveille  added SLAVE_MASK parameter
+// ------------------------------------------------------------------
+// KEYWORDS : AMBA AHB AHB3-Lite Interconnect Matrix
+// ------------------------------------------------------------------
+// PURPOSE  : AHB3Lite Interconnect Matrix
+// ------------------------------------------------------------------
+// PARAMETERS
+//  PARAM NAME          RANGE    DESCRIPTION              DEFAULT UNITS
+//  HADDR_SIZE          1+       Address bus size         8       bits
+//  HDATA_SIZE          1+       Data bus size            32      bits
+//  SLAVES              1+       Number of Slave ports    8       ports
+//  SLAVE_MASK                   Slave mask 0:slave is never addressed
+//                                          1:slave can be addressed
+//  ERROR_ON_SLAVE_MASK 1+       ERROR when addressing masked slave
+// ------------------------------------------------------------------
+// REUSE ISSUES 
+//   Reset Strategy      : external asynchronous active low; HRESETn
+//   Clock Domains       : HCLK, rising edge
+//   Critical Timing     : 
+//   Test Features       : na
+//   Asynchronous I/F    : no
+//   Scan Methodology    : na
+//   Instantiations      : none
+//   Synthesizable (y/n) : Yes
+//   Other               :                                         
+// -FHDR-------------------------------------------------------------
  
 module ahb3lite_interconnect_master_port #(
-  parameter HADDR_SIZE  = 32,
-  parameter HDATA_SIZE  = 32,
-  parameter MASTERS     = 3, //number of AHB masters
-  parameter SLAVES      = 8  //number of AHB slaves
+  parameter              HADDR_SIZE          = 32,
+  parameter              HDATA_SIZE          = 32,
+  parameter              MASTERS             = 3, //number of AHB Masters
+  parameter              SLAVES              = 8, //number of AHB Slaves
+  parameter [SLAVES-1:0] SLAVE_MASK          = {SLAVES{1'b1}},
+  parameter [SLAVES-1:0] ERROR_ON_SLAVE_MASK = ~SLAVE_MASK,
+
+  //actually localparam
+  parameter MASTER_BITS = $clog2(MASTERS)
 )
 (
   //Common signals
@@ -49,21 +81,21 @@ module ahb3lite_interconnect_master_port #(
 
   //AHB Slave Interfaces (receive data from AHB Masters)
   //AHB Masters connect to these ports
-  input [            2:0]              mst_priority,
+  input  [MASTER_BITS-1:0]              mst_priority,
  
-  input                                mst_HSEL,
-  input  [HADDR_SIZE-1:0]              mst_HADDR,
-  input  [HDATA_SIZE-1:0]              mst_HWDATA,
-  output [HDATA_SIZE-1:0]              mst_HRDATA,
-  input                                mst_HWRITE,
-  input  [           2:0]              mst_HSIZE,
-  input  [           2:0]              mst_HBURST,
-  input  [           3:0]              mst_HPROT,
-  input  [           1:0]              mst_HTRANS,
-  input                                mst_HMASTLOCK,
-  output                               mst_HREADYOUT,
-  input                                mst_HREADY,
-  output                               mst_HRESP,
+  input                                 mst_HSEL,
+  input  [HADDR_SIZE -1:0]              mst_HADDR,
+  input  [HDATA_SIZE -1:0]              mst_HWDATA,
+  output [HDATA_SIZE -1:0]              mst_HRDATA,
+  input                                 mst_HWRITE,
+  input  [            2:0]              mst_HSIZE,
+  input  [            2:0]              mst_HBURST,
+  input  [            3:0]              mst_HPROT,
+  input  [            1:0]              mst_HTRANS,
+  input                                 mst_HMASTLOCK,
+  output                                mst_HREADYOUT,
+  input                                 mst_HREADY,
+  output                                mst_HRESP,
 
   //AHB Master Interfaces; send data to AHB slaves
   input              [HADDR_SIZE -1:0] slvHADDRmask [SLAVES],
@@ -84,7 +116,7 @@ module ahb3lite_interconnect_master_port #(
 
   //Internal signals
   output reg                           can_switch,
-  output             [            2:0] slvpriority,
+  output             [MASTER_BITS-1:0] slvpriority,
   input  [SLAVES-1:0]                  master_granted
 );
 
@@ -101,29 +133,31 @@ module ahb3lite_interconnect_master_port #(
   //
   // Variables
   //
-  enum logic [1:0] {NO_ACCESS,ACCESS_PENDING,ACCESS_GRANTED} access_state;
+  enum logic [2:0] {NO_ACCESS=3'b001,ACCESS_PENDING=3'b010,ACCESS_GRANTED=3'b100} access_state;
   logic                   no_access,
                           access_pending,
                           access_granted;
 
 
-  logic [SLAVES     -1:0] current_HSEL,
-                          pending_HSEL;
+  logic [SLAVES     -1:0] current_HSEL,      //current-cycle addressed slave
+                          pending_HSEL,      //pending-cycle addressed slave
+                          error_masked_HSEL; //generate error when accessing masked slave
 
-  logic                   local_HREADYOUT;
+  logic                   local_HREADYOUT,
+                          local_HRESP;
 
   logic                   mux_sel;
   logic [SLAVES_BITS-1:0] slave_sel, slaves2int;
 
   logic [            3:0] burst_cnt;
 
-  logic [            2:0] regpriority;
+  logic [MASTER_BITS-1:0] regpriority;
   logic [HADDR_SIZE -1:0] regHADDR;
   logic [HDATA_SIZE -1:0] regHWDATA;
   logic [            1:0] regHTRANS;
   logic                   regHWRITE;
   logic [            2:0] regHSIZE;
-  logic [            3:0] regHBURST;
+  logic [            2:0] regHBURST;
   logic [            3:0] regHPROT;
   logic                   regHMASTLOCK;
 
@@ -141,7 +175,10 @@ module ahb3lite_interconnect_master_port #(
   function integer onehot2int;
     input [SLAVES-1:0] onehot;
 
-    for (onehot2int = -1; |onehot; onehot2int++) onehot = onehot >> 1;
+    integer i;
+
+    onehot2int = 0; //prevent latch behaviour
+    for (i=1; i < SLAVES; i++) if (onehot[i]) onehot2int = i;
   endfunction //onehot2int
 
 
@@ -149,7 +186,6 @@ module ahb3lite_interconnect_master_port #(
   //
   // Module Body
   //
-
 
   /*
    * Register Address Phase Signals
@@ -172,11 +208,22 @@ module ahb3lite_interconnect_master_port #(
     end 
 
   /*
-   * Generate local HREADY response
+   * Generate local HREADY and HRESP
+   * Local means the master port replies to the connected master
+   *
+   * Always generate HREADY when IDLE, otherwise insert wait state
+   * HRESP is always OKAY, except when addressing masked slave
    */
   always @(posedge HCLK,negedge HRESETn)
-    if      (!HRESETn   ) local_HREADYOUT <= 1'b1;
-    else if ( mst_HREADY) local_HREADYOUT <= (mst_HTRANS == HTRANS_IDLE) | ~mst_HSEL;
+    if      (!HRESETn    ) local_HREADYOUT <= 1'b1;
+    else if ( local_HRESP) local_HREADYOUT <= 1'b1; //HRESP='1' 2nd cycle of ERROR-response
+    else if ( mst_HREADY ) local_HREADYOUT <= (mst_HTRANS == HTRANS_IDLE) | ~mst_HSEL;
+
+
+  always @(posedge HCLK,negedge HRESETn)
+    if      (!HRESETn   ) local_HRESP <= HRESP_OKAY;
+    else if ( mst_HREADY) local_HRESP <= |error_masked_HSEL ? HRESP_ERROR : HRESP_OKAY;
+
 
   /*
    * Access granted state machine
@@ -187,7 +234,9 @@ module ahb3lite_interconnect_master_port #(
    *                 else the access is pending
    *
    * ACCESS_PENDING: Intermediate state to hold bus-command (HTRANS, ...)
+   *
    * ACCESS_GRANTED: while access requested and granted stay in this state
+   *                 else if access requested but not granted go to ACCESS_PENDING
    *                 else go to NO_ACCESS
    */
 
@@ -204,12 +253,14 @@ module ahb3lite_interconnect_master_port #(
 
         ACCESS_GRANTED: if      (mst_HREADY && ~|current_HSEL                                ) access_state <= NO_ACCESS;
                         else if (mst_HREADY && ~|(current_HSEL & master_granted & slvHREADY) ) access_state <= ACCESS_PENDING;
+
+        default       : access_state <= NO_ACCESS; //something went wrong, should never end up here
       endcase
 
 
-  assign no_access      = access_state == NO_ACCESS;
-  assign access_pending = access_state == ACCESS_PENDING;
-  assign access_granted = access_state == ACCESS_GRANTED;
+  assign no_access      = access_state[0];
+  assign access_pending = access_state[1];
+  assign access_granted = access_state[2];
 
   /*
    * Generate burst counter
@@ -236,21 +287,19 @@ module ahb3lite_interconnect_master_port #(
   /*
    * Indicate that the slave may switch masters on the NEXT cycle
    */
-  always_comb
-    case (access_state)
-      NO_ACCESS     : can_switch = ~|(current_HSEL & master_granted);
-      ACCESS_PENDING: can_switch = ~|(pending_HSEL & master_granted); 
-      ACCESS_GRANTED: can_switch = ~mst_HSEL |
-                                   (mst_HSEL & ~mst_HMASTLOCK & mst_HREADY & 
-                                     ( (mst_HTRANS == HTRANS_IDLE                                              ) |
-                                       (mst_HTRANS == HTRANS_NONSEQ & mst_HBURST == HBURST_SINGLE              ) |
-                                       (mst_HTRANS == HTRANS_SEQ    & mst_HBURST != HBURST_INCR   & ~|burst_cnt) )
-                                    );
-    endcase
-
+  assign can_switch = ( no_access      & ~|(current_HSEL & master_granted) ) |
+                      ( access_pending & ~|(pending_HSEL & master_granted) ) |
+                      ( access_granted & ( ~mst_HSEL |
+                                           (mst_HSEL & ~mst_HMASTLOCK & mst_HREADY & 
+                                             ( (mst_HTRANS == HTRANS_IDLE                                              ) |
+                                               (mst_HTRANS == HTRANS_NONSEQ & mst_HBURST == HBURST_SINGLE              ) |
+                                               (mst_HTRANS == HTRANS_SEQ    & mst_HBURST != HBURST_INCR   & ~|burst_cnt) )
+                                            )
+                                         )
+                      );
 
   /*
-   * Decode slave-request; which AHB slave (master-port) to address?
+   * Decode slave-request; which AHB slave (slave-port) to address?
    *
    * Send out connection request to slave-port
    * Slave-port replies by asserting master_gnt
@@ -259,12 +308,17 @@ module ahb3lite_interconnect_master_port #(
 generate
   for (s=0; s<SLAVES; s++)
   begin: gen_HSEL
-      assign current_HSEL[s] = (mst_HTRANS != HTRANS_IDLE) & ( (mst_HADDR & slvHADDRmask[s]) == (slvHADDRbase[s] & slvHADDRmask[s]) );
-      assign pending_HSEL[s] = (regHTRANS  != HTRANS_IDLE) & ( (regHADDR  & slvHADDRmask[s]) == (slvHADDRbase[s] & slvHADDRmask[s]) );
-      assign slvHSEL[s] = access_pending ? (pending_HSEL[s]) : (mst_HSEL & current_HSEL[s]);
+      assign current_HSEL     [s] = SLAVE_MASK[s] & (mst_HTRANS != HTRANS_IDLE) &
+                                      ( (mst_HADDR & slvHADDRmask[s]) == (slvHADDRbase[s] & slvHADDRmask[s]) );
+      assign pending_HSEL     [s] = SLAVE_MASK[s] & (regHTRANS  != HTRANS_IDLE) &
+                                      ( (regHADDR  & slvHADDRmask[s]) == (slvHADDRbase[s] & slvHADDRmask[s]) );
+      assign slvHSEL          [s] = access_pending ? (pending_HSEL[s]) : (mst_HSEL & current_HSEL[s]);
+
+      //generate an error while addressing a masked slave
+      assign error_masked_HSEL[s] = ~SLAVE_MASK[s] & ERROR_ON_SLAVE_MASK[s] & mst_HSEL & (mst_HTRANS != HTRANS_IDLE) &
+                                       ( (mst_HADDR & slvHADDRmask[s]) == (slvHADDRbase[s] & slvHADDRmask[s]) );
   end
 endgenerate
-
 
   /*
    * Check if granted access
@@ -295,7 +349,7 @@ endgenerate
    */
   assign mst_HRDATA    =                  slvHRDATA[slave_sel];
   assign mst_HREADYOUT = access_granted ? slvHREADY[slave_sel] : local_HREADYOUT; //master's HREADYOUT is driven by slave's HREADY (slv_HREADY -> mst_HREADYOUT)
-  assign mst_HRESP     = access_granted ? slvHRESP [slave_sel] : HRESP_OKAY; 
+  assign mst_HRESP     = access_granted ? slvHRESP [slave_sel] : local_HRESP; 
 endmodule
 
 

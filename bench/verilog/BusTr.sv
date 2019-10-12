@@ -1,46 +1,40 @@
-/////////////////////////////////////////////////////////////////
-//                                                             //
-//    ██████╗  ██████╗  █████╗                                 //
-//    ██╔══██╗██╔═══██╗██╔══██╗                                //
-//    ██████╔╝██║   ██║███████║                                //
-//    ██╔══██╗██║   ██║██╔══██║                                //
-//    ██║  ██║╚██████╔╝██║  ██║                                //
-//    ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝                                //
-//          ██╗      ██████╗  ██████╗ ██╗ ██████╗              //
-//          ██║     ██╔═══██╗██╔════╝ ██║██╔════╝              //
-//          ██║     ██║   ██║██║  ███╗██║██║                   //
-//          ██║     ██║   ██║██║   ██║██║██║                   //
-//          ███████╗╚██████╔╝╚██████╔╝██║╚██████╗              //
-//          ╚══════╝ ╚═════╝  ╚═════╝ ╚═╝ ╚═════╝              //
-//                                                             //
-//    Bus Transaction Class                                    //
-//                                                             //
-/////////////////////////////////////////////////////////////////
-//                                                             //
-//     Copyright (C) 2016 ROA Logic BV                         //
-//     www.roalogic.com                                        //
-//                                                             //
-//    This source file may be used and distributed without     //
-//  restrictions, provided that this copyright statement is    //
-//  not removed from the file and that any derivative work     //
-//  contains the original copyright notice and the associated  //
-//  disclaimer.                                                //
-//                                                             //
-//    This soure file is free software; you can redistribute   //
-//  it and/or modify it under the terms of the GNU General     //
-//  Public License as published by the Free Software           //
-//  Foundation, either version 3 of the License, or (at your   //
-//  option) any later versions.                                //
-//  The current text of the License can be found at:           //
-//  http://www.gnu.org/licenses/gpl.html                       //
-//                                                             //
-//    This source file is distributed in the hope that it will //
-//  be useful, but WITHOUT ANY WARRANTY; without even the      //
-//  implied warranty of MERCHANTABILITY or FITTNESS FOR A      //
-//  PARTICULAR PURPOSE. See the GNU General Public License for //
-//  more details.                                              //
-//                                                             //
-/////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
+//   ,------.                    ,--.                ,--.         //
+//   |  .--. ' ,---.  ,--,--.    |  |    ,---. ,---. `--' ,---.   //
+//   |  '--'.'| .-. |' ,-.  |    |  |   | .-. | .-. |,--.| .--'   //
+//   |  |\  \ ' '-' '\ '-'  |    |  '--.' '-' ' '-' ||  |\ `--.   //
+//   `--' '--' `---'  `--`--'    `-----' `---' `-   /`--' `---'   //
+//                                             `---'              //
+//                                                                //
+//     AHB3-Lite Interconnect Switch Testbench                    //
+//     Bus Transaction Class                                      //
+//                                                                //
+////////////////////////////////////////////////////////////////////
+//                                                                //
+//     Copyright (C) 2016-2019 ROA Logic BV                       //
+//     www.roalogic.com                                           //
+//                                                                //
+//     This source file may be used and distributed without       //
+//   restrictions, provided that this copyright statement is      //
+//   not removed from the file and that any derivative work       //
+//   contains the original copyright notice and the associated    //
+//   disclaimer.                                                  //
+//                                                                //
+//     This soure file is free software; you can redistribute     //
+//   it and/or modify it under the terms of the GNU General       //
+//   Public License as published by the Free Software             //
+//   Foundation, either version 3 of the License, or (at your     //
+//   option) any later versions.                                  //
+//   The current text of the License can be found at:             //
+//   http://www.gnu.org/licenses/gpl.html                         //
+//                                                                //
+//     This source file is distributed in the hope that it will   //
+//   be useful, but WITHOUT ANY WARRANTY; without even the        //
+//   implied warranty of MERCHANTABILITY or FITTNESS FOR A        //
+//   PARTICULAR PURPOSE. See the GNU General Public License for   //
+//   more details.                                                //
+//                                                                //
+////////////////////////////////////////////////////////////////////
 
 //`define DEBUG
 
@@ -58,6 +52,7 @@ class BusTr extends BaseTr;
   int          BytesPerTransfer;   //Bytes per transfer
   byte_array_t AddressQueue[$];    //Addresses
   byte_array_t DataQueue[$];       //Data
+  bit          Error;              //Error during transaction
 
   extern         function        new(input int unsigned AddressSize, DataSize);
   extern virtual function bit    compare  (input BaseTr to);
@@ -81,6 +76,7 @@ function BusTr::new(input int unsigned AddressSize, DataSize);
   //set data/addressbus sizes
   this.AddressSize = AddressSize;
   this.DataSize    = DataSize;
+  this.Error       = 0;
 endfunction : new
 
 
@@ -104,7 +100,8 @@ function bit BusTr::compare(input BaseTr to);
               (this.DataSize         == b.DataSize        ) &
               (this.Write            == b.Write           ) &
               (this.TransferSize     == b.TransferSize    ) &
-              (this.BytesPerTransfer == b.BytesPerTransfer);
+              (this.BytesPerTransfer == b.BytesPerTransfer) &
+              (this.Error            == b.Error           );
 
 
    //compare addresses
@@ -169,6 +166,7 @@ function BaseTr BusTr::copy (input BaseTr to);
   cp.Write            = this.Write;
   cp.TransferSize     = this.TransferSize;
   cp.BytesPerTransfer = this.BytesPerTransfer;
+  cp.Error            = this.Error;
 
   foreach (this.AddressQueue[i])
   begin
@@ -195,7 +193,7 @@ function void BusTr::display (input string prefix);
   byte address[],
        data[];
 
-  $display("%sTr-id:%0d, AddressSize=%0d DataSize=%0d Write=%0b TransferSize=%0d BytesPerTransfer=%0d", prefix, id, AddressSize, DataSize, Write, TransferSize, BytesPerTransfer);
+  $display("%sTr-id:%0d, AddressSize=%0d DataSize=%0d Write=%0b TransferSize=%0d BytesPerTransfer=%0d Error=%0d", prefix, id, AddressSize, DataSize, Write, TransferSize, BytesPerTransfer, Error);
 
   $write(" Address=");
   foreach (AddressQueue[j])

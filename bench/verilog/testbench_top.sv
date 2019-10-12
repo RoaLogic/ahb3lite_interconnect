@@ -1,46 +1,39 @@
-/////////////////////////////////////////////////////////////////
-//                                                             //
-//    ██████╗  ██████╗  █████╗                                 //
-//    ██╔══██╗██╔═══██╗██╔══██╗                                //
-//    ██████╔╝██║   ██║███████║                                //
-//    ██╔══██╗██║   ██║██╔══██║                                //
-//    ██║  ██║╚██████╔╝██║  ██║                                //
-//    ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝                                //
-//          ██╗      ██████╗  ██████╗ ██╗ ██████╗              //
-//          ██║     ██╔═══██╗██╔════╝ ██║██╔════╝              //
-//          ██║     ██║   ██║██║  ███╗██║██║                   //
-//          ██║     ██║   ██║██║   ██║██║██║                   //
-//          ███████╗╚██████╔╝╚██████╔╝██║╚██████╗              //
-//          ╚══════╝ ╚═════╝  ╚═════╝ ╚═╝ ╚═════╝              //
-//                                                             //
-//    AHB3-Lite Interconnect Switch Testbench (Top level)      //
-//                                                             //
-/////////////////////////////////////////////////////////////////
-//                                                             //
-//     Copyright (C) 2016 ROA Logic BV                         //
-//     www.roalogic.com                                        //
-//                                                             //
-//    This source file may be used and distributed without     //
-//  restrictions, provided that this copyright statement is    //
-//  not removed from the file and that any derivative work     //
-//  contains the original copyright notice and the associated  //
-//  disclaimer.                                                //
-//                                                             //
-//    This soure file is free software; you can redistribute   //
-//  it and/or modify it under the terms of the GNU General     //
-//  Public License as published by the Free Software           //
-//  Foundation, either version 3 of the License, or (at your   //
-//  option) any later versions.                                //
-//  The current text of the License can be found at:           //
-//  http://www.gnu.org/licenses/gpl.html                       //
-//                                                             //
-//    This source file is distributed in the hope that it will //
-//  be useful, but WITHOUT ANY WARRANTY; without even the      //
-//  implied warranty of MERCHANTABILITY or FITTNESS FOR A      //
-//  PARTICULAR PURPOSE. See the GNU General Public License for //
-//  more details.                                              //
-//                                                             //
-/////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
+//   ,------.                    ,--.                ,--.         //
+//   |  .--. ' ,---.  ,--,--.    |  |    ,---. ,---. `--' ,---.   //
+//   |  '--'.'| .-. |' ,-.  |    |  |   | .-. | .-. |,--.| .--'   //
+//   |  |\  \ ' '-' '\ '-'  |    |  '--.' '-' ' '-' ||  |\ `--.   //
+//   `--' '--' `---'  `--`--'    `-----' `---' `-   /`--' `---'   //
+//                                             `---'              //
+//                                                                //
+//      AHB3-Lite Interconnect Switch Testbench (Top level)       //
+//                                                                //
+////////////////////////////////////////////////////////////////////
+//                                                                //
+//     Copyright (C) 2016-2019 ROA Logic BV                       //
+//     www.roalogic.com                                           //
+//                                                                //
+//     This source file may be used and distributed without       //
+//   restrictions, provided that this copyright statement is      //
+//   not removed from the file and that any derivative work       //
+//   contains the original copyright notice and the associated    //
+//   disclaimer.                                                  //
+//                                                                //
+//     This soure file is free software; you can redistribute     //
+//   it and/or modify it under the terms of the GNU General       //
+//   Public License as published by the Free Software             //
+//   Foundation, either version 3 of the License, or (at your     //
+//   option) any later versions.                                  //
+//   The current text of the License can be found at:             //
+//   http://www.gnu.org/licenses/gpl.html                         //
+//                                                                //
+//     This source file is distributed in the hope that it will   //
+//   be useful, but WITHOUT ANY WARRANTY; without even the        //
+//   implied warranty of MERCHANTABILITY or FITTNESS FOR A        //
+//   PARTICULAR PURPOSE. See the GNU General Public License for   //
+//   more details.                                                //
+//                                                                //
+////////////////////////////////////////////////////////////////////
 
 module testbench_top;
   parameter MASTERS = 3; //Number of master ports
@@ -56,7 +49,7 @@ module testbench_top;
   //
   genvar m, s;
 
-  logic [            2:0] mst_priority  [MASTERS];
+  logic [$clog2(MASTERS)-1:0] mst_priority  [MASTERS];
   logic [HADDR_SIZE -1:0] slv_addr_mask [SLAVES ];
   logic [HADDR_SIZE -1:0] slv_addr_base [SLAVES ];
 
@@ -187,15 +180,17 @@ endgenerate
     .HDATA_SIZE ( HDATA_SIZE )
   )
   tb(
-//    .master ( ahb_master ),
-//    .slave  ( ahb_slave  )
   );
 
   ahb3lite_interconnect #(
     .MASTERS    ( MASTERS    ),
     .SLAVES     ( SLAVES     ),
     .HADDR_SIZE ( HADDR_SIZE ),
-    .HDATA_SIZE ( HDATA_SIZE )
+    .HDATA_SIZE ( HDATA_SIZE ),
+    .SLAVE_MASK ( '{5'b11111, //5'b00000,
+                    5'b11111,
+                    5'b11111}
+                )
   )
   dut (
     .*

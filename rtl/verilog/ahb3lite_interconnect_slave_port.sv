@@ -1,54 +1,81 @@
-/////////////////////////////////////////////////////////////////
-//                                                             //
-//    ██████╗  ██████╗  █████╗                                 //
-//    ██╔══██╗██╔═══██╗██╔══██╗                                //
-//    ██████╔╝██║   ██║███████║                                //
-//    ██╔══██╗██║   ██║██╔══██║                                //
-//    ██║  ██║╚██████╔╝██║  ██║                                //
-//    ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝                                //
-//          ██╗      ██████╗  ██████╗ ██╗ ██████╗              //
-//          ██║     ██╔═══██╗██╔════╝ ██║██╔════╝              //
-//          ██║     ██║   ██║██║  ███╗██║██║                   //
-//          ██║     ██║   ██║██║   ██║██║██║                   //
-//          ███████╗╚██████╔╝╚██████╔╝██║╚██████╗              //
-//          ╚══════╝ ╚═════╝  ╚═════╝ ╚═╝ ╚═════╝              //
-//                                                             //
-//    AHB3-Lite Interconnect Switch (Multi-Layer Switch)       //
-//    Slave Port (AHB Master)                                  //
-//                                                             //
-/////////////////////////////////////////////////////////////////
-//                                                             //
-//             Copyright (C) 2016 ROA Logic BV                 //
-//             www.roalogic.com                                //
-//                                                             //
-//    Unless specifically agreed in writing, this software is  //
-//  licensed under the RoaLogic Non-Commercial License         //
-//  version-1.0 (the "License"), a copy of which is included   //
-//  with this file or may be found on the RoaLogic website     //
-//  http://www.roalogic.com. You may not use the file except   //
-//  in compliance with the License.                            //
-//                                                             //
-//    THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY        //
-//  EXPRESS OF IMPLIED WARRANTIES OF ANY KIND.                 //
-//  See the License for permissions and limitations under the  //
-//  License.                                                   //
-//                                                             //
-/////////////////////////////////////////////////////////////////
- 
+/////////////////////////////////////////////////////////////////////
+//   ,------.                    ,--.                ,--.          //
+//   |  .--. ' ,---.  ,--,--.    |  |    ,---. ,---. `--' ,---.    //
+//   |  '--'.'| .-. |' ,-.  |    |  |   | .-. | .-. |,--.| .--'    //
+//   |  |\  \ ' '-' '\ '-'  |    |  '--.' '-' ' '-' ||  |\ `--.    //
+//   `--' '--' `---'  `--`--'    `-----' `---' `-   /`--' `---'    //
+//                                             `---'               //
+//    AHB3-Lite Interconnect Switch (Multi-Layer Switch)           //
+//    Slave Port (AHB Master)                                      //
+//                                                                 //
+/////////////////////////////////////////////////////////////////////
+//                                                                 //
+//             Copyright (C) 2016-2018 ROA Logic BV                //
+//             www.roalogic.com                                    //
+//                                                                 //
+//     Unless specifically agreed in writing, this software is     //
+//   licensed under the RoaLogic Non-Commercial License            //
+//   version-1.0 (the "License"), a copy of which is included      //
+//   with this file or may be found on the RoaLogic website        //
+//   http://www.roalogic.com. You may not use the file except      //
+//   in compliance with the License.                               //
+//                                                                 //
+//     THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY           //
+//   EXPRESS OF IMPLIED WARRANTIES OF ANY KIND.                    //
+//   See the License for permissions and limitations under the     //
+//   License.                                                      //
+//                                                                 //
+/////////////////////////////////////////////////////////////////////
+
+// +FHDR -  Semiconductor Reuse Standard File Header Section  -------
+// FILE NAME      : ahb3lite_interconnect_slave_port.sv
+// DEPARTMENT     :
+// AUTHOR         : rherveille
+// AUTHOR'S EMAIL :
+// ------------------------------------------------------------------
+// RELEASE HISTORY
+// VERSION DATE        AUTHOR      DESCRIPTION
+// 1.0     2017-03-29  rherveille  initial release
+// 1.1     2019-08-01  rherveille  Fixed onehot2int size
+// ------------------------------------------------------------------
+// KEYWORDS : AMBA AHB AHB3-Lite Interconnect Matrix
+// ------------------------------------------------------------------
+// PURPOSE  : AHB3Lite Interconnect Matrix, Slave Port
+// ------------------------------------------------------------------
+// PARAMETERS
+//  PARAM NAME        RANGE    DESCRIPTION              DEFAULT UNITS
+//  HADDR_SIZE        1+       Address bus size         8       bits
+//  HDATA_SIZE        1+       Data bus size            32      bits
+//  MASTERS           1+       Number of Master ports   3       ports
+// ------------------------------------------------------------------
+// REUSE ISSUES 
+//   Reset Strategy      : external asynchronous active low; HRESETn
+//   Clock Domains       : HCLK, rising edge
+//   Critical Timing     : 
+//   Test Features       : na
+//   Asynchronous I/F    : no
+//   Scan Methodology    : na
+//   Instantiations      : none
+//   Synthesizable (y/n) : Yes
+//   Other               :                                         
+// -FHDR-------------------------------------------------------------
+
 
 module ahb3lite_interconnect_slave_port #(
   parameter HADDR_SIZE  = 32,
   parameter HDATA_SIZE  = 32,
   parameter MASTERS     = 3,  //number of slave-ports
-  parameter SLAVES      = 8   //number of master-ports
+
+  //actually localparam
+  parameter MASTER_BITS = $clog2(MASTERS)
 )
 (
-  input                               HRESETn,
-                                      HCLK,
+  input                                        HRESETn,
+                                               HCLK,
 
   //AHB Slave Interfaces (receive data from AHB Masters)
   //AHB Masters conect to these ports
-  input      [MASTERS-1:0][            2:0] mstpriority,
+  input      [MASTERS-1:0][MASTER_BITS-1:0] mstpriority,
   input      [MASTERS-1:0]                  mstHSEL,
   input      [MASTERS-1:0][HADDR_SIZE -1:0] mstHADDR,
   input      [MASTERS-1:0][HDATA_SIZE -1:0] mstHWDATA,
@@ -88,25 +115,23 @@ module ahb3lite_interconnect_slave_port #(
   //
   import ahb3lite_pkg::*;
 
-  localparam MASTER_BITS = $clog2(MASTERS);
-
 
   //////////////////////////////////////////////////////////////////
   //
   // Variables
   //
-  logic [            2:0]              requested_priority_lvl;  //requested priority level
-  logic [MASTERS    -1:0]              priority_masters;        //all masters at this priority level
+  logic [MASTER_BITS-1:0]                  requested_priority_lvl;  //requested priority level
+  logic [MASTERS    -1:0]                  priority_masters;        //all masters at this priority level
 
-  logic [MASTERS    -1:0]              pending_master,          //next master waiting to be served
-                                       last_granted_master;     //for requested priority level
-  logic [            2:0][MASTERS-1:0] last_granted_masters;    //per priority level, for round-robin
+  logic [MASTER_BITS-1:0]                  pending_master_idx,      //next master waiting to be served
+                                           last_granted_master_idx; //last granted master for requested priority level
+  logic [MASTERS    -1:0][MASTER_BITS-1:0] last_granted_masters;    //per priority level, for round-robin
 
   
-  logic [MASTER_BITS-1:0]              granted_master_idx,      //granted master as index
-                                       granted_master_idx_dly;  //deleayed granted master index (for HWDATA)
+  logic [MASTER_BITS-1:0]                  granted_master_idx,      //granted master as index
+                                           granted_master_idx_dly;  //deleayed granted master index (for HWDATA)
   
-  logic                                can_switch_master;       //Slave may switch to a new master
+  logic                                    can_switch_master;       //Slave may switch to a new master
 
   
   genvar m;
@@ -123,53 +148,105 @@ module ahb3lite_interconnect_slave_port #(
   // Functions
   //
   function integer onehot2int;
-    input [SLAVES-1:0] onehot;
+    input [MASTERS-1:0] onehot;
 
-    for (onehot2int = -1; |onehot; onehot2int++) onehot = onehot >>1;
-  endfunction //onehot2int
+    integer i;
+
+    onehot2int = 0; //prevent latch behaviour
+    for (i=1; i < MASTERS; i++) if (onehot[i]) onehot2int = i;
+  endfunction : onehot2int
 
 
-  function [2:0] highest_requested_priority (
-    input [MASTERS-1:0]      hsel,
-    input [MASTERS-1:0][2:0] priorities
+  /*
+   * Intel Quartus does not support recursive functions.
+   * Even though this one would be perfectly fine
+  function automatic [MASTER_BITS-1:0] highest_requested_priority (
+    input [MASTERS-1:0]                  hsel,
+    input [MASTERS-1:0][MASTER_BITS-1:0] priorities,
+    input int                            hi,
+    input int                            lo
   );
 
-    highest_requested_priority = 0;
-    for (int n=0; n<MASTERS; n++)
-      if (hsel[n] && priorities[n] > highest_requested_priority) highest_requested_priority = priorities[n];
-  endfunction //highest_requested_priority
+    logic [MASTER_BITS-1:0] priority_hi, priority_lo;
+
+    //build binary decision tree
+    if (hi - lo > 1)
+    begin
+        priority_hi = highest_requested_priority(hsel, priorities, hi            , hi - (hi-lo)/2);
+        priority_lo = highest_requested_priority(hsel, priorities, lo + (hi-lo)/2, lo            );
+    end
+    else
+    begin
+        priority_hi = hsel[hi] ? priorities[hi] : {MASTER_BITS{1'b0}};
+        priority_lo = hsel[lo] ? priorities[lo] : {MASTER_BITS{1'b0}};
+    end
+
+    //finally compare lo and hi priorities
+    return (priority_hi > priority_lo) ? priority_hi : priority_lo;
+  endfunction : highest_requested_priority
+  */
 
 
+  //If every master has its own unique priority, this just becomes HSEL
   function [MASTERS-1:0] requesters;
-    input [MASTERS-1:0]      hsel;
-    input [MASTERS-1:0][2:0] priorities;
-    input              [2:0] priority_select;
+    input [MASTERS-1:0]                  hsel;
+    input [MASTERS-1:0][MASTER_BITS-1:0] priorities;
+    input              [MASTER_BITS-1:0] priority_select;
 
     for (int n=0; n<MASTERS; n++)
       requesters[n] = (priorities[n] == priority_select) & hsel[n];
-  endfunction //requesters
+  endfunction : requesters
 
 
-  function [MASTERS-1:0] nxt_master;
-    input [MASTERS-1:0] pending_masters;  //pending masters for the requesed priority level
-    input [MASTERS-1:0] last_master;      //last granted master for the priority level
-    input [MASTERS-1:0] current_master;   //current granted master (indpendent of priority level)
+/*
+ * too slow and too big ...
+  function [MASTER_BITS-1:0] nxt_master;
+    input [MASTERS    -1:0] pending_masters;  //pending masters for the requesed priority level
+    input [MASTER_BITS-1:0] last_master;      //last granted master for the priority level
+    input [MASTER_BITS-1:0] current_master;   //current granted master (indpendent of priority level)
 
-    integer offset;
+    int                   offset;
     logic [MASTERS*2-1:0] sr;
-
 
     //default value, don't switch if not needed
     nxt_master = current_master;
 	 
     //implement round-robin
-    offset = onehot2int(last_master) +1;
-
+    offset = last_master +1;
     sr = {pending_masters,pending_masters};
-    for (int n = 0; n < MASTERS; n++)
-      if ( sr[n + offset] ) return (1 << ( (n+offset) % MASTERS));
-  endfunction
 
+    for (int n = 0; n < MASTERS; n++)
+      if (sr[n + offset]) return ((n + offset) % MASTERS);
+  endfunction : nxt_master
+*/
+
+
+  function [MASTER_BITS-1:0] nxt_master;
+    input [MASTERS    -1:0] pending_masters;            //pending masters for the requesed priority level
+    input [MASTER_BITS-1:0] last_master;                //last granted master for the priority level
+    input [MASTER_BITS-1:0] current_master;             //current granted master (indpendent of priority level)
+
+    int                   offset;
+    logic [MASTERS*2-1:0]                  mst_lst;     //list of requesting masters
+    logic [MASTERS*2-1:0][MASTER_BITS-1:0] mst_idx_lst; //list of master indexes
+
+
+    for (int n=0; n < MASTERS; n++)
+    begin
+        mst_idx_lst[n        ] = n[MASTER_BITS-1:0];
+        mst_idx_lst[n+MASTERS] = n[MASTER_BITS-1:0];
+    end
+
+    //default value, don't switch if not needed
+    nxt_master = current_master;
+	 
+    //implement round-robin
+    mst_lst     = {pending_masters,pending_masters} >> last_master;
+    mst_idx_lst = mst_idx_lst >> (last_master * MASTER_BITS);
+
+    for (int n = 1; n < MASTERS+1; n++)
+      if (mst_lst[n]) return mst_idx_lst[n];
+  endfunction : nxt_master
 
 
   //////////////////////////////////////////////////////////////////
@@ -183,35 +260,44 @@ module ahb3lite_interconnect_slave_port #(
    * 2. Round-Robin
    */
 
-  //get highest priority from selected masters
-  assign requested_priority_lvl = highest_requested_priority(mstHSEL,mstpriority);
-
+  //get highest priority from requesting masters
+  //assign requested_priority_lvl = highest_requested_priority(mstHSEL, mstpriority, MASTERS, 0);
+  //recursive functions are not supported in Intel Quartus. Use Verilog Module instead
+  ahb3lite_interconnect_slave_priority #(
+    .MASTERS    ( MASTERS                )
+  )
+  requested_priority_inst (
+    .HSEL       ( mstHSEL                ),
+    .priority_i ( mstpriority            ),
+    .priority_o ( requested_priority_lvl ) );
+  
   //get pending masters for the highest priority requested
   assign priority_masters = requesters(mstHSEL, mstpriority,requested_priority_lvl);
 
   //get last granted master for the priority requested
-  assign last_granted_master = last_granted_masters[requested_priority_lvl];
+  assign last_granted_master_idx = last_granted_masters[requested_priority_lvl];
 
   //get next master to serve
-  assign pending_master = nxt_master(priority_masters,last_granted_master, granted_master);
+  assign pending_master_idx = nxt_master(priority_masters,last_granted_master_idx, granted_master_idx);
 
-  //Master port signals when it can be switched
-  assign can_switch_master = can_switch [granted_master_idx];
+  //Switch masters when
+  // 1. Current active master port signals it can be switched
+  // 2. Current active master isn't actually addressing this slave
+  assign can_switch_master = can_switch[granted_master_idx] | ~mstHSEL[granted_master_idx];
+
 
   //select new master
   always @(posedge HCLK, negedge HRESETn)
     if      (!HRESETn       ) granted_master <= 'h1;
-//    else if (!slv_HSEL      ) granted_master <= pending_master;
-    else if ( slv_HREADY)
-      if (can_switch_master) granted_master <= pending_master;
+    else if ( slv_HREADY    )
+      if (can_switch_master) granted_master <= (1 << pending_master_idx);
 
 
   //store current master (for this priority level)
   always @(posedge HCLK, negedge HRESETn)
     if      (!HRESETn       ) last_granted_masters <= 'h1;
-//    else if (!slv_HSEL      ) last_granted_masters[requested_priority_lvl] <= pending_master;
     else if ( slv_HREADY)
-      if (can_switch_master) last_granted_masters[requested_priority_lvl] <= pending_master;
+      if (can_switch_master) last_granted_masters[requested_priority_lvl] <= pending_master_idx;
 
 
   /*
@@ -219,8 +305,9 @@ module ahb3lite_interconnect_slave_port #(
    */
   always @(posedge HCLK, negedge HRESETn)
     if      (!HRESETn   ) granted_master_idx <= 'h0;
-//    else if (!slv_HSEL  ) granted_master_idx <= onehot2int( pending_master );
-    else if ( slv_HREADY) granted_master_idx <= onehot2int( can_switch_master ? pending_master : granted_master );
+    else if ( slv_HREADY)
+      if (can_switch_master) granted_master_idx <= pending_master_idx;
+
 
   always @(posedge HCLK)
     if (slv_HREADY) granted_master_idx_dly <= granted_master_idx;
