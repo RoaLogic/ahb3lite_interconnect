@@ -321,6 +321,14 @@ generate
 endgenerate
 
   /*
+   * Ensure only one slave bit set per master. Lowest set bit will have precedence.
+   * This will prioritize lower indexed slaves and prevent overlapping memory maps
+   * from causing issues.
+   */
+  assign current_HSEL = -current_HSEL & current_HSEL;
+  assign pending_HSEL = -pending_HSEL & pending_HSEL;
+
+  /*
    * Check if granted access
    */
   always @(posedge HCLK,negedge HRESETn)
