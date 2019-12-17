@@ -48,7 +48,13 @@
 # Design constants
 #####################################################################
 INCDIRS:=
-DEFINES:= 
+
+#Use RECURSIVE_FUNCTIONS_SUPPORTED to compile the core with a recursive function
+#Quartus doesn't like this, other tools require this
+#There is no easy way to handle this. Hence the define.
+#Define set    : compile with recursive function
+#Define not set: compile with recursive module
+DEFINES:= RECURSIVE_FUNCTIONS_SUPPORTED
 
 
 #####################################################################
