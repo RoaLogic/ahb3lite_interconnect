@@ -160,6 +160,7 @@ module ahb3lite_interconnect_slave_port #(
   /*
    * Intel Quartus does not support recursive functions.
    * Even though this one would be perfectly fine
+  */
   function automatic [MASTER_BITS-1:0] highest_requested_priority (
     input [MASTERS-1:0]                  hsel,
     input [MASTERS-1:0][MASTER_BITS-1:0] priorities,
@@ -184,7 +185,6 @@ module ahb3lite_interconnect_slave_port #(
     //finally compare lo and hi priorities
     return (priority_hi > priority_lo) ? priority_hi : priority_lo;
   endfunction : highest_requested_priority
-  */
 
 
   //If every master has its own unique priority, this just becomes HSEL
@@ -230,7 +230,6 @@ module ahb3lite_interconnect_slave_port #(
     logic [MASTERS*2-1:0]                  mst_lst;     //list of requesting masters
     logic [MASTERS*2-1:0][MASTER_BITS-1:0] mst_idx_lst; //list of master indexes
 
-
     for (int n=0; n < MASTERS; n++)
     begin
         mst_idx_lst[n        ] = n[MASTER_BITS-1:0];
@@ -260,8 +259,14 @@ module ahb3lite_interconnect_slave_port #(
    * 2. Round-Robin
    */
 
+//Impossible to prevent usage of ifdef here ...
+`ifdef RECURSIVE_FUNCTIONS_SUPPORTED
+
   //get highest priority from requesting masters
-  //assign requested_priority_lvl = highest_requested_priority(mstHSEL, mstpriority, MASTERS, 0);
+  assign requested_priority_lvl = highest_requested_priority(mstHSEL, mstpriority, MASTERS-1, 0);
+
+`else
+
   //recursive functions are not supported in Intel Quartus. Use Verilog Module instead
   ahb3lite_interconnect_slave_priority #(
     .MASTERS    ( MASTERS                )
@@ -270,7 +275,9 @@ module ahb3lite_interconnect_slave_port #(
     .HSEL       ( mstHSEL                ),
     .priority_i ( mstpriority            ),
     .priority_o ( requested_priority_lvl ) );
-  
+
+`endif
+
   //get pending masters for the highest priority requested
   assign priority_masters = requesters(mstHSEL, mstpriority,requested_priority_lvl);
 
