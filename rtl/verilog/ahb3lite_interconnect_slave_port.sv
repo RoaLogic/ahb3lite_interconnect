@@ -67,7 +67,7 @@ module ahb3lite_interconnect_slave_port #(
   parameter MASTERS     = 3,  //number of slave-ports
 
   //actually localparam
-  parameter MASTER_BITS = $clog2(MASTERS)
+  parameter MASTER_BITS = $clog2(MASTERS+1)
 )
 (
   input                                        HRESETn,

@@ -127,7 +127,7 @@ module ahb3lite_interconnect #(
   parameter bit [SLAVES-1:0] ERROR_ON_SLAVE_MASK[MASTERS] = invert_slave_mask(),
 
   //actually localparam
-  parameter                  MASTER_BITS          = $clog2(MASTERS)
+  parameter                  MASTER_BITS          = $clog2(MASTERS+1)
 )
 (
   //Common signals

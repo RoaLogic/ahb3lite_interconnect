@@ -72,7 +72,7 @@ module ahb3lite_interconnect_master_port #(
   parameter [SLAVES-1:0] ERROR_ON_SLAVE_MASK = ~SLAVE_MASK,
 
   //actually localparam
-  parameter MASTER_BITS = $clog2(MASTERS)
+  parameter MASTER_BITS = $clog2(MASTERS+1)
 )
 (
   //Common signals
