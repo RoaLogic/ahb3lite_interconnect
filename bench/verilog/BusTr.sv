@@ -193,7 +193,7 @@ function void BusTr::display (input string prefix);
   byte address[],
        data[];
 
-  $display("%sTr-id:%0d, AddressSize=%0d DataSize=%0d Write=%0b TransferSize=%0d BytesPerTransfer=%0d Error=%0d", prefix, id, AddressSize, DataSize, Write, TransferSize, BytesPerTransfer, Error);
+  $display("%sTr-id:%0d, AddressSize=%0d DataSize=%0d %0s TransferSize=%0d BytesPerTransfer=%0d Error=%0d", prefix, id, AddressSize, DataSize, Write ? "Write":"Read", TransferSize, BytesPerTransfer, Error);
 
   $write(" Address=");
   foreach (AddressQueue[j])

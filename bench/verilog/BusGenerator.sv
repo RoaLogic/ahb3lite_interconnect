@@ -78,7 +78,7 @@ class BusGenerator #(type T=BaseTr);
 
         //send copy of transfer to driver
         $cast(tr, blueprint.copy());
-        tr.display( $sformatf("@%0t: Master%0d: ", $time, MasterId) );
+        tr.display( $sformatf("@%0t Master%0d ", $time, MasterId) );
         gen2drv.put(tr);
 
         //wait for driver to finish the transfer
