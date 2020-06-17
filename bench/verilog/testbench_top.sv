@@ -49,36 +49,36 @@ module testbench_top;
   //
   genvar m, s;
 
-  logic [$clog2(MASTERS)-1:0] mst_priority  [MASTERS];
-  logic [HADDR_SIZE -1:0] slv_addr_mask [SLAVES ];
-  logic [HADDR_SIZE -1:0] slv_addr_base [SLAVES ];
+  logic [$clog2(MASTERS+1)-1:0] mst_priority  [MASTERS];
+  logic [HADDR_SIZE       -1:0] slv_addr_mask [SLAVES ];
+  logic [HADDR_SIZE       -1:0] slv_addr_base [SLAVES ];
 
-  logic                   mst_HSEL      [MASTERS],
-                          slv_HSEL      [SLAVES ];
-  logic [HADDR_SIZE -1:0] mst_HADDR     [MASTERS],
-                          slv_HADDR     [SLAVES ];
-  logic [HDATA_SIZE -1:0] mst_HWDATA    [MASTERS],
-                          slv_HWDATA    [SLAVES ];
-  logic [HDATA_SIZE -1:0] mst_HRDATA    [MASTERS],
-                          slv_HRDATA    [SLAVES ];
-  logic                   mst_HWRITE    [MASTERS],
-                          slv_HWRITE    [SLAVES ];
-  logic [            2:0] mst_HSIZE     [MASTERS],
-                          slv_HSIZE     [SLAVES ];
-  logic [            2:0] mst_HBURST    [MASTERS],
-                          slv_HBURST    [SLAVES ];
-  logic [            3:0] mst_HPROT     [MASTERS],
-                          slv_HPROT     [SLAVES ];
-  logic [            1:0] mst_HTRANS    [MASTERS],
-                          slv_HTRANS    [SLAVES ];
-  logic                   mst_HMASTLOCK [MASTERS],
-                          slv_HMASTLOCK [SLAVES ];
-  logic                   mst_HREADY    [MASTERS],
-                          slv_HREADY    [SLAVES ];
-  logic                   mst_HREADYOUT [MASTERS],
-                          slv_HREADYOUT [SLAVES ];
-  logic                   mst_HRESP     [MASTERS],
-                          slv_HRESP     [SLAVES ];
+  logic                         mst_HSEL      [MASTERS],
+                                slv_HSEL      [SLAVES ];
+  logic [HADDR_SIZE       -1:0] mst_HADDR     [MASTERS],
+                                slv_HADDR     [SLAVES ];
+  logic [HDATA_SIZE       -1:0] mst_HWDATA    [MASTERS],
+                                slv_HWDATA    [SLAVES ];
+  logic [HDATA_SIZE       -1:0] mst_HRDATA    [MASTERS],
+                                slv_HRDATA    [SLAVES ];
+  logic                         mst_HWRITE    [MASTERS],
+                                slv_HWRITE    [SLAVES ];
+  logic [                  2:0] mst_HSIZE     [MASTERS],
+                                slv_HSIZE     [SLAVES ];
+  logic [                  2:0] mst_HBURST    [MASTERS],
+                                slv_HBURST    [SLAVES ];
+  logic [                  3:0] mst_HPROT     [MASTERS],
+                                slv_HPROT     [SLAVES ];
+  logic [                  1:0] mst_HTRANS    [MASTERS],
+                                slv_HTRANS    [SLAVES ];
+  logic                         mst_HMASTLOCK [MASTERS],
+                                slv_HMASTLOCK [SLAVES ];
+  logic                         mst_HREADY    [MASTERS],
+                                slv_HREADY    [SLAVES ];
+  logic                         mst_HREADYOUT [MASTERS],
+                                slv_HREADYOUT [SLAVES ];
+  logic                         mst_HRESP     [MASTERS],
+                                slv_HRESP     [SLAVES ];
 
 
   /////////////////////////////////////////////////////////
@@ -187,10 +187,7 @@ endgenerate
     .SLAVES     ( SLAVES     ),
     .HADDR_SIZE ( HADDR_SIZE ),
     .HDATA_SIZE ( HDATA_SIZE ),
-    .SLAVE_MASK ( '{5'b11111, //5'b00000,
-                    5'b11111,
-                    5'b11111}
-                )
+    .SLAVE_MASK ( '{MASTERS{ {SLAVES{1'b1}} }} )
   )
   dut (
     .*
