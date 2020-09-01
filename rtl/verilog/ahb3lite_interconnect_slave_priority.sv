@@ -9,7 +9,7 @@
 //                                                                 //
 /////////////////////////////////////////////////////////////////////
 //                                                                 //
-//             Copyright (C) 2017 ROA Logic BV                     //
+//             Copyright (C) 2017-2020 ROA Logic BV                //
 //             www.roalogic.com                                    //
 //                                                                 //
 //   This source file may be used and distributed without          //
@@ -71,7 +71,7 @@ module ahb3lite_interconnect_slave_priority #(
   parameter LO         = 0,
 
   //really a localparam
-  parameter PRIORITY_BITS = $clog2(MASTERS)
+  parameter PRIORITY_BITS = $clog2(MASTERS+1)
 )
 (
   input  [MASTERS      -1:0]                    HSEL,
