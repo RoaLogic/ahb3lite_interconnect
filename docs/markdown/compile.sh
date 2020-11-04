@@ -11,13 +11,17 @@ then
     exit
 fi
 
+if [ ! -d "tex" ]; then
+  mkdir tex
+fi
+
+
 # Pre-process LaTeX Source
 for entry in ../tex/*.tex
 do
-  	base="${entry##*/}"
+  	base="tex/${entry##*/}"
 	./lpp.pl $entry > $base
 done
-
 
 # Generate new Markdown
 cd ..
@@ -30,10 +34,10 @@ pandoc 	--atx-headers \
 		--toc-depth=1 \
 		-t markdown_github \
 		-B markdown/frontmatter.md \
-		-o ../DATASHEET.md \
+		-o datasheet.md \
 		$topfile.tex
 
 cd markdown
 
 # Remove Preprocessed LaTeX source
-rm *.tex
+rm -rf tex/*

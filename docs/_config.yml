@@ -5,3 +5,9 @@ show_downloads: true
 show_license: true
 license: Non-Commercial License
 github: [metadata]
+exclude:
+  - "*.sublime-project"
+  - "*.sublime-workspace"
+  - "*.tex"
+  - build
+  - markdown
