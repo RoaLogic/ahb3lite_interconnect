@@ -74,7 +74,7 @@
  *   It is allowed to drive HSEL with a static/hardwired signal ('1'). This results in a smaller (less logic resources) and faster (larger slack) switch.
  *
  *   'priority' sets the priority of the port. This is used to determine what slave-port (AHB bus master) gets granted access to a master-port when multiple slave-ports want to access the same master-port. The slave-port with the highest priority is granted access.
- *   'priority' may be a static value or it may be a dynamic value where the priority can be set per AHB transfer. In the latter case 'priority' has the same requirements/restrictions as HSIZE/HBURST/HPROT, that is it must remain stable during a burst transfer.
+ *   'priority' may be a static value or it may be a dynamic value where the priority can be set per AHB transfer. In the latter case 'priority' has the same requirements/restrictions as HSIZE/HBURST/HPROT, that is it must remain stable during a burst transfer. Priority has a range of 0..MASTERS-1
  *   Hardwiring 'priority' results in a smaller (less logic resources) and faster (larger slack) switch.
  *
  *
@@ -125,9 +125,10 @@ module ahb3lite_interconnect #(
 
   parameter bit [SLAVES-1:0] SLAVE_MASK         [MASTERS] = '{MASTERS{ {SLAVES{1'b1}} }},
   parameter bit [SLAVES-1:0] ERROR_ON_SLAVE_MASK[MASTERS] = invert_slave_mask(),
+  parameter bit              ERROR_ON_NO_SLAVE  [MASTERS] = '{MASTERS {1'b0 }},
 
   //actually localparam
-  parameter                  MASTER_BITS          = $clog2(MASTERS+1)
+  parameter                  MASTER_BITS = MASTERS==1 ? 1 : $clog2(MASTERS)
 )
 (
   //Common signals
@@ -249,7 +250,8 @@ generate
     .MASTERS             ( MASTERS                ),
     .SLAVES              ( SLAVES                 ),
     .SLAVE_MASK          ( SLAVE_MASK         [m] ),
-    .ERROR_ON_SLAVE_MASK ( ERROR_ON_SLAVE_MASK[m] ) )
+    .ERROR_ON_SLAVE_MASK ( ERROR_ON_SLAVE_MASK[m] ),
+    .ERROR_ON_NO_SLAVE   ( ERROR_ON_NO_SLAVE  [m] ) )
   master_port (
     .HRESETn             ( HRESETn                ),
     .HCLK                ( HCLK                   ),
