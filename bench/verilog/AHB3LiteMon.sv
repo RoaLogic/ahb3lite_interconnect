@@ -164,13 +164,14 @@ task AHB3LiteMon::ahb_next(input AHBBusTr tr);
   while (slave.cb_slave.HSEL   == 1'b1 &&
          (slave.cb_slave.HTRANS == HTRANS_SEQ || slave.cb_slave.HTRANS == HTRANS_BUSY || slave.cb_slave.HREADY !== 1'b1) )
   begin
+//$display ("%0t %0d %0d %0d", $time, PortId, slave.cb_slave.HREADY, slave.cb_slave.HTRANS);
       if (slave.cb_slave.HREADY && slave.cb_slave.HTRANS == HTRANS_SEQ)
       begin
           address = new[ (tr.AddressSize+7)/8 ];
           getHADDR(address);
           tr.AddressQueue.push_back( address );
 
-          //one more cycle in this burst. Increase TransferSize
+          //one more cycle in this burst. Increase TransferSize, force another datacycle
           tr.TransferSize++;
       end
 
@@ -182,7 +183,7 @@ endtask : ahb_next
 //-------------------------------------
 //AHB Data task
 //
-//When we get here, we only stored the data of the 1st cycle of the transaction
+//When we get here, we only stored the metadata of the 1st cycle of the transaction
 //and we're still in the 1st cycle
 //We're in control of HREADY (actually HREADYOUT)
 task AHB3LiteMon::ahb_data(input AHBBusTr tr);
@@ -199,10 +200,12 @@ task AHB3LiteMon::ahb_data(input AHBBusTr tr);
   data_offset %= ((tr.DataSize+7)/8);
 
   cnt = 0;
+//$display ("%0t %0d tr=%0d", $time, PortId, tr.TransferSize);
   while (cnt !== tr.TransferSize)
   begin
       //increase transfer counter
       cnt++;
+//$display ("%0t %0d tr=%0d cnt=%0d", $time, PortId, tr.TransferSize, cnt);
 
       //generate new 'data' object
       data = new[ tr.BytesPerTransfer ];
@@ -251,7 +254,6 @@ task AHB3LiteMon::ahb_data(input AHBBusTr tr);
   //check transaction
   if (tr.Write == 0) #1;
   scb.check_actual(tr, PortId);
-
 
   `ifdef DEBUG
       //Execute here to ensure last data cycle completes before display
