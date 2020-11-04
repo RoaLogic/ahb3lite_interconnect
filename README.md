@@ -16,7 +16,7 @@ The Multi-layer Interconnect supports Priority and Round-Robin based arbitration
 
 - AMBA AHB-Lite Compatible
 - Fully parameterized
-- Unlimited number of Bus Masters and Slaves[[1\]](https://roalogic.com/portfolio/ahb-lite-multilayer-switch/#_ftn1)
+- Unlimited number of Bus Masters and Slaves[^1]
 - Slave side arbitration
 - Priority and Round-Robin based arbitration
 - Slave Port address decoding
@@ -32,3 +32,5 @@ Released under the RoaLogic [Non-Commercial License](/LICENSE.md)
 ## Dependencies
 
 This release requires the ahb3lite package found here: [https://github.com/RoaLogic/ahb3lite_pkg](https://github.com/RoaLogic/ahb3lite_pkg)
+
+[^1]: The number of Bus Masters and Slaves is physically limited by the timing requirements of the design.

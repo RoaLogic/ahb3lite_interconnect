@@ -1,4 +1,4 @@
-\chapter{Configurations}\label{configurations}
+\chapter{Configuration}\label{configuration}
 
 
 \section{Introduction}\label{introduction-1}
@@ -72,3 +72,21 @@ Conversely, setting a \texttt{ERROR\_ON\_SLAVE\_MASK[\,]} bit to '1' indicates t
 be generated if the master is masked from accessing the corresponding slave.
 
 The default value of \texttt{ERROR\_ON\_SLAVE\_MASK[\,]} is the bitwise inverse of \texttt{SLAVE\_MASK[\,]} - i.e. inv(\texttt{SLAVE\_MASK[\,]}). If \texttt{SLAVE\_MASK[\,]} is assigned a value, then \texttt{ERROR\_ON\_SLAVE\_MASK[\,]} is by default inv(\texttt{SLAVE\_MASK[\,]}).
+
+\section{Core Macros}\label{core-macros}
+
+\begin{longtable}[]{@{}ll@{}}
+\toprule
+Macro & Description\tabularnewline
+\midrule
+\endhead
+\texttt{RECURSIVE\_FUNCTIONS\_SUPPORTED} & Enable use of recursive functions \tabularnewline
+\bottomrule
+\caption{Core Macros}
+\end{longtable}
+
+\subsection{RECURSIVE\_FUNCTIONS\_SUPPORTED}\label{recursive_functions_supported}
+
+Recursive functions and modules are used within the verilog source code. However EDA tools vary in their support for recursion, with some supporting recursive functions, whereas others support recursive modules or both. For example, Intel Quartus v19.1 and earlier supports recursive modules, but not recursive functions. 
+
+To accomodate these toolchain differences, recursive modules are the default method used for implementation. However recursive functions may instead be enabled by setting the synthesis macro \texttt{RECURSIVE\_FUNCTIONS\_SUPPORTED}
