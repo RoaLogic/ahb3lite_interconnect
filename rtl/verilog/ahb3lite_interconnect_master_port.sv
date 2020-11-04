@@ -64,15 +64,16 @@
 // -FHDR-------------------------------------------------------------
  
 module ahb3lite_interconnect_master_port #(
-  parameter              HADDR_SIZE          = 32,
-  parameter              HDATA_SIZE          = 32,
-  parameter              MASTERS             = 3, //number of AHB Masters
-  parameter              SLAVES              = 8, //number of AHB Slaves
-  parameter [SLAVES-1:0] SLAVE_MASK          = {SLAVES{1'b1}},
-  parameter [SLAVES-1:0] ERROR_ON_SLAVE_MASK = ~SLAVE_MASK,
+  parameter              HADDR_SIZE                  = 32,
+  parameter              HDATA_SIZE                  = 32,
+  parameter              MASTERS                     = 3, //number of AHB Masters
+  parameter              SLAVES                      = 8, //number of AHB Slaves
+  parameter [SLAVES-1:0] SLAVE_MASK                  = {SLAVES{1'b1}},
+  parameter [SLAVES-1:0] ERROR_ON_SLAVE_MASK         = ~SLAVE_MASK,
+  parameter              ERROR_ON_NO_SLAVE           = 1,
 
   //actually localparam
-  parameter MASTER_BITS = $clog2(MASTERS+1)
+  parameter MASTER_BITS = MASTERS==1 ? 1 : $clog2(MASTERS)
 )
 (
   //Common signals
@@ -134,6 +135,8 @@ module ahb3lite_interconnect_master_port #(
   // Variables
   //
   enum logic [2:0] {NO_ACCESS=3'b001,ACCESS_PENDING=3'b010,ACCESS_GRANTED=3'b100} access_state;
+  enum logic       {RESP_OKAY=1'b0, RESP_ERROR=1'b1} resp_state;
+
   logic                   no_access,
                           access_pending,
                           access_granted;
@@ -141,7 +144,9 @@ module ahb3lite_interconnect_master_port #(
 
   logic [SLAVES     -1:0] current_HSEL,      //current-cycle addressed slave
                           pending_HSEL,      //pending-cycle addressed slave
-                          error_masked_HSEL; //generate error when accessing masked slave
+                          error_masked_HSEL, //generate error when accessing masked slave
+                          error_no_slave;    //generate error when accessing non-mapped memory region
+  logic                   error_response;    //generate error response
 
   logic                   local_HREADYOUT,
                           local_HRESP;
@@ -212,17 +217,51 @@ module ahb3lite_interconnect_master_port #(
    * Local means the master port replies to the connected master
    *
    * Always generate HREADY when IDLE, otherwise insert wait state
-   * HRESP is always OKAY, except when addressing masked slave
+   * HRESP is always OKAY, except when addressing masked or non-addressed slave
    */
-  always @(posedge HCLK,negedge HRESETn)
-    if      (!HRESETn    ) local_HREADYOUT <= 1'b1;
-    else if ( local_HRESP) local_HREADYOUT <= 1'b1; //HRESP='1' 2nd cycle of ERROR-response
-    else if ( mst_HREADY ) local_HREADYOUT <= (mst_HTRANS == HTRANS_IDLE) | ~mst_HSEL;
-
 
   always @(posedge HCLK,negedge HRESETn)
-    if      (!HRESETn   ) local_HRESP <= HRESP_OKAY;
-    else if ( mst_HREADY) local_HRESP <= |error_masked_HSEL ? HRESP_ERROR : HRESP_OKAY;
+    if (!HRESETn)
+    begin
+        resp_state      <= RESP_OKAY;
+        local_HREADYOUT <= 1'b1;
+        local_HRESP     <= HRESP_OKAY;
+    end
+    else
+      case (resp_state)
+          RESP_OKAY: if (mst_HREADY)
+                     begin
+                         if (mst_HTRANS == HTRANS_IDLE || ~mst_HSEL)
+                         begin
+                             //idle response
+                             local_HREADYOUT <= 1'b1;
+                             local_HRESP     <= HRESP_OKAY;
+                         end
+                         else if (|error_masked_HSEL || &error_no_slave)
+                         begin
+                             //1st error response cycle
+                             resp_state <= RESP_ERROR;
+                             local_HREADYOUT <= 1'b0;
+                             local_HRESP     <= HRESP_ERROR;
+                         end
+                         else
+                         begin
+                             //wait state response
+                             local_HREADYOUT <= 1'b0;
+                             local_HRESP     <= HRESP_OKAY;
+                         end
+                     end
+
+        RESP_ERROR: begin
+                        //2nd error cycle response
+                        resp_state      <= RESP_OKAY;
+                        local_HREADYOUT <= 1'b1;
+                        local_HRESP     <= HRESP_ERROR;
+                    end
+      endcase
+
+
+  assign error_response = resp_state[0];
 
 
   /*
@@ -309,7 +348,8 @@ generate
   for (s=0; s<SLAVES; s++)
   begin: gen_HSEL
       assign current_HSEL     [s] = SLAVE_MASK[s] & (mst_HTRANS != HTRANS_IDLE) &
-                                      ( (mst_HADDR & slvHADDRmask[s]) == (slvHADDRbase[s] & slvHADDRmask[s]) );
+                                      ( (mst_HADDR & slvHADDRmask[s]) == (slvHADDRbase[s] & slvHADDRmask[s]) ) &
+                                      ~error_response; //previous transaction generated an error, can not allow current transaction
       assign pending_HSEL     [s] = SLAVE_MASK[s] & (regHTRANS  != HTRANS_IDLE) &
                                       ( (regHADDR  & slvHADDRmask[s]) == (slvHADDRbase[s] & slvHADDRmask[s]) );
       assign slvHSEL          [s] = access_pending ? (pending_HSEL[s]) : (mst_HSEL & current_HSEL[s]);
@@ -317,6 +357,10 @@ generate
       //generate an error while addressing a masked slave
       assign error_masked_HSEL[s] = ~SLAVE_MASK[s] & ERROR_ON_SLAVE_MASK[s] & mst_HSEL & (mst_HTRANS != HTRANS_IDLE) &
                                        ( (mst_HADDR & slvHADDRmask[s]) == (slvHADDRbase[s] & slvHADDRmask[s]) );
+
+      //generate an error while addressing a non-mapped memory region (check if address is in any slave's memory map)
+      assign error_no_slave[s] = ERROR_ON_NO_SLAVE & mst_HSEL & (mst_HTRANS != HTRANS_IDLE) &
+                                   ( (mst_HADDR & slvHADDRmask[s]) != (slvHADDRbase[s] & slvHADDRmask[s]) );
   end
 endgenerate
 
