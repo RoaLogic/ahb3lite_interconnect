@@ -9,7 +9,7 @@ Author: Roa Logic
 
 -   [Introduction](#introduction)
 -   [Specifications](#specifications)
--   [Configurations](#configurations)
+-   [Configuration](#configuration)
 -   [Interfaces](#interfaces)
 -   [Resources](#resources)
 -   [Revision History](#revision-history)
@@ -126,7 +126,7 @@ Similarly since there is no other slave on the Slave Bus, the Slave Port’s `HR
 
 The number of Slave Ports is specified by the `SLAVES` parameter.
 
-## Configurations
+## Configuration
 
 ### Introduction
 
@@ -176,6 +176,18 @@ There is one `ERROR_ON_SLAVE_MASK` parameter per master, each `SLAVES` bits wide
 Setting an `ERROR_ON_SLAVE_MASK[]` bit to ’0’ indicates that an AHB error response will not be generated if the master is masked from accessing the corresponding slave. Conversely, setting a `ERROR_ON_SLAVE_MASK[]` bit to ’1’ indicates that an AHB error response will be generated if the master is masked from accessing the corresponding slave.
 
 The default value of `ERROR_ON_SLAVE_MASK[]` is the bitwise inverse of `SLAVE_MASK[]` - i.e. inv(`SLAVE_MASK[]`). If `SLAVE_MASK[]` is assigned a value, then `ERROR_ON_SLAVE_MASK[]` is by default inv(`SLAVE_MASK[]`).
+
+### Core Macros
+
+| Macro                           | Description                       |
+|:--------------------------------|:----------------------------------|
+| `RECURSIVE_FUNCTIONS_SUPPORTED` | Enable use of recursive functions |
+
+#### RECURSIVE\_FUNCTIONS\_SUPPORTED
+
+Recursive functions and modules are used within the verilog source code. However EDA tools vary in their support for recursion, with some supporting recursive functions, whereas others support recursive modules or both. For example, Intel Quartus v19.1 and earlier supports recursive modules, but not recursive functions.
+
+To accomodate these toolchain differences, recursive modules are the default method used for implementation. However recursive functions may instead be enabled by setting the synthesis macro `RECURSIVE_FUNCTIONS_SUPPORTED`
 
 ## Interfaces
 
@@ -473,7 +485,6 @@ Below are some example implementations when targeting the Altera Cyclone-V famil
 |:-----------:|:--------:|:----------------------------------------|
 | 13-Oct-2017 |    1.0   | Initial Release                         |
 | 16-Sep-2019 |    1.1   | Updated to add `SLAVE_MASK[]` Parameter |
-|             |          |                                         |
-|             |          |                                         |
+| 04-Nov-2020 |    1.2   | Add Recursive Function support          |
 
 [1] The number of Bus Masters and Slaves is physically limited by the timing requirements.
