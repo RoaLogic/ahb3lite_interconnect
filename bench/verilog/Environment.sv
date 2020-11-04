@@ -40,11 +40,11 @@
 
 
 class Environment #(parameter HADDR_SIZE=32);
-  Config                   cfg;             //Test configuration
-  BusGenerator #(AHBBusTr) gen[];           //Transaction generator
-  AHB3LiteDrv              drv[];           //Bus driver
-  AHB3LiteMon              mon[];           //Bus monitor
-  ScoreBoard               scb;             //Score Board
+  Config       #(HADDR_SIZE) cfg;         //Test configuration
+  BusGenerator #(AHBBusTr  ) gen[];       //Transaction generator
+  AHB3LiteDrv                drv[];       //Bus driver
+  AHB3LiteMon                mon[];       //Bus monitor
+  ScoreBoard                 scb;         //Score Board
 
   mailbox gen2drv[];
   event   drv2gen[];
@@ -56,7 +56,7 @@ class Environment #(parameter HADDR_SIZE=32);
 
   extern function new (input virtual ahb3lite_if.master masters[],
                        input virtual ahb3lite_if.slave  slaves[],
-                       input logic [           2:0] mst_priority[],
+                       input logic [           2:0] mst_priority[], //TODO
                        input logic [HADDR_SIZE-1:0] slv_addr_base[],
                                                     slv_addr_mask[]);
   extern virtual function void gen_cfg();
