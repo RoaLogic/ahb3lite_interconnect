@@ -44,10 +44,14 @@ This release requires the ahb3lite package found here: [https://github.com/RoaLo
 [^1]: The number of Bus Masters and Slaves is physically limited by the timing requirements of the design.
 
 [GitHub Pages]:   https://roalogic.github.io/ahb3lite_interconnect/ "GitHub Pages Documentation"
+
 [ahb3lite pkg]:   https://github.com/RoaLogic/ahb3lite_pkg "ahb3lite submodule"
 
 [System Diagram]: {% link /assets/img/ahb-lite-switch-sys.png %} "Example Interconnect System"
+
 [HTML Datasheet]: {% link ahb3lite_interconnect_datasheet.md %} "AHB3Lite Interconnect Datasheet (HTML)"
+
 [PDF Datasheet]:  {% link ahb3lite_interconnect_datasheet.pdf %} "AHB3Lite Interconnect Datasheet (PDF)"
+
 [NC License]:     {% link _pages/license.md %} "Non-Commercial License"
 
