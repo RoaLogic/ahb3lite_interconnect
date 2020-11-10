@@ -1,5 +1,6 @@
 ---
 title: Non-Commercial License Agreement
+permalink: /license
 ---
 # Non-Commercial License Agreement
 
