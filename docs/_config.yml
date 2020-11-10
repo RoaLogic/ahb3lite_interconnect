@@ -7,17 +7,21 @@ show_license: true
 license: Non-Commercial License
 github: [metadata]
 
+include:
+  - _pages
+
 exclude:
   - "*.sublime-project"
   - "*.sublime-workspace"
   - "*.tex"
-  - "*.sty"
   - "*.graffle"
   - "*.sh"
   - "/assets/img/*.pdf"
   - "/assets/img/*.eps"
   - build
   - markdown
+  - pkg
+  - tex
   - Gemfile
   - Gemfile.lock
 

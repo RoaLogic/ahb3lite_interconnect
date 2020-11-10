@@ -19,9 +19,8 @@ if [ ! -d "tex" ]; then
   mkdir tex
 fi
 
-
 # Pre-process LaTeX Source
-echo "Generate markdown compatible source..."
+echo "Generate markdown compatible LaTeX source..."
 for entry in ../tex/*.tex
 do
   	base="tex/${entry##*/}"
@@ -30,7 +29,7 @@ done
 
 # Generate new Markdown
 # cd ..
-echo "Convert Latex to Markdown..."
+echo "Convert LaTeX to Markdown..."
 pandoc 	\
 		--atx-headers \
 		--base-header-level=2 \
@@ -41,7 +40,7 @@ pandoc 	\
 		--toc-depth=1 \
 		-t markdown_github \
 		-B frontmatter.md \
-		-o ../datasheet.md \
+		-o ../$topfile.md \
 		../$topfile.tex
 
 #cd markdown
