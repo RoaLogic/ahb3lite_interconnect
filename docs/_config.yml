@@ -9,5 +9,20 @@ exclude:
   - "*.sublime-project"
   - "*.sublime-workspace"
   - "*.tex"
+  - "*.sty"
+  - "*.graffle"
+  - "*.sh"
+  - "/assets/img/*.pdf"
+  - "/assets/img/*.eps"
   - build
   - markdown
+  - Gemfile
+  - Gemfile.lock
+
+defaults:
+  # _pages
+  - scope:
+      path              : ""
+      type              : pages
+    values:
+      layout            : roalogic
