@@ -8,10 +8,6 @@ The Multi-layer Interconnect supports Priority and Round-Robin based arbitration
 
 ![System Diagram][]
 
-## Documentation
-
-- Datasheet: See [Roa Logic GitHub Pages Site][GitHub Pages]
-
 ## Features
 
 - AMBA AHB-Lite Compatible
@@ -27,6 +23,13 @@ The Multi-layer Interconnect supports Priority and Round-Robin based arbitration
 
 - AHB-Lite Master & Slave Interfaces
 
+## Documentation
+
+- [GitHub Pages Documentation][GitHub Pages]
+- [HTML Datasheet (via GitHub Pages)][HTML Datasheet]
+- [Markdown Datasheet][MD Datasheet]
+- [PDF Datasheet][PDF Datasheet]
+
 ## License
 
 Released under the Roa Logic [Non-Commercial License][NC License]
@@ -40,7 +43,17 @@ This release requires the ahb3lite package found here: [`https://github.com/RoaL
 <sup>1</sup>The number of Bus Masters and Slaves is physically limited by the timing requirements of the design.
 
 [Roa Logic Hdr]:  /docs/assets/img/RoaLogicHeader.png
-[GitHub Pages]:   https://roalogic.github.io/ahb3lite_interconnect/ "GitHub Pages Documentation"
+
+[GitHub Pages]:   https://roalogic.github.io/ahb3lite_interconnect "GitHub Pages Documentation"
+
+[HTML Datasheet]: https://roalogic.github.io/ahb3lite_interconnect/ahb3lite_interconnect_datasheet.html "HTML Datasheet"
+
+[MD Datasheet]:   /docs/ahb3lite_interconnect_datasheet.md "Markdown Datasheet"
+
+[PDF Datasheet]:  /docs/ahb3lite_interconnect_datasheet.pdf "PDF Datasheet"
+
 [System Diagram]: /docs/assets/img/ahb-lite-switch-sys.png "Example Interconnect System"
+
 [NC License]:     LICENSE.md "Non-Commercial License"
-[ahb3lite pkg]:   https://github.com/RoaLogic/ahb3lite_pkg "ahb3lite submodule"
+
+[ahb3lite pkg]:   https://github.com/RoaLogic/ahb3lite_pkg "ahb3lite submodule" 
