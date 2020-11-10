@@ -1,14 +1,18 @@
 #!/bin/bash
 
-topfile="ahb3lite_interconnect_markdown"
+#topfile="ahb3lite_interconnect_markdown"
+topfile="ahb3lite_interconnect_datasheet"
 
 # Run from markdown directory only
+
 curdir=${PWD##*/}
 
 if [ "$curdir" != "markdown" ]
 then
 	echo "Must run from markdown directory"
     exit
+else
+	echo "Starting in Markdown directory..."
 fi
 
 if [ ! -d "tex" ]; then
@@ -17,6 +21,7 @@ fi
 
 
 # Pre-process LaTeX Source
+echo "Generate markdown compatible source..."
 for entry in ../tex/*.tex
 do
   	base="tex/${entry##*/}"
@@ -24,8 +29,10 @@ do
 done
 
 # Generate new Markdown
-cd ..
-pandoc 	--atx-headers \
+# cd ..
+echo "Convert Latex to Markdown..."
+pandoc 	\
+		--atx-headers \
 		--base-header-level=2 \
 		--number-sections \
 		--default-image-extension=png \
@@ -33,11 +40,13 @@ pandoc 	--atx-headers \
 		--toc \
 		--toc-depth=1 \
 		-t markdown_github \
-		-B markdown/frontmatter.md \
-		-o datasheet.md \
-		$topfile.tex
+		-B frontmatter.md \
+		-o ../datasheet.md \
+		../$topfile.tex
 
-cd markdown
+#cd markdown
 
 # Remove Preprocessed LaTeX source
 rm -rf tex/*
+
+echo "Done!"
