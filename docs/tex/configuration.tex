@@ -21,6 +21,7 @@ Parameter & Type & Default & Description\tabularnewline
 \texttt{SLAVES}                & Integer & 8      & Number of Slave Ports\tabularnewline
 \texttt{SLAVE\_MASK[MASTERS]}  & Array  & All '1's & Mask Slaves accessible by each Master\tabularnewline
 \texttt{ERROR\_ON\_SLAVE\_MASK[MASTERS]} & Array & inv(\texttt{SLAVE\_MASK}) & Enable Error Reporting for masked Slaves\tabularnewline
+\texttt{ERROR\_ON\_NO\_SLAVE[MASTERS]}  & Array  & All '1's & Enable Error Reporting when non-mapped address space accessed\tabularnewline
 
 \bottomrule
 \caption{Core Parameters}
@@ -72,6 +73,14 @@ Conversely, setting a \texttt{ERROR\_ON\_SLAVE\_MASK[\,]} bit to '1' indicates t
 be generated if the master is masked from accessing the corresponding slave.
 
 The default value of \texttt{ERROR\_ON\_SLAVE\_MASK[\,]} is the bitwise inverse of \texttt{SLAVE\_MASK[\,]} - i.e. inv(\texttt{SLAVE\_MASK[\,]}). If \texttt{SLAVE\_MASK[\,]} is assigned a value, then \texttt{ERROR\_ON\_SLAVE\_MASK[\,]} is by default inv(\texttt{SLAVE\_MASK[\,]}).
+
+\subsection{ERROR\_ON\_NO\_SLAVE[ ]}\label{error_on_no_slave}
+
+The AHB-Lite Multi-layer Interconnect decodes all accesses to slaves and can therefore determine if a master attempts to access a slave at an invalid (ie non-memory mapped) address. The \texttt{ERROR\_ON\_NO\_SLAVE[\,]} parameter enables error reporting for this scenario, via the generation of an AHB error response.
+
+\texttt{ERROR\_ON\_NO\_SLAVE[\,]} is \texttt{MASTERS} bits wide. Setting a bit of the parameter to '1' enables error reporting for the corresponding master. 
+
+The default value for \texttt{ERROR\_ON\_NO\_SLAVE[\,]} is all bits set to '1' to fully enable errors to be reported.
 
 \section{Core Macros}\label{core-macros}
 

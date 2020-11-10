@@ -25,8 +25,8 @@ The Multi-layer Interconnect supports Priority and Round-Robin based arbitration
 - Slave side arbitration
 - Priority and Round-Robin based arbitration
 - Slave Port address decoding
-- Slave Masking to increase system performance
-- Error assertion when no slave correctly addressed
+- Slave Masking to increase system performance - ***New in v1.2***
+- Error assertion when no slave correctly addressed - ***New in v1.3***
 
 ## Interfaces
 
@@ -42,7 +42,7 @@ This release requires the ahb3lite package found here: [https://github.com/RoaLo
 
 [^1]: The number of Bus Masters and Slaves is physically limited by the timing requirements of the design.
 
-[GitHub Pages]:   https://roalogic.github.io/ahb3lite-interconnect "GitHub Pages Documentation"
+[GitHub Pages]:   https://roalogic.github.io/ahb3lite_interconnect/ "GitHub Pages Documentation"
 [ahb3lite pkg]:   https://github.com/RoaLogic/ahb3lite_pkg "ahb3lite submodule"
 
 [System Diagram]: {% link /assets/img/ahb-lite-switch-sys.png %} "Example Interconnect System"

@@ -134,14 +134,15 @@ The Roa Logic AHB-Lite Multi-layer Interconnect is a highly configurable Interco
 
 ### Core Parameters
 
-| Parameter                      |   Type  |      Default      | Description                              |
-|:-------------------------------|:-------:|:-----------------:|:-----------------------------------------|
-| `HADDR_SIZE`                   | Integer |         32        | Address Bus Size                         |
-| `HDATA_SIZE`                   | Integer |         32        | Data Bus Size                            |
-| `MASTERS`                      | Integer |         3         | Number of Master Ports                   |
-| `SLAVES`                       | Integer |         8         | Number of Slave Ports                    |
-| `SLAVE_MASK[MASTERS]`          |  Array  |      All ’1’s     | Mask Slaves accessible by each Master    |
-| `ERROR_ON_SLAVE_MASK[MASTERS]` |  Array  | inv(`SLAVE_MASK`) | Enable Error Reporting for masked Slaves |
+| Parameter                      |   Type  |      Default      | Description                                                   |
+|:-------------------------------|:-------:|:-----------------:|:--------------------------------------------------------------|
+| `HADDR_SIZE`                   | Integer |         32        | Address Bus Size                                              |
+| `HDATA_SIZE`                   | Integer |         32        | Data Bus Size                                                 |
+| `MASTERS`                      | Integer |         3         | Number of Master Ports                                        |
+| `SLAVES`                       | Integer |         8         | Number of Slave Ports                                         |
+| `SLAVE_MASK[MASTERS]`          |  Array  |      All ’1’s     | Mask Slaves accessible by each Master                         |
+| `ERROR_ON_SLAVE_MASK[MASTERS]` |  Array  | inv(`SLAVE_MASK`) | Enable Error Reporting for masked Slaves                      |
+| `ERROR_ON_NO_SLAVE[MASTERS]`   |  Array  |      All ’1’s     | Enable Error Reporting when non-mapped address space accessed |
 
 #### HADDR\_SIZE
 
@@ -176,6 +177,14 @@ There is one `ERROR_ON_SLAVE_MASK` parameter per master, each `SLAVES` bits wide
 Setting an `ERROR_ON_SLAVE_MASK[]` bit to ’0’ indicates that an AHB error response will not be generated if the master is masked from accessing the corresponding slave. Conversely, setting a `ERROR_ON_SLAVE_MASK[]` bit to ’1’ indicates that an AHB error response will be generated if the master is masked from accessing the corresponding slave.
 
 The default value of `ERROR_ON_SLAVE_MASK[]` is the bitwise inverse of `SLAVE_MASK[]` - i.e. inv(`SLAVE_MASK[]`). If `SLAVE_MASK[]` is assigned a value, then `ERROR_ON_SLAVE_MASK[]` is by default inv(`SLAVE_MASK[]`).
+
+#### ERROR\_ON\_NO\_SLAVE\[ \]
+
+The AHB-Lite Multi-layer Interconnect decodes all accesses to slaves and can therefore determine if a master attempts to access a slave at an invalid (ie non-memory mapped) address. The `ERROR_ON_NO_SLAVE[]` parameter enables error reporting for this scenario, via the generation of an AHB error response.
+
+`ERROR_ON_NO_SLAVE[]` is `MASTERS` bits wide. Setting a bit of the parameter to ’1’ enables error reporting for the corresponding master.
+
+The default value for `ERROR_ON_NO_SLAVE[]` is all bits set to ’1’ to fully enable errors to be reported.
 
 ### Core Macros
 
@@ -481,10 +490,11 @@ Below are some example implementations when targeting the Altera Cyclone-V famil
 
 ## Revision History
 
-|   **Date**  | **Rev.** | **Comments**                            |
-|:-----------:|:--------:|:----------------------------------------|
-| 13-Oct-2017 |    1.0   | Initial Release                         |
-| 16-Sep-2019 |    1.1   | Updated to add `SLAVE_MASK[]` Parameter |
-| 04-Nov-2020 |    1.2   | Add Recursive Function support          |
+|   **Date**  | **Rev.** | **Comments**                        |
+|:-----------:|:--------:|:------------------------------------|
+| 13-Oct-2017 |    1.0   | Initial Release                     |
+| 16-Sep-2019 |    1.1   | Add `SLAVE_MASK[]` Parameter        |
+| 04-Nov-2020 |    1.2   | Add Recursive Function support      |
+| 13-Nov-2020 |    1.3   | Add `ERROR_ON_NO_SLAVE[]` Parameter |
 
 [1] The number of Bus Masters and Slaves is physically limited by the timing requirements.
