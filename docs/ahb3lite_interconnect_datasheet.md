@@ -37,6 +37,10 @@ The Multi-layer Interconnect supports priority based and Round-Robin based arbit
 
 -   Slave Port address decoding
 
+-   Slave Masking to increase system performance - New in v1.2
+
+-   Error assertion when no slave correctly addressed - New in v1.3
+
 ## Specifications
 
 ### Functional Description

@@ -9,7 +9,7 @@ implemented for each Slave Port within the core.
 
 \begin{figure}[tbh]
   \centering
-  \includegraphics{assets/img/ahb-lite-switch-sys}
+  \includegraphics[scale=0.9]{assets/img/ahb-lite-switch-sys}
   \caption{Multi--layer Interconnect Usage Example}
   \label{fig:ahb-lite-switch-sys}
 \end{figure}
@@ -35,4 +35,8 @@ Port. Typically arbitration completes within 1 clock cycle.
   Priority and Round-Robin based arbitration
 \item
   Slave Port address decoding
+\item
+  Slave Masking to increase system performance - New in v1.2
+\item
+  Error assertion when no slave correctly addressed - New in v1.3
 \end{itemize}
