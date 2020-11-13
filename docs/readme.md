@@ -1,11 +1,15 @@
 ---
-title: Documentation ReadMe
+title: AHB3lite_interconnect Documentation ReadMe
 layout: roalogic
 ---
 
-# Documentation ReadMe
+# AHB3lite_interconnect Documentation ReadMe
 
-**`/docs`:** Documentation subfolder for ahb3lite_interconnect IP
+The **`/docs`** subfolder is a self contained sub-repository of all documentation for the `AHB3lite_interconnect` IP
+
+All documentation is written in LaTeX from which a standalone PDF datasheet and HTML data sheet (via markdown) are generated. The HTML datasheet is served via GitHub pages
+
+The following sections describe in detail the contents of this sub-repository
 
 ## LaTeX Source:
 
@@ -27,7 +31,7 @@ Compiled from LaTeX source using pdfLaTeX
 Generated from LaTeX source via 'pandoc' utility
 
 - Generated as → [`ahb3lite_interconnect_datasheet.md`](./ahb3lite_interconnect_datasheet.md)
-- `markdown/` → Compilation script(s) 
+- `markdown/` → Compilation script(s) to create markdown
 
 ## HTML:
 
