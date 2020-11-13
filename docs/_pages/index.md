@@ -29,9 +29,10 @@ The Multi-layer Interconnect supports Priority and Round-Robin based arbitration
 
 ## Documentation
 
-- Datasheet
-  - [HTML Format][HTML Datasheet]
-  - [PDF Format][PDF Datasheet]
+- Datasheet: [HTML Format][HTML Datasheet]
+- Datasheet: [PDF Format][PDF Datasheet]
+- About this Documentation: [ReadMe](/readme)
+
 
 ## License
 
