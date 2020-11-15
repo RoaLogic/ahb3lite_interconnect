@@ -125,7 +125,16 @@ task AHB3LiteDrv::ahb_cmd(input AHBBusTr tr);
   byte address[];
   int  cnt;
 
-  wait4hready(0);
+  wait4hready(1);
+  //Check HRESP
+  if (master.cb_master.HRESP == HRESP_ERROR && master.cb_master.HREADY != 1'b1)
+  begin
+      //We are in the 1st error cycle. Next cycle must be IDLE
+      master.cb_master.HTRANS <= HTRANS_IDLE;
+      //wait for HREADY
+      wait4hready(0);
+  end
+
 
   //first cycle of a (potential) burst
   master.cb_master.HSEL      <= 1'b1;
@@ -174,8 +183,14 @@ task AHB3LiteDrv::ahb_data(input AHBBusTr tr);
        data[];
   int unsigned data_offset, cnt;
 
+  
+  wait4hready(1);
+  if (master.cb_master.HRESP == HRESP_ERROR && master.cb_master.HREADY != 1'b1)
+  begin
+      //We are in the 1st error cycle. Wait for error transaction to complete
+      wait4hready(0);
+  end
 
-  wait4hready(0);
 
   if (tr.TransferSize > 0)
   begin
