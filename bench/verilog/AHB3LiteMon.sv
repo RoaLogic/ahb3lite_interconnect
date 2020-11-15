@@ -252,7 +252,6 @@ task AHB3LiteMon::ahb_data(input AHBBusTr tr);
 
 
   //check transaction
-  if (tr.Write == 0) #1;
   scb.check_actual(tr, PortId);
 
   `ifdef DEBUG
