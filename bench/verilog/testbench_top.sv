@@ -97,6 +97,10 @@ module testbench_top;
     HRESETn <= 1'b1;
   end : gen_HRESETn;
 
+initial
+  for (int n=1; n<64; n++)
+    $display("masters=%0d clog2(%0d)=%0d [%0d:0], clog(%0d+1)=%0d [%0d:0]", n, n, $clog2(n), $clog2(n)-1, n, $clog2(n+1), $clog2(n+1)-1);
+
 
   /////////////////////////////////////////////////////////
   //
@@ -187,7 +191,7 @@ endgenerate
     .SLAVES     ( SLAVES     ),
     .HADDR_SIZE ( HADDR_SIZE ),
     .HDATA_SIZE ( HDATA_SIZE ),
-    .SLAVE_MASK ( '{MASTERS{ {SLAVES{1'b1}} }} )
+    .SLAVE_MASK ( '{MASTERS{5'b01111}} ) //'{MASTERS{ {SLAVES{1'b1}} }} )
   )
   dut (
     .*
