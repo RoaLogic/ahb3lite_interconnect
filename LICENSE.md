@@ -1,6 +1,5 @@
----
-title: Non-Commercial License Agreement
----
+![Roa Logic Hdr][]
+
 # Non-Commercial License Agreement
 
 PLEASE CAREFULLY REVIEW THE FOLLOWING TERMS AND CONDITIONS BEFORE DOWNLOADING AND USING THE LICENSED MATERIALS. THIS LICENSE AGREEMENT (“AGREEMENT”) IS A LEGAL AGREEMENT BETWEEN YOU (EITHER A SINGLE INDIVIDUAL, OR A SINGLE LEGAL ENTITY)(“YOU”) AND ROA LOGIC BV (“ROA LOGIC”) COVERING THE PRODUCTS OR SERVICES YOU PURCHASE FROM ROA LOGIC.
@@ -81,3 +80,5 @@ All agreements and contracts between you and Roa Logic, which these conditions a
 The competent courts in the district where Roa Logic has its registered office in the Netherlands has jurisdiction over all disputes concerning rights and obligations associated with the contractual relations.
 
 Conversion: If any clause or sentence of this agreement is held by a court of law to be illegal or unenforceable, the remaining provisions of the agreement remain in effect. The failure of Roa Logic to enforce any of the provisions in the agreement does not constitute a waiver of Roa Logic’s rights to enforce any provision of the agreement in the future.
+
+[Roa Logic Hdr]:  /docs/assets/img/RoaLogicHeader.png
