@@ -46,8 +46,3 @@ virtual class BaseScoreBoard;
   pure virtual function void display(string prefix="");
 endclass : BaseScoreBoard
 
-
-/////////////////////////////////////////////////////////////////
-//
-// Class Methods
-//
