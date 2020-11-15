@@ -88,8 +88,19 @@ code, pre {
     font-size: 12px;
 }
 
-p img {
+img {
   display: block;
   margin-left: auto;
   margin-right: auto;
+  border: 0;
+}
+
+figcaption {
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 1em;
+}
+
+ul, ul p {
+    margin: 0px;
 }

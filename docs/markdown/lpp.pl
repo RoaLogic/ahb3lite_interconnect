@@ -18,7 +18,7 @@ while (<>) {
 
 
   #check for new define
-  if (/\\newcommand\*{\\(\w+)}{}/) {
+  if (/\\newcommand\*\{\\(\w+)}\{}/) {
     push @defines, $1;
     next;
   }

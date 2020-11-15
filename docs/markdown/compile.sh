@@ -28,22 +28,10 @@ do
 done
 
 # Generate new Markdown
-# cd ..
-echo "Convert LaTeX to Markdown..."
-pandoc 	\
-		--atx-headers \
-		--base-header-level=2 \
-		--number-sections \
-		--default-image-extension=png \
-		--file-scope \
-		--toc \
-		--toc-depth=1 \
-		-t markdown_github \
-		-B frontmatter.md \
-		-o ../$topfile.md \
-		../$topfile.tex
 
-#cd markdown
+echo "Convert LaTeX to Markdown..."
+# conversion options stored in markdown.yaml
+pandoc --defaults markdown ../$topfile.tex > ../$topfile.md 
 
 # Remove Preprocessed LaTeX source
 rm -rf tex/*
