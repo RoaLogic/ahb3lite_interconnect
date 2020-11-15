@@ -44,12 +44,12 @@ class Config #(parameter HADDR_SIZE=32) extends BaseConfig;
   int nTransactions[];             //Actual number of transactions per master
 
 
-  logic [           2:0] mst_priority [];
+  logic [           2:0] mst_priority []; //TODO
   logic [HADDR_SIZE-1:0] slv_addr_base[],
                          slv_addr_mask[];
 
   extern function new(input int                    nmasters, nslaves,
-                      input logic [           2:0] mst_priority[],
+                      input logic [           2:0] mst_priority[], //TODO
                       input logic [HADDR_SIZE-1:0] slv_addr_base[],
                                                    slv_addr_mask[]);
   extern function void random();
