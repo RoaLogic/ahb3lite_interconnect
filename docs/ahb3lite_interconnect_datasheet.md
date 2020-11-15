@@ -242,7 +242,7 @@ and configuration options are described in this section.
 | `ERROR_ON_NO_SLAVE[MASTERS]`   |  Array  |     All ’1’s      | Enable Error Reporting when non-mapped address space accessed |
 |                                |         |                   |                                                               |
 
-: Core Parameters
+<p align=center><strong>Table: Core Parameters</strong></p>
 
 #### HADDR_SIZE
 
@@ -320,7 +320,7 @@ fully enable errors to be reported.
 | `RECURSIVE_FUNCTIONS_SUPPORTED` | Enable use of recursive functions |
 |                                 |                                   |
 
-: Core Macros
+<p align=center><strong>Table: Core Macros</strong></p>
 
 #### RECURSIVE_FUNCTIONS_SUPPORTED
 
@@ -349,7 +349,7 @@ use the global signals.
 | `HCLK`    |  1   |   Input   | System clock input            |
 |           |      |           |                               |
 
-: AMBA3 Global Signals
+<p align=center><strong>Table: AMBA3 Global Signals</strong></p>
 
 #### HRESETn
 
@@ -394,14 +394,14 @@ supported.
 | `mst_HRESP`     |      1       |   Input   | Transfer Response         |
 |                 |              |           |                           |
 
-: Master Interface AHB-Lite Port
+<p align=center><strong>Table: Master Interface AHB-Lite Port</strong></p>
 
 | Port           |            Size             | Direction | Description            |
 |:---------------|:---------------------------:|:---------:|:-----------------------|
 | `mst_priority` | clog<sub>2</sub>(`MASTERS`) |   Input   | Master Priority Levels |
 |                |                             |           |                        |
 
-: Master Interface Custom Port
+<p align=center><strong>Table: Master Interface Custom Port</strong></p>
 
 **Note:** clog<sub>2</sub>() refers to the System Verilog function by
 the same name, defined below, and is used to determine the required
@@ -432,7 +432,7 @@ the connected slave.
 |   11   | SEQ    | Remaining transfers of a burst                                                           |
 |        |        |                                                                                          |
 
-: Transfer Type (HTRANS)
+<p align=center><strong>Table: Transfer Type (HTRANS)</strong></p>
 
 #### mst_HADDR
 
@@ -471,7 +471,7 @@ the connected slave.
 | `111` | 1024bit |             |
 |       |         |             |
 
-: Transfer Size Values (HSIZE)
+<p align=center><strong>Table: Transfer Size Values (HSIZE)</strong></p>
 
 #### mst_HBURST
 
@@ -490,7 +490,7 @@ a burst. It is driven to the connected slave.
 | `111`  | INCR16 | 16-beat incrementing burst   |
 |        |        |                              |
 
-: Burst Types (HBURST)
+<p align=center><strong>Table: Burst Types (HBURST)</strong></p>
 
 #### mst_HPROT
 
@@ -510,7 +510,7 @@ connected slave.
 |        |   0   | Opcode fetch                   |
 |        |       |                                |
 
-: Protection Signals (HPROT)
+<p align=center><strong>Table: Protection Signals (HPROT)</strong></p>
 
 #### mst_HREADYOUT
 
@@ -570,7 +570,7 @@ supported.
 | `slv_addr_mask` | `HADDR_SIZE` |   Input   | Slave Address Space Mask |
 |                 |              |           |                          |
 
-: Slave Interface Customisation Port
+<p align=center><strong>Table: Slave Interface Customisation Port</strong></p>
 
 | Port            |     Size     | Direction | Description               |
 |:----------------|:------------:|:---------:|:--------------------------|
@@ -588,7 +588,7 @@ supported.
 | `slv_HRESP`     |      1       |   Input   | Transfer Response         |
 |                 |              |           |                           |
 
-: Slave Interface AHB-Lite Port
+<p align=center><strong>Table: Slave Interface AHB-Lite Port</strong></p>
 
 #### slv_addr_base
 
@@ -650,7 +650,7 @@ master drives `slv_HSIZE`.
 | `111` | 1024bit |             |
 |       |         |             |
 
-: Data Transfer Sizes
+<p align=center><strong>Table: Data Transfer Sizes</strong></p>
 
 #### slv_HBURST
 
@@ -669,7 +669,7 @@ a burst. The connected master drives it.
 | `111`  | INCR16 | 16-beat incrementing burst   |
 |        |        |                              |
 
-: Burst Types (HBURST)
+<p align=center><strong>Table: Burst Types (HBURST)</strong></p>
 
 #### slv_HPROT
 
@@ -688,7 +688,7 @@ master drives `slv_HPROT`.
 |   0   |   1   | Data transfer, always ‘1’                  |
 |       |       |                                            |
 
-: Data Protection Signals
+<p align=center><strong>Table: Data Protection Signals</strong></p>
 
 #### slv_HTRANS
 
@@ -702,7 +702,7 @@ master drives `slv_HPROT`.
 |    `11`    |  SEQ   | Remaining transfers of an data burst |
 |            |        |                                      |
 
-: Data Transfer Type
+<p align=center><strong>Table: Data Transfer Type</strong></p>
 
 #### slv_HMASTLOCK
 
@@ -745,7 +745,7 @@ effort has been undertaken to reduce area or improve performance.
 | Fmax (MHz)     |  47  |  61  |  68  |  71  | 109  | 104  |  66  |  63  |
 |                |      |      |      |      |      |      |      |      |
 
-: Resource Utilisation Examples
+<p align=center><strong>Table: Resource Utilisation Examples</strong></p>
 
 **NOTE:** Config in the above table refers to the `MASTERS` x `SLAVES`
 configuration of the interconnect.
@@ -760,7 +760,7 @@ configuration of the interconnect.
 | 13-Nov-2020 |   1.3    | Add `ERROR_ON_NO_SLAVE[ ]` Parameter |
 |             |          |                                      |
 
-: Revision History
+<p align=center><strong>Table: Revision History</strong></p>
 
 [^1]: The number of Bus Masters and Slaves is physically limited by the
     timing requirements.

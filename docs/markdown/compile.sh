@@ -41,7 +41,7 @@ rm ../$topfile.md
 IFS=''
 while read -r line || [[ -n "${line}" ]]; do
   if [ "${line:0:2}" == ": " ]; then
-  	echo "  " $line
+    echo "  " $line
     echo "<p align=center><strong>Table${line}</strong></p>" >> ../$topfile.md
   else
     echo ${line} >> ../$topfile.md
@@ -51,6 +51,5 @@ done < $topfile.md
 # Remove Preprocessed LaTeX source
 echo -e "\nCleaning Up...\n"
 rm -rf tex/* $topfile.md
-
 
 echo "Done!"
