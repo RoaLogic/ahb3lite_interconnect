@@ -1,0 +1,35 @@
+title: AHB-Lite Multi-Layer Switch
+description: Parameterised AHB-Lite Multi-layer Interconnect Switch
+
+theme: jekyll-theme-dinky
+show_downloads: true
+show_license: true
+license: Non-Commercial License
+github: [metadata]
+
+include:
+  - _pages
+
+exclude:
+  - "*.sublime-project"
+  - "*.sublime-workspace"
+  - "*.tex"
+  - "*.graffle"
+  - "*.sh"
+  - "/assets/img/*.pdf"
+  - "/assets/img/*.eps"
+  - build
+  - markdown
+  - pkg
+  - tex
+  - Gemfile
+  - Gemfile.lock
+
+defaults:
+  # _pages
+  - scope:
+      path    : ""
+      type    : pages
+    values:
+      layout  : roalogic
+      author  : Roa Logic

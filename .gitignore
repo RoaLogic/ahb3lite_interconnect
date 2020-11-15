@@ -1,2 +1,4 @@
-docs/build
 .ruby-version
+docs/build
+docs/*.sh
+docs/_site
