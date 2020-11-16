@@ -71,7 +71,7 @@ Setting an \texttt{ERROR\_ON\_SLAVE\_MASK[\,]} bit to '0' indicates that an AHB 
 Conversely, setting a \texttt{ERROR\_ON\_SLAVE\_MASK[\,]} bit to '1' indicates that an AHB error response will
 be generated if the master is masked from accessing the corresponding slave.
 
-The default value of \texttt{ERROR\_ON\_SLAVE\_MASK[\,]} is the bitwise inverse of \texttt{SLAVE\_MASK[\,]} - i.e. inv(\texttt{SLAVE\_MASK[\,]}). If \texttt{SLAVE\_MASK[\,]} is assigned a value, then \texttt{ERROR\_ON\_SLAVE\_MASK[\,]} is by default inv(\texttt{SLAVE\_MASK[\,]}).
+The default value of \texttt{ERROR\_ON\_SLAVE\_MASK[\,]} is the bitwise inverse of \texttt{SLAVE\_MASK[\,]} - i.e. inv(\texttt{SLAVE\_MASK[\,]}). If \texttt{SLAVE\_MASK[\,]} is assigned a value, then \texttt{ERROR\_ON\_SLAVE\_MASK[\,]} is by default inv(\texttt{SLAVE\_MASK[\,]}). The default value of inv(\texttt{SLAVE\_MASK[\,]}) causes the core to generate an error response when a masked slave is addressed by a master.
 
 \subsection{ERROR\_ON\_NO\_SLAVE[ ]}\label{error_on_no_slave}
 
