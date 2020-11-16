@@ -5,7 +5,6 @@ theme: jekyll-theme-dinky
 show_downloads: true
 show_license: true
 license: Non-Commercial License
-github: [metadata]
 
 url: https://roalogic.github.io
 baseurl: /ahb3lite_interconnect
