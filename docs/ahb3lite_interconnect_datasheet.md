@@ -301,17 +301,19 @@ inv(`SLAVE_MASK[ ]`).
 
 #### ERROR_ON_NO_SLAVE\[ \]
 
-The AHB-Lite Multi-layer Interconnect decodes all accesses to slaves and
-can therefore determine if a master attempts to access a slave at an
-invalid (ie non-memory mapped) address. The `ERROR_ON_NO_SLAVE[ ]`
-parameter enables error reporting for this scenario, via the generation
-of an AHB error response.
+The AHB-Lite Multi-layer Interconnect uses `slv_addr_base` and
+`slv_addr_mask` to decode the target slave port. It can therefore
+determine if a master attempts to access a non-mapped slave port. This
+means the switch can generate an AHB error response should a master
+attempt to access an address which is not mapped to any slave port.
 
-`ERROR_ON_NO_SLAVE[ ]` is `MASTERS` bits wide. Setting a bit of the
-parameter to ’1’ enables error reporting for the corresponding master.
+The `ERROR_ON_NO_SLAVE[ ]` is a is `MASTERS` bits wide parameter used to
+enable error response generation for this scenario. Setting a bit of the
+parameter to ’1’ enables error generation for the corresponding master.
 
-The default value for `ERROR_ON_NO_SLAVE[ ]` is all bits set to ’1’ to
-fully enable errors to be reported.
+The default value for `ERROR_ON_NO_SLAVE[ ]` is all bits set to ’0’,
+disabling this feature to match the behaviour of previous releases of
+the IP.
 
 ### Core Macros
 

@@ -76,11 +76,11 @@ The default value of \texttt{ERROR\_ON\_SLAVE\_MASK[\,]} is the bitwise inverse 
 
 \subsection{ERROR\_ON\_NO\_SLAVE[ ]}\label{error_on_no_slave}
 
-The AHB-Lite Multi-layer Interconnect decodes all accesses to slaves and can therefore determine if a master attempts to access a slave at an invalid (ie non-memory mapped) address. The \texttt{ERROR\_ON\_NO\_SLAVE[\,]} parameter enables error reporting for this scenario, via the generation of an AHB error response.
+The AHB-Lite Multi-layer Interconnect uses \texttt{slv\_addr\_base} and \texttt{slv\_addr\_mask} to decode the target slave port. It can therefore determine if a master attempts to access a non-mapped slave port. This means the switch can generate an AHB error response should a master attempt to access an address which is not mapped to any slave port.
 
-\texttt{ERROR\_ON\_NO\_SLAVE[\,]} is \texttt{MASTERS} bits wide. Setting a bit of the parameter to '1' enables error reporting for the corresponding master. 
+The \texttt{ERROR\_ON\_NO\_SLAVE[\,]} is a is \texttt{MASTERS} bits wide parameter used to enable error response generation for this scenario. Setting a bit of the parameter to '1' enables error generation for the corresponding master. 
 
-The default value for \texttt{ERROR\_ON\_NO\_SLAVE[\,]} is all bits set to '1' to fully enable errors to be reported.
+The default value for \texttt{ERROR\_ON\_NO\_SLAVE[\,]} is all bits set to '0', disabling this feature to match the behaviour of previous releases of the IP.
 
 \section{Core Macros}\label{core-macros}
 
