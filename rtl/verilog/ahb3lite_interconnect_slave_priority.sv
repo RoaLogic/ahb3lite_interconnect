@@ -71,7 +71,7 @@ module ahb3lite_interconnect_slave_priority #(
   parameter LO         = 0,
 
   //really a localparam
-  parameter PRIORITY_BITS = $clog2(MASTERS+1)
+  parameter PRIORITY_BITS = MASTERS==1 ? 1 : $clog2(MASTERS)
 )
 (
   input  [MASTERS      -1:0]                    HSEL,

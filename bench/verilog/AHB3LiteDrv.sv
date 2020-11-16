@@ -55,7 +55,7 @@ class AHB3LiteDrv extends BaseDrv;
 
   extern virtual task run();
   extern         task initialize();
-  extern         task wait4hready();
+  extern         task wait4hready(input exit_on_hresp_error);
   extern         task ahb_cmd(input AHBBusTr tr);
   extern         task ahb_data(input AHBBusTr tr);
 
@@ -81,11 +81,15 @@ endtask : initialize
 
 //-------------------------------------
 //Wait for HREADY to assert
-task AHB3LiteDrv::wait4hready();
-  do
-    @(master.cb_master);
-  while (master.cb_master.HREADY !== 1'b1 && master.cb_master.HRESP !== HRESP_ERROR);
-
+task AHB3LiteDrv::wait4hready(input exit_on_hresp_error);
+  if (exit_on_hresp_error)
+    do
+      @(master.cb_master);
+    while (master.cb_master.HREADY !== 1'b1 && master.cb_master.HRESP !== HRESP_ERROR);
+  else
+    do
+      @(master.cb_master);
+    while (master.cb_master.HREADY !== 1'b1);
 endtask : wait4hready
 
 
@@ -121,18 +125,16 @@ task AHB3LiteDrv::ahb_cmd(input AHBBusTr tr);
   byte address[];
   int  cnt;
 
-  //wait for HREADY
-  wait4hready();
-
+  wait4hready(1);
   //Check HRESP
-  if (master.cb_master.HRESP == HRESP_ERROR)
+  if (master.cb_master.HRESP == HRESP_ERROR && master.cb_master.HREADY != 1'b1)
   begin
-      //finish error response from previous transaction
+      //We are in the 1st error cycle. Next cycle must be IDLE
       master.cb_master.HTRANS <= HTRANS_IDLE;
-
-      if (master.cb_master.HREADY !== 1)
-        @(master.cb_master);
+      //wait for HREADY
+      wait4hready(0);
   end
+
 
   //first cycle of a (potential) burst
   master.cb_master.HSEL      <= 1'b1;
@@ -152,11 +154,12 @@ task AHB3LiteDrv::ahb_cmd(input AHBBusTr tr);
       repeat (tr.TransferSize -1)
       begin
           //wait for HREADY
-          wait4hready();
+          wait4hready(1);
 
           //Check HRESP
           if (master.cb_master.HRESP == HRESP_ERROR)
           begin
+              //error response. Next cycle must be IDLE. Exit current transaction
               master.cb_master.HTRANS <= HTRANS_IDLE;
               return;
           end
@@ -180,16 +183,12 @@ task AHB3LiteDrv::ahb_data(input AHBBusTr tr);
        data[];
   int unsigned data_offset, cnt;
 
-  //Data transfer starts 1 bus-cycle after command/address
-  wait4hready();
-
-  //Check HRESP
-  if (master.cb_master.HRESP == HRESP_ERROR)
+  
+  wait4hready(1);
+  if (master.cb_master.HRESP == HRESP_ERROR && master.cb_master.HREADY != 1'b1)
   begin
-      //finish error response from previous transaction
-      do
-        @(master.cb_master);
-      while (master.cb_master.HREADY === 1'b0);
+      //We are in the 1st error cycle. Wait for error transaction to complete
+      wait4hready(0);
   end
 
 
@@ -206,7 +205,7 @@ task AHB3LiteDrv::ahb_data(input AHBBusTr tr);
       if (!tr.Write)
       begin
           //Extra cycle for reading (read at the end of the cycle)
-          wait4hready();
+          wait4hready(0);
 
           //Check HRESP
           if (master.cb_master.HRESP == HRESP_ERROR)
@@ -220,7 +219,7 @@ task AHB3LiteDrv::ahb_data(input AHBBusTr tr);
       repeat (tr.TransferSize)
       begin
           //wait for HREADY
-          wait4hready();
+          wait4hready(0);
 
           //Check HRESP
           if (master.cb_master.HRESP == HRESP_ERROR)
@@ -243,7 +242,10 @@ task AHB3LiteDrv::ahb_data(input AHBBusTr tr);
                   @(master.cb_master);
 
                  if (master.cb_master.HRESP == HRESP_ERROR)
+                 begin
                      tr.Error = 1;
+                     break;
+                 end
               end
           end
           else
@@ -261,11 +263,9 @@ task AHB3LiteDrv::ahb_data(input AHBBusTr tr);
       end
   end
 
-
   //Done transmit; send transaction to scoreboard
   scb.save_expected(tr);
 
-  
 //  tr.display($sformatf("@%0t: Drv%0d: ", $time, PortId));
 endtask : ahb_data
 

@@ -50,6 +50,7 @@
 //  SLAVES            1+       Number of Slave ports    8       ports
 //  SLAVE_MASK                 Per Master Slave mask
 //  ERROR_ON_SLAVE_MASK        Per Master error response on masked slave
+//  ERROR_ON_NO_SLAVE          Per Master error response on unmapped address
 // ------------------------------------------------------------------
 // REUSE ISSUES 
 //   Reset Strategy      : external asynchronous active low; HRESETn
@@ -74,7 +75,7 @@
  *   It is allowed to drive HSEL with a static/hardwired signal ('1'). This results in a smaller (less logic resources) and faster (larger slack) switch.
  *
  *   'priority' sets the priority of the port. This is used to determine what slave-port (AHB bus master) gets granted access to a master-port when multiple slave-ports want to access the same master-port. The slave-port with the highest priority is granted access.
- *   'priority' may be a static value or it may be a dynamic value where the priority can be set per AHB transfer. In the latter case 'priority' has the same requirements/restrictions as HSIZE/HBURST/HPROT, that is it must remain stable during a burst transfer.
+ *   'priority' may be a static value or it may be a dynamic value where the priority can be set per AHB transfer. In the latter case 'priority' has the same requirements/restrictions as HSIZE/HBURST/HPROT, that is it must remain stable during a burst transfer. Priority has a range of 0..MASTERS-1
  *   Hardwiring 'priority' results in a smaller (less logic resources) and faster (larger slack) switch.
  *
  *
@@ -88,6 +89,7 @@
  *   selected = (HADDR & haddr_mask) == (haddr_base & haddr_mask)
  *   'haddr_mask' and 'haddr_base' should be static signals. Hardwiring these signals results in a smaller (less logic resource) and faster (larger slack) switch.
  *
+ *
  * SLAVE_MASK:
  *   Indicates that a master can/will never access a slave
  *   There is a MASK for each master with a bit for each slave. I.e. SLAVE_MASK is an array of MASTERS x SLAVES.
@@ -100,6 +102,7 @@
  *         1| 1 1 0    Slave[1] can only be accessed by masters 2 and 1. Master[0] never accesses Slave[1]
  *         0| 0 1 1    Slave[0] can only be accessed by masters 1 and 0. Master[2] never accesses Slave[0]
  *         SLAVE_MASK = '{2'b10, 2'b11, 2'b01}
+ *
  *
  * ERROR_ON_SLAVE_MASK:
  *   Indicates that an AHB transaction error response is generated when addressing a masked Slave
@@ -116,6 +119,11 @@
  *
  *   WARNING: when SLAVE_MASK='0' and ERROR_ON_SLAVE_MASK='0', the master must ensure not to address the masked slave, because that will cause deadlock on the master AHB bus, where the master waits indefinitely for a response that never comes.
  *
+ *
+ * ERROR_ON_NO_SLAVE:
+ *  Indicates that an AHB transaction error response is generated when no slave port is addressed
+ *  When a master tries to access an address that is not mapped to any Slave, the Master Port generates an AHB transaction error response when ERROR_ON_NO_SLAVE for that Master is set to '1'. If ERROR_ON_NO_SLAVE is set to '0', the Master Port does not generate and error transaction response. Note that the bus will hang in that case, because the master waits for a response that never comes.
+ *
  */
 module ahb3lite_interconnect #(
   parameter                  HADDR_SIZE                   = 32,
@@ -125,9 +133,10 @@ module ahb3lite_interconnect #(
 
   parameter bit [SLAVES-1:0] SLAVE_MASK         [MASTERS] = '{MASTERS{ {SLAVES{1'b1}} }},
   parameter bit [SLAVES-1:0] ERROR_ON_SLAVE_MASK[MASTERS] = invert_slave_mask(),
+  parameter bit              ERROR_ON_NO_SLAVE  [MASTERS] = '{MASTERS {1'b0 }},
 
   //actually localparam
-  parameter                  MASTER_BITS          = $clog2(MASTERS+1)
+  parameter                  MASTER_BITS = MASTERS==1 ? 1 : $clog2(MASTERS)
 )
 (
   //Common signals
@@ -249,7 +258,8 @@ generate
     .MASTERS             ( MASTERS                ),
     .SLAVES              ( SLAVES                 ),
     .SLAVE_MASK          ( SLAVE_MASK         [m] ),
-    .ERROR_ON_SLAVE_MASK ( ERROR_ON_SLAVE_MASK[m] ) )
+    .ERROR_ON_SLAVE_MASK ( ERROR_ON_SLAVE_MASK[m] ),
+    .ERROR_ON_NO_SLAVE   ( ERROR_ON_NO_SLAVE  [m] ) )
   master_port (
     .HRESETn             ( HRESETn                ),
     .HCLK                ( HCLK                   ),
