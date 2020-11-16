@@ -37,7 +37,7 @@
 
 module testbench_top;
   parameter MASTERS = 3; //Number of master ports
-  parameter SLAVES  = 5; //Number of slave ports
+  parameter SLAVES  = 4; //Number of slave ports
 
   parameter HADDR_SIZE = 16;
   parameter HDATA_SIZE = 32;
@@ -187,11 +187,12 @@ endgenerate
   );
 
   ahb3lite_interconnect #(
-    .MASTERS    ( MASTERS    ),
-    .SLAVES     ( SLAVES     ),
-    .HADDR_SIZE ( HADDR_SIZE ),
-    .HDATA_SIZE ( HDATA_SIZE ),
-    .SLAVE_MASK ( '{MASTERS{5'b01111}} ) //'{MASTERS{ {SLAVES{1'b1}} }} )
+    .MASTERS           (   MASTERS            ),
+    .SLAVES            (   SLAVES             ),
+    .HADDR_SIZE        (   HADDR_SIZE         ),
+    .HDATA_SIZE        (   HDATA_SIZE         ),
+    .SLAVE_MASK        ( '{MASTERS{5'b11011}} ), //'{MASTERS{ {SLAVES{1'b1}} }} )
+    .ERROR_ON_NO_SLAVE ( '{MASTERS{1'b1    }} )
   )
   dut (
     .*
