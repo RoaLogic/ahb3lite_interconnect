@@ -1,6 +1,7 @@
 ---
 title: AHB3lite_interconnect Documentation ReadMe
 layout: roalogic
+permalink: /readme/
 ---
 
 # AHB3lite_interconnect Documentation ReadMe
