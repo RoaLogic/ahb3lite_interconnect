@@ -50,7 +50,7 @@ This release requires the ahb3lite package found here: [https://github.com/RoaLo
 
 [System Diagram]: /assets/img/ahb-lite-switch-sys.png "Example Interconnect System"
 
-[HTML Datasheet]: ahb3lite_interconnect_datasheet.md "AHB3Lite Interconnect Datasheet (HTML)"
+[HTML Datasheet]: ahb3lite_interconnect_datasheet.html "AHB3Lite Interconnect Datasheet (HTML)"
 
 [PDF Datasheet]:  ahb3lite_interconnect_datasheet.pdf "AHB3Lite Interconnect Datasheet (PDF)"
 
