@@ -1,5 +1,7 @@
 #!/usr/local/bin/bash
 
+# Usage: create_markdown.sg <top level file>
+
 set -e
 
 # Verify number of parameters specified
