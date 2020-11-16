@@ -18,7 +18,7 @@ All documentation generated from LaTex Source
 
 - Top Level: [`ahb3lite_interconnect_datasheet.tex`](./ahb3lite_interconnect_datasheet.tex)
 - `tex/` → Datasheet Content
-- `pkg/` → Configure build environment
+- `pkg/` → Layout definition
 - `assets/` → Graphics Content, including source files
 
 ## PDF: 
