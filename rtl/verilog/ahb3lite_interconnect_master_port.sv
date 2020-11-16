@@ -50,6 +50,7 @@
 //  SLAVE_MASK                   Slave mask 0:slave is never addressed
 //                                          1:slave can be addressed
 //  ERROR_ON_SLAVE_MASK 1+       ERROR when addressing masked slave
+//  ERROR_ON_NO_SLAVE   1+       ERROR when addressing unmapped address
 // ------------------------------------------------------------------
 // REUSE ISSUES 
 //   Reset Strategy      : external asynchronous active low; HRESETn
@@ -217,7 +218,7 @@ module ahb3lite_interconnect_master_port #(
    * Local means the master port replies to the connected master
    *
    * Always generate HREADY when IDLE, otherwise insert wait state
-   * HRESP is always OKAY, except when addressing masked or non-addressed slave
+   * HRESP is always OKAY, except when addressing masked or non-mapped address
    */
 
   always @(posedge HCLK,negedge HRESETn)
@@ -240,7 +241,7 @@ module ahb3lite_interconnect_master_port #(
                          else if (|error_masked_HSEL || &error_no_slave)
                          begin
                              //1st error response cycle
-                             resp_state <= RESP_ERROR;
+                             resp_state      <= RESP_ERROR;
                              local_HREADYOUT <= 1'b0;
                              local_HRESP     <= HRESP_ERROR;
                          end
@@ -253,7 +254,7 @@ module ahb3lite_interconnect_master_port #(
                      end
 
         RESP_ERROR: begin
-                        //2nd error cycle response
+                        //2nd error response cycle
                         resp_state      <= RESP_OKAY;
                         local_HREADYOUT <= 1'b1;
                         local_HRESP     <= HRESP_ERROR;

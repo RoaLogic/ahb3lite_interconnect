@@ -50,6 +50,7 @@
 //  SLAVES            1+       Number of Slave ports    8       ports
 //  SLAVE_MASK                 Per Master Slave mask
 //  ERROR_ON_SLAVE_MASK        Per Master error response on masked slave
+//  ERROR_ON_NO_SLAVE          Per Master error response on unmapped address
 // ------------------------------------------------------------------
 // REUSE ISSUES 
 //   Reset Strategy      : external asynchronous active low; HRESETn
