@@ -97,11 +97,6 @@ module testbench_top;
     HRESETn <= 1'b1;
   end : gen_HRESETn;
 
-initial
-  for (int n=1; n<64; n++)
-    $display("masters=%0d clog2(%0d)=%0d [%0d:0], clog(%0d+1)=%0d [%0d:0]", n, n, $clog2(n), $clog2(n)-1, n, $clog2(n+1), $clog2(n+1)-1);
-
-
   /////////////////////////////////////////////////////////
   //
   // Master & Slave Model ports
@@ -187,12 +182,12 @@ endgenerate
   );
 
   ahb3lite_interconnect #(
-    .MASTERS           (   MASTERS            ),
-    .SLAVES            (   SLAVES             ),
-    .HADDR_SIZE        (   HADDR_SIZE         ),
-    .HDATA_SIZE        (   HDATA_SIZE         ),
-    .SLAVE_MASK        ( '{MASTERS{5'b11011}} ), //'{MASTERS{ {SLAVES{1'b1}} }} )
-    .ERROR_ON_NO_SLAVE ( '{MASTERS{1'b1    }} )
+    .MASTERS           (   MASTERS           ),
+    .SLAVES            (   SLAVES            ),
+    .HADDR_SIZE        (   HADDR_SIZE        ),
+    .HDATA_SIZE        (   HDATA_SIZE        ),
+    .SLAVE_MASK        ( '{MASTERS{4'b1011}} ),
+    .ERROR_ON_NO_SLAVE ( '{MASTERS{1'b1   }} )
   )
   dut (
     .*
