@@ -16,7 +16,6 @@ include:
 exclude:
   - "*.sublime-project"
   - "*.sublime-workspace"
-  - "*.tex"
   - "*.graffle"
   - "*.sh"
   - "/assets/img/*.pdf"
