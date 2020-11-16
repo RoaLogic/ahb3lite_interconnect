@@ -11,19 +11,19 @@ url: https://roalogic.github.io
 baseurl: /ahb3lite_interconnect
 
 include:
-  - _pages
+  - _pages                  # Non-datasheet GH Pages
 
 exclude:
   - "*.sublime-project"
   - "*.sublime-workspace"
-  - "*.graffle"
-  - "*.sh"
-  - "/assets/img/*.pdf"
-  - "/assets/img/*.eps"
-  - build
-  - markdown
-  - pkg
-  - tex
+  - "*.graffle"             # Original Omnigraffle sources
+  - "*.sh"                  # Ignore any scripts
+  - "/assets/img/*.pdf"     # PDF images used for PDF Datasheet 
+  - "/assets/img/*.eps"     # EPS images used for PDF Datasheet
+  - build                   # Temp build folder for PDF Datasheet
+  - markdown                # Markdown Datasheet generation scripts
+  - pkg                     # PDF Datasheet layout definition
+  - tex                     # Original source texfiles
   - Gemfile
   - Gemfile.lock
 
