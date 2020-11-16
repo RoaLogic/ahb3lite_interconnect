@@ -87,3 +87,25 @@ p.logo {
 code, pre {
     font-size: 12px;
 }
+
+img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  border: 0;
+}
+
+figcaption {
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 1em;
+}
+
+ul, ul p {
+    margin: 0px;
+}
+
+sup {
+  vertical-align: super;
+  font-size: smaller;
+}

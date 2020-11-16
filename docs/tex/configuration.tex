@@ -5,7 +5,7 @@
 
 
 The Roa Logic AHB-Lite Multi-layer Interconnect is a highly configurable
-Interconnect Fabric for AMBA AHB-Lite based systems. The core parameters
+interconnect fabric for AMBA AHB-Lite based systems. The core parameters
 and configuration options are described in this section.
 
 \section{Core Parameters}\label{core-parameters}
@@ -15,12 +15,13 @@ and configuration options are described in this section.
 Parameter & Type & Default & Description\tabularnewline
 \midrule
 \endhead
-\texttt{HADDR\_SIZE}           & Integer & 32     & Address Bus Size\tabularnewline
-\texttt{HDATA\_SIZE}           & Integer & 32     & Data Bus Size\tabularnewline
-\texttt{MASTERS}               & Integer & 3      & Number of Master Ports\tabularnewline
-\texttt{SLAVES}                & Integer & 8      & Number of Slave Ports\tabularnewline
-\texttt{SLAVE\_MASK[MASTERS]}  & Array  & All '1's & Mask Slaves accessible by each Master\tabularnewline
-\texttt{ERROR\_ON\_SLAVE\_MASK[MASTERS]} & Array & inv(\texttt{SLAVE\_MASK}) & Enable Error Reporting for masked Slaves\tabularnewline
+\texttt{HADDR\_SIZE}           & Integer & 32     & Address bus size\tabularnewline
+\texttt{HDATA\_SIZE}           & Integer & 32     & Data bus size\tabularnewline
+\texttt{MASTERS}               & Integer & 3      & Number of master ports\tabularnewline
+\texttt{SLAVES}                & Integer & 8      & Number of slave ports\tabularnewline
+\texttt{SLAVE\_MASK[MASTERS]}  & Array  & All '1's & Mask slaves accessible by each master\tabularnewline
+\texttt{ERROR\_ON\_SLAVE\_MASK[MASTERS]} & Array & inv(\texttt{SLAVE\_MASK}) & Enable error reporting for masked slaves\tabularnewline
+\texttt{ERROR\_ON\_NO\_SLAVE[MASTERS]}  & Array  & All '0's & Disable error reporting when non-mapped address space accessed (to match previous IP releases)\tabularnewline
 
 \bottomrule
 \caption{Core Parameters}
@@ -29,22 +30,22 @@ Parameter & Type & Default & Description\tabularnewline
 \subsection{HADDR\_SIZE}\label{haddr_size}
 
 The \texttt{HADDR\_SIZE} parameter specifies the width of the address bus for all
-Master and Slave ports.
+master and slave ports.
 
 \subsection{HDATA\_SIZE}\label{hdata_size}
 
 The \texttt{HDATA\_SIZE} parameter specifies the width of the data bus for all
-Master and Slave ports.
+master and slave ports.
 
 \subsection{MASTERS}\label{masters}
 
-The \texttt{MASTERS} parameter specifies the number of Master Ports on the
-Interconnect fabric.
+The \texttt{MASTERS} parameter specifies the number of master ports on the
+interconnect fabric.
 
 \subsection{SLAVES}\label{slaves}
 
-The \texttt{SLAVES} parameter specifies the number of Slave Ports on the
-Interconnect Fabric.
+The \texttt{SLAVES} parameter specifies the number of slave ports on the
+interconnect fabric.
 
 \subsection{SLAVE\_MASK[ ]}\label{slave_mask}
 
@@ -61,17 +62,24 @@ Conversely, setting a \texttt{SLAVE\_MASK[\,]} bit to '1' indicates that master 
 \subsection{ERROR\_ON\_SLAVE\_MASK[ ]}\label{error_on_slave_mask}
 
 The \texttt{ERROR\_ON\_SLAVE\_MASK[\,]} parameter enables generating an AHB error response when the
-master attempts to access a masked Slave Port.
+master attempts to access a masked slave port.
 
 There is one \texttt{ERROR\_ON\_SLAVE\_MASK} parameter per master, each \texttt{SLAVES} bits wide.
 i.e. \texttt{ERROR\_ON\_SLAVE\_MASK[\,]} is an array of dimensions \texttt{MASTERS} x \texttt{SLAVES}.
 
-Setting an \texttt{ERROR\_ON\_SLAVE\_MASK[\,]} bit to '0' indicates that an AHB error response will not be generated
-if the master is masked from accessing the corresponding slave.
+Setting an \texttt{ERROR\_ON\_SLAVE\_MASK[\,]} bit to '0' indicates that an AHB error response will not be generated if the master is masked from accessing the corresponding slave.
 Conversely, setting a \texttt{ERROR\_ON\_SLAVE\_MASK[\,]} bit to '1' indicates that an AHB error response will
 be generated if the master is masked from accessing the corresponding slave.
 
 The default value of \texttt{ERROR\_ON\_SLAVE\_MASK[\,]} is the bitwise inverse of \texttt{SLAVE\_MASK[\,]} - i.e. inv(\texttt{SLAVE\_MASK[\,]}). If \texttt{SLAVE\_MASK[\,]} is assigned a value, then \texttt{ERROR\_ON\_SLAVE\_MASK[\,]} is by default inv(\texttt{SLAVE\_MASK[\,]}).
+
+\subsection{ERROR\_ON\_NO\_SLAVE[ ]}\label{error_on_no_slave}
+
+The AHB-Lite Multi-layer Interconnect uses \texttt{slv\_addr\_base} and \texttt{slv\_addr\_mask} to decode the target slave port. It can therefore determine if a master attempts to access a non-mapped slave port. This means the switch can generate an AHB error response should a master attempt to access an address which is not mapped to any slave port.
+
+The \texttt{ERROR\_ON\_NO\_SLAVE[\,]} is a is \texttt{MASTERS} bits wide parameter used to enable error response generation for this scenario. Setting a bit of the parameter to '1' enables error generation for the corresponding master. 
+
+The default value for \texttt{ERROR\_ON\_NO\_SLAVE[\,]} is all bits set to '0', disabling this feature to match the behaviour of previous releases of the IP.
 
 \section{Core Macros}\label{core-macros}
 

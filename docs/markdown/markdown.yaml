@@ -1,0 +1,11 @@
+from: latex
+to: markdown_github+table_captions+footnotes
+
+standalone: true
+atx-headers: true
+shift-heading-level-by: 1 # Added title will be level 1
+default-image-extension: png
+file-scope: true
+toc: true
+toc-depth: 3 # Actual depth = 2 as Title added post processing
+include-in-header: frontmatter.md
