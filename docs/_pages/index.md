@@ -48,11 +48,11 @@ This release requires the ahb3lite package found here: [https://github.com/RoaLo
 
 [ahb3lite pkg]:   https://github.com/RoaLogic/ahb3lite_pkg "ahb3lite submodule"
 
-[System Diagram]: {% link /assets/img/ahb-lite-switch-sys.png %} "Example Interconnect System"
+[System Diagram]: /assets/img/ahb-lite-switch-sys.png "Example Interconnect System"
 
-[HTML Datasheet]: {% link ahb3lite_interconnect_datasheet.md %} "AHB3Lite Interconnect Datasheet (HTML)"
+[HTML Datasheet]: ahb3lite_interconnect_datasheet.md "AHB3Lite Interconnect Datasheet (HTML)"
 
-[PDF Datasheet]:  {% link ahb3lite_interconnect_datasheet.pdf %} "AHB3Lite Interconnect Datasheet (PDF)"
+[PDF Datasheet]:  ahb3lite_interconnect_datasheet.pdf "AHB3Lite Interconnect Datasheet (PDF)"
 
-[NC License]:     {% link _pages/license.md %} "Non-Commercial License"
+[NC License]:     /license/ "Non-Commercial License"
 
