@@ -27,36 +27,37 @@ layout: roalogic
 
 ## Introduction
 
-The Roa Logic AHB-Lite Multi-layer Interconnect is a fully parameterized
-soft IP High Performance, Low Latency Interconnect Fabric for AHB-Lite.
-It allows a virtually unlimited number of AHB-Lite Bus Masters and
-Slaves to be connected without the need of bus arbitration to be
-implemented by the Bus Masters. Instead, Slave Side Arbitration is
-implemented for each Slave Port within the core.
+The Roa Logic AHB-Lite Multi-layer Interconnect, hereafter referred to
+as ’the Interconnect’, is a fully parameterized high performance, low
+latency interconnect fabric soft IP for AHB-Lite. It allows a virtually
+unlimited number of AHB-Lite bus masters and slaves to be connected
+without the need for bus arbitration to be implemented by the bus
+masters. Instead, slave side arbitration is implemented for each slave
+port within the core.
 
 <figure>
 <img src="assets/img/ahb-lite-switch-sys.png" id="fig:ahb-lite-switch-sys" alt="Multi–layer Interconnect Usage Example" /><figcaption aria-hidden="true">Multi–layer Interconnect Usage Example</figcaption>
 </figure>
 
-The Multi-layer Interconnect supports priority based and Round-Robin
-based arbitration when multiple Bus Masters request access to the same
-Slave Port. Typically arbitration completes within 1 clock cycle.
+The Multi-layer Interconnect supports priority based and round-robin
+based arbitration when multiple bus masters request access to the same
+slave port. Typically arbitration completes within 1 clock cycle.
 
 ### Features
 
--   AMBA AHB-Lite Compatible
+-   AMBA AHB-Lite compatible
 
 -   Fully parameterized
 
--   Unlimited number of Bus Masters and Slaves[^1]
+-   Unlimited number of bus masters and slaves[^1]
 
 -   Slave side arbitration
 
--   Priority and Round-Robin based arbitration
+-   Priority and round-robin based arbitration
 
--   Slave Port address decoding
+-   Slave port address decoding
 
--   Slave Masking to increase system performance - New in v1.2
+-   Slave masking to increase system performance - New in v1.2
 
 -   Error assertion when no slave correctly addressed - New in v1.3
 
@@ -65,15 +66,15 @@ Slave Port. Typically arbitration completes within 1 clock cycle.
 ### Functional Description
 
 The Roa Logic AHB-Lite Multi-layer Interconnect is a highly configurable
-Interconnect Fabric for AMBA AHB-Lite based systems, enabling multiple
-Masters to be connected to multiple Slaves.
+interconnect fabric for AMBA AHB-Lite based systems, enabling multiple
+masters to be connected to multiple slaves.
 
-Connections are dynamically created based on which Slave a Master is
-addressing, and once created enable direct communication between Master
-and Slave without other Masters being aware or interfering.
+Connections are dynamically created based on which slave a master is
+addressing, and once created enable direct communication between master
+and slave without other masters being aware or interfering.
 
 A new connection is typically created within one clock cycle, providing
-high bandwidth and low latency communication between Master and Slave.
+high bandwidth and low latency communication between master and slave.
 
 <figure>
 <img src="assets/img/ahb-lite-switch-sys1.png" id="fig:ahb-lite-switch-sys1" alt="Example Master / Slave Communication Setup" /><figcaption aria-hidden="true">Example Master / Slave Communication Setup</figcaption>
@@ -81,67 +82,67 @@ high bandwidth and low latency communication between Master and Slave.
 
 ### Master Port
 
-An AHB-Lite Bus Master connects to a Master port of the Multi-layer
-Interconnect. The Master port is implemented as a regular AHB-Lite Slave
-Interface thereby allowing support for complex bus structures.
+An AHB-Lite bus master connects to a master port of the Multi-layer
+Interconnect. The master port is implemented as a regular AHB-Lite slave
+interface thereby allowing support for complex bus structures.
 
-The following figure shows an example bus structure where a Bus Master –
-Master-1 – has two directly connected Slaves; the
+The following figure shows an example bus structure where a bus master –
+Master-1 – has two directly connected slaves; the
 Interconnect-Master-Port1 and Slave-4
 
 <figure>
 <img src="assets/img/ahb-lite-switch-sys2.png" id="fig:ahb-lite-switch-sys2" alt="Connectivity Example for 2 Bus Masters, 4 Slaves" /><figcaption aria-hidden="true">Connectivity Example for 2 Bus Masters, 4 Slaves</figcaption>
 </figure>
 
-To access a Slave, the Interconnect first checks if the designated Slave
-Port is available. If it is available the Slave Port immediately
-switches to the requesting Master. If the Slave Port is occupied due to
-another Master accessing the Slave, the Master Port generates wait
-states until the requested Slave becomes available. Note the pipelined
+To access a slave, the Interconnect first checks if the designated slave
+port is available. If it is available the slave port immediately
+switches to the requesting master. If the slave port is occupied due to
+another master accessing the slave, the master port generates wait
+states until the requested slave becomes available. Note the pipelined
 nature of the AHB-Lite bus may cause a single wait state to be inserted
-when the Slave switches to a new Master.
+when the slave switches to a new master.
 
-The Slave Port always retains the connection to the Master until another
-Master requests access to that Slave Port; this enables the original
-Master to request further access to the Slave without incurring any
+The slave port always retains the connection to the master until another
+master requests access to that slave port; this enables the original
+master to request further access to the slave without incurring any
 delay due to arbitration.
 
 #### Master Priority
 
-Each Master Port has a priority level port (`mst_priority[]`).
+Each master port has a priority level port (`mst_priority[]`).
 
-When multiple Masters with different priority levels request access to
-the same Slave Port, access is always granted to the Master with the
-highest priority level. If a new Master requests access while a
+When multiple masters with different priority levels request access to
+the same slave port, access is always granted to the master with the
+highest priority level. If a new master requests access while a
 transaction is already in progress, access will be granted according to
-its priority, ahead of any waiting lower priority Masters. If Masters
+its priority, ahead of any waiting lower priority masters. If masters
 have the same priority level, then access is granted based on a
-Round-Robin scheme.
+round-robin scheme.
 
 Master priority may be set dynamically, however assigning a static
 priority results in a smaller Interconnect and reduces timing paths. The
-priority value may only be changed while the Master Port is idle; i.e.
+priority value may only be changed while the master port is idle; i.e.
 `mst_HSEL` is negated (‘0’) and/or when `mst_HTRANS` is IDLE.
 
 #### Bus Locking Support
 
-The priority levels determine the order in which Masters are granted
-access to the Slave Port. The Slave Port switches between masters when
+The priority levels determine the order in which masters are granted
+access to the slave port. The slave port switches between masters when
 the current accessing master is idle (`mst_HSEL` is negated and/or
 `mst_HTRANS` = IDLE) or when the current burst completes.
 
-However the current Master may lock the bus by asserting `HMASTLOCK`;
-this prevents the Slave port switching.
+However the current master may lock the bus by asserting `HMASTLOCK`;
+this prevents the slave port switching.
 
 #### Specifying the number of Master Ports
 
-The number of Master Ports is specified by the `MASTERS` parameter.
+The number of master ports is specified by the `MASTERS` parameter.
 
 ### Slave Port
 
-An AHB-Lite Bus Slave connects to a Slave Port of the Multi-layer
-Interconnect. The Slave Port is implemented as a regular AHB3-Lite
-Master Interface thereby allowing support for complex bus structures
+An AHB-Lite bus slave connects to a slave port of the Multi-layer
+Interconnect. The slave port is implemented as a regular AHB3-Lite
+master interface thereby allowing support for complex bus structures
 such as shown below:
 
 <figure>
@@ -150,24 +151,24 @@ such as shown below:
 
 #### Address Space Configuration
 
-Each Slave Port has an Address Base (`slv_addr_base`) and Address Mask
+Each slave port has an address base (`slv_addr_base`) and address mask
 (`slv_addr_mask`) port. Together these set the address range covered by
-the Slave Port.
+the slave port.
 
-The Address Base port specifies the base address for the address range
-covered by the Slave Port and the Address Mask port defines the address
-range covered by the Slave Port. The internal port select signal is
+The address base port specifies the base address for the address range
+covered by the slave port and the address mask port defines the address
+range covered by the slave port. The internal port select signal is
 specified as `slv_addr_base` AND `slv_addr_mask`.
 
-The Address Base and Address Mask values may be changed dynamically,
+The address base and address mask values may be changed dynamically,
 however assigning static values results in a smaller Interconnect and
-reduces timing paths. Address Base and Address Mask may only be changed
+reduces timing paths. Address base and address mask may only be changed
 when the slave port(s) are idle. Since multiple masters may be active at
-the same time trying to access the Interconnect, special care must be
-taken to ensure NO master accesses the Interconnect while updating the
-Address Base and Address Mask values.
+the same time trying to access the interconnect, special care must be
+taken to ensure no master accesses the Interconnect while updating the
+address base and address mask values.
 
-The Slave Port asserts `HSEL` when accesses are within the port’s
+The slave port asserts `HSEL` when accesses are within the port’s
 address range. When the port is not being accessed `HSEL` is negated
 (‘0’), but `HTRANS` and other AMBA signals will still provide data.
 These signals must be ignored while `HSEL` is negated (‘0’).
@@ -190,7 +191,7 @@ relevant least significant bits (LSBs) only.
 
 #### Slave Port HREADYOUT and HREADY Routing
 
-The Slave Port has an `HREADYOUT` port, which is not part of the
+The slave port has an `HREADYOUT` port, which is not part of the
 AHB-Lite specification. It is required to support slaves on the master’s
 local bus. The `HREADY` signal, generated by the multiplexor, is driven
 to the addressed slave’s `HREADYOUT` port.
@@ -199,19 +200,19 @@ to the addressed slave’s `HREADYOUT` port.
 <img src="assets/img/ahb-lite-switch-sys4.png" id="fig:hready-hready-routing" alt="HREADYOUT and HREADY Routing" /><figcaption aria-hidden="true">HREADYOUT and HREADY Routing</figcaption>
 </figure>
 
-The simple case of where only one master is connected to a Master Port
-or where only a single slave is connected to a Slave Port is illustrated
+The simple case of where only one master is connected to a master port
+or where only a single slave is connected to a slave port is illustrated
 below.
 
-There are no multiplexors on either the Master Bus or the Slave Bus.
-Since there is no other slave on the Master Bus, its `HREADY` signal is
-only driven by the Master Port’s `HREADYOUT` signal. Thus the Master
-Port’s `HREADYOUT` drives both the Master’s `HREADY` input and the
-Master Port’s `HREADY` input.
+There are no multiplexors on either the master bus or the slave bus.
+Since there is no other slave on the master bus, its `HREADY` signal is
+only driven by the master port’s `HREADYOUT` signal. Thus the master
+port’s `HREADYOUT` drives both the master’s `HREADY` input and the
+master port’s `HREADY` input.
 
-Similarly since there is no other slave on the Slave Bus, the Slave
-Port’s `HREADYOUT` signals drives the slave’s `HREADY` input and the
-slave’s `HREADYOUT` signal drives the Slave Port’s `HREADY` input.
+Similarly since there is no other slave on the slave bus, the slave
+port’s `HREADYOUT` signals drives the slave’s `HREADY` input and the
+slave’s `HREADYOUT` signal drives the slave port’s `HREADY` input.
 
 <figure>
 <img src="assets/img/ahb-lite-switch-sys5.png" id="fig:master-slave-routing" alt="Single Master/Slave Routing" /><figcaption aria-hidden="true">Single Master/Slave Routing</figcaption>
@@ -219,27 +220,27 @@ slave’s `HREADYOUT` signal drives the Slave Port’s `HREADY` input.
 
 #### Specifying the number of Slave Ports
 
-The number of Slave Ports is specified by the `SLAVES` parameter.
+The number of slave ports is specified by the `SLAVES` parameter.
 
 ## Configuration
 
 ### Introduction
 
 The Roa Logic AHB-Lite Multi-layer Interconnect is a highly configurable
-Interconnect Fabric for AMBA AHB-Lite based systems. The core parameters
+interconnect fabric for AMBA AHB-Lite based systems. The core parameters
 and configuration options are described in this section.
 
 ### Core Parameters
 
 | Parameter                      |  Type   |      Default      | Description                                                                                    |
 |:-------------------------------|:-------:|:-----------------:|:-----------------------------------------------------------------------------------------------|
-| `HADDR_SIZE`                   | Integer |        32         | Address Bus Size                                                                               |
-| `HDATA_SIZE`                   | Integer |        32         | Data Bus Size                                                                                  |
-| `MASTERS`                      | Integer |         3         | Number of Master Ports                                                                         |
-| `SLAVES`                       | Integer |         8         | Number of Slave Ports                                                                          |
-| `SLAVE_MASK[MASTERS]`          |  Array  |     All ’1’s      | Mask Slaves accessible by each Master                                                          |
-| `ERROR_ON_SLAVE_MASK[MASTERS]` |  Array  | inv(`SLAVE_MASK`) | Enable Error Reporting for masked Slaves                                                       |
-| `ERROR_ON_NO_SLAVE[MASTERS]`   |  Array  |     All ’0’s      | Disable Error Reporting when non-mapped address space accessed (to match previous IP releases) |
+| `HADDR_SIZE`                   | Integer |        32         | Address bus size                                                                               |
+| `HDATA_SIZE`                   | Integer |        32         | Data bus size                                                                                  |
+| `MASTERS`                      | Integer |         3         | Number of master ports                                                                         |
+| `SLAVES`                       | Integer |         8         | Number of slave ports                                                                          |
+| `SLAVE_MASK[MASTERS]`          |  Array  |     All ’1’s      | Mask slaves accessible by each master                                                          |
+| `ERROR_ON_SLAVE_MASK[MASTERS]` |  Array  | inv(`SLAVE_MASK`) | Enable error reporting for masked slaves                                                       |
+| `ERROR_ON_NO_SLAVE[MASTERS]`   |  Array  |     All ’0’s      | Disable error reporting when non-mapped address space accessed (to match previous IP releases) |
 |                                |         |                   |                                                                                                |
 
 <p align=center><strong>Table: Core Parameters</strong></p>
@@ -247,22 +248,22 @@ and configuration options are described in this section.
 #### HADDR_SIZE
 
 The `HADDR_SIZE` parameter specifies the width of the address bus for
-all Master and Slave ports.
+all master and slave ports.
 
 #### HDATA_SIZE
 
 The `HDATA_SIZE` parameter specifies the width of the data bus for all
-Master and Slave ports.
+master and slave ports.
 
 #### MASTERS
 
-The `MASTERS` parameter specifies the number of Master Ports on the
-Interconnect fabric.
+The `MASTERS` parameter specifies the number of master ports on the
+interconnect fabric.
 
 #### SLAVES
 
-The `SLAVES` parameter specifies the number of Slave Ports on the
-Interconnect Fabric.
+The `SLAVES` parameter specifies the number of slave ports on the
+interconnect fabric.
 
 #### SLAVE_MASK\[ \]
 
@@ -281,7 +282,7 @@ that master may access the slave.
 #### ERROR_ON_SLAVE_MASK\[ \]
 
 The `ERROR_ON_SLAVE_MASK[ ]` parameter enables generating an AHB error
-response when the master attempts to access a masked Slave Port.
+response when the master attempts to access a masked slave port.
 
 There is one `ERROR_ON_SLAVE_MASK` parameter per master, each `SLAVES`
 bits wide. i.e. `ERROR_ON_SLAVE_MASK[ ]` is an array of dimensions
@@ -342,7 +343,7 @@ instead be enabled by setting the synthesis macro
 ### Global Signals
 
 The common signals are shared between all devices on the AHB bus. The
-AHB-Lite Interconnect has Master and Slave AHB-Lite buses and they all
+AHB-Lite Interconnect has master and slave AHB-Lite buses and they all
 use the global signals.
 
 | Port      | Size | Direction | Description                   |
@@ -362,12 +363,12 @@ core is put into its initial reset state.
 
 `HCLK` is the system clock. All internal logic operates at the rising
 edge of the system clock. All AHB bus timings are related to the rising
-edge of `HCLK`. All Master and Slave ports must operate at the same
+edge of `HCLK`. All master and slave ports must operate at the same
 `HCLK` clock.
 
 ### Master Interface
 
-The Master Ports are regular AHB3-Lite slave interfaces. All signals are
+The master ports are regular AHB3-Lite slave interfaces. All signals are
 supported. See the AHB-Lite specifications for a complete description of
 the signals. In addition, a custom master priority port is included per
 interface to enable prioritisation when multiple masters attempt to
@@ -381,26 +382,26 @@ supported.
 
 | Port            |     Size     | Direction | Description               |
 |:----------------|:------------:|:---------:|:--------------------------|
-| `mst_HSEL`      |      1       |   Input   | Bus Select                |
-| `mst_HTRANS`    |      2       |   Input   | Transfer Type             |
-| `mst_HADDR`     | `HADDR_SIZE` |   Input   | Address Bus               |
-| `mst_HWDATA`    | `HDATA_SIZE` |   Input   | Write Data Bus            |
-| `mst_HRDATA`    | `HDATA_SIZE` |  Output   | Read Data Bus             |
-| `mst_HWRITE`    |      1       |   Input   | Write Select              |
-| `mst_HSIZE`     |      3       |   Input   | Transfer Size             |
-| `mst_HBURST`    |      3       |   Input   | Transfer Burst Size       |
-| `mst_HPROT`     |      4       |   Input   | Transfer Protection Level |
-| `mst_HMASTLOCK` |      1       |   Input   | Transfer Master Lock      |
-| `mst_HREADYOUT` |      1       |  Output   | Transfer Ready Output     |
-| `mst_HREADY`    |      1       |   Input   | Transfer Ready Input      |
-| `mst_HRESP`     |      1       |   Input   | Transfer Response         |
+| `mst_HSEL`      |      1       |   Input   | Bus select                |
+| `mst_HTRANS`    |      2       |   Input   | Transfer type             |
+| `mst_HADDR`     | `HADDR_SIZE` |   Input   | Address bus               |
+| `mst_HWDATA`    | `HDATA_SIZE` |   Input   | Write data bus            |
+| `mst_HRDATA`    | `HDATA_SIZE` |  Output   | Read data bus             |
+| `mst_HWRITE`    |      1       |   Input   | Write select              |
+| `mst_HSIZE`     |      3       |   Input   | Transfer size             |
+| `mst_HBURST`    |      3       |   Input   | Transfer burst size       |
+| `mst_HPROT`     |      4       |   Input   | Transfer protection level |
+| `mst_HMASTLOCK` |      1       |   Input   | Transfer master lock      |
+| `mst_HREADYOUT` |      1       |  Output   | Transfer ready output     |
+| `mst_HREADY`    |      1       |   Input   | Transfer ready input      |
+| `mst_HRESP`     |      1       |   Input   | Transfer response         |
 |                 |              |           |                           |
 
 <p align=center><strong>Table: Master Interface AHB-Lite Port</strong></p>
 
 | Port           |            Size             | Direction | Description            |
 |:---------------|:---------------------------:|:---------:|:-----------------------|
-| `mst_priority` | clog<sub>2</sub>(`MASTERS`) |   Input   | Master Priority Levels |
+| `mst_priority` | clog<sub>2</sub>(`MASTERS`) |   Input   | master priority Levels |
 |                |                             |           |                        |
 
 <p align=center><strong>Table: Master Interface Custom Port</strong></p>
@@ -417,9 +418,9 @@ bitwidth of a bus required to represent the defined range of values:
 
 #### mst_HSEL
 
-The Master Port only responds to other signals on its bus when
+The master port only responds to other signals on its bus when
 `mst_HSEL` is asserted (‘1’). When `mst_HSEL` is negated (‘0’) the
-Master Port considers the bus IDLE and asserts `HREADYOUT` (‘1’).
+master port considers the bus IDLE and asserts `HREADYOUT` (‘1’).
 
 #### mst_HTRANS
 
@@ -464,9 +465,9 @@ the connected slave.
 | HSIZE |  Size   | Description |
 |:-----:|:-------:|:------------|
 | `000` |  8bit   | Byte        |
-| `001` |  16bit  | Half Word   |
+| `001` |  16bit  | Half word   |
 | `010` |  32bit  | Word        |
-| `011` | 64bits  | Double Word |
+| `011` | 64bits  | Double word |
 | `100` | 128bit  |             |
 | `101` | 256bit  |             |
 | `110` | 512bit  |             |
@@ -506,9 +507,9 @@ connected slave.
 |        |   0   | Non-cacheable region addressed |
 |   2    |   1   | Bufferable                     |
 |        |   0   | Non-bufferable                 |
-|   1    |   1   | Privileged Access              |
-|        |   0   | User Access                    |
-|   0    |   1   | Data Access                    |
+|   1    |   1   | Privileged access              |
+|        |   0   | User access                    |
+|   0    |   1   | Data access                    |
 |        |   0   | Opcode fetch                   |
 |        |       |                                |
 
@@ -556,8 +557,8 @@ level, with lowest priority being 0 and highest priority being 3.
 
 ### Slave Interface
 
-The Slave Ports are regular AHB-Lite master interfaces.. All signals are
-supported. In addition each Slave Port has a non-standard
+The slave ports are regular AHB-Lite master interfaces.. All signals are
+supported. In addition each slave port has a non-standard
 `slv_HREADYOUT`. See the AHB-Lite specifications for a complete
 description of the signals.
 
@@ -568,26 +569,26 @@ supported.
 
 | Port            |     Size     | Direction | Description              |
 |:----------------|:------------:|:---------:|:-------------------------|
-| `slv_addr_base` | `HADDR_SIZE` |   Input   | Slave Base Address       |
-| `slv_addr_mask` | `HADDR_SIZE` |   Input   | Slave Address Space Mask |
+| `slv_addr_base` | `HADDR_SIZE` |   Input   | Slave base address       |
+| `slv_addr_mask` | `HADDR_SIZE` |   Input   | Slave address space mask |
 |                 |              |           |                          |
 
 <p align=center><strong>Table: Slave Interface Customisation Port</strong></p>
 
 | Port            |     Size     | Direction | Description               |
 |:----------------|:------------:|:---------:|:--------------------------|
-| `slv_HSEL`      |      1       |  Output   | Bus Select                |
+| `slv_HSEL`      |      1       |  Output   | Bus select                |
 | `slv_HADDR`     | `HADDR_SIZE` |  Output   | Address                   |
-| `slv_HWDATA`    | `HDATA_SIZE` |  Output   | Write Data Bus            |
-| `slv_HRDATA`    | `HDATA_SIZE` |   Input   | Read Data Bus             |
-| `slv_HWRITE`    |      1       |  Output   | Write Select              |
+| `slv_HWDATA`    | `HDATA_SIZE` |  Output   | Write data bus            |
+| `slv_HRDATA`    | `HDATA_SIZE` |   Input   | Read data bus             |
+| `slv_HWRITE`    |      1       |  Output   | Write select              |
 | `slv_HSIZE`     |      3       |  Output   | Transfer size             |
-| `slv_HBURST`    |      3       |  Output   | Transfer Burst Size       |
-| `slv_HPROT`     |      4       |  Output   | Transfer Protection Level |
-| `slv_HTRANS`    |      2       |   Input   | Transfer Type             |
-| `slv_HMASTLOCK` |      1       |  Output   | Transfer Master Lock      |
-| `slv_HREADY`    |      1       |   Input   | Transfer Ready Input      |
-| `slv_HRESP`     |      1       |   Input   | Transfer Response         |
+| `slv_HBURST`    |      3       |  Output   | Transfer burst size       |
+| `slv_HPROT`     |      4       |  Output   | Transfer protection level |
+| `slv_HTRANS`    |      2       |   Input   | Transfer type             |
+| `slv_HMASTLOCK` |      1       |  Output   | Transfer master lock      |
+| `slv_HREADY`    |      1       |   Input   | Transfer ready input      |
+| `slv_HRESP`     |      1       |   Input   | Transfer response         |
 |                 |              |           |                           |
 
 <p align=center><strong>Table: Slave Interface AHB-Lite Port</strong></p>
@@ -610,9 +611,9 @@ See section ’Address Space Configuration’ for specific examples.
 
 #### slv_HSEL
 
-Slaves connected to the Slave Port must only respond to other signals on
+Slaves connected to the slave port must only respond to other signals on
 the bus when `slv_HSEL` is asserted (‘1’). When `slv_HSEL` is negated
-(‘0’) the interface is idle and the connected Slaves must assert their
+(‘0’) the interface is idle and the connected slaves must assert their
 `HREADYOUT` (‘1’).
 
 #### slv_HADDR
@@ -643,9 +644,9 @@ master drives `slv_HSIZE`.
 | HSIZE |  Size   | Description |
 |:-----:|:-------:|:------------|
 | `000` |  8bit   | Byte        |
-| `001` |  16bit  | Half Word   |
+| `001` |  16bit  | Half word   |
 | `010` |  32bit  | Word        |
-| `011` | 64bits  | Double Word |
+| `011` | 64bits  | Double word |
 | `100` | 128bit  |             |
 | `101` | 256bit  |             |
 | `110` | 512bit  |             |
@@ -714,9 +715,9 @@ connected master drives `slv_MASTLOCK`.
 
 #### slv_HREADYOUT
 
-The `slv_HREADYOUT` signal reflects the state of the connected Master
-Port’s `HREADY` port. It is provided to support local slaves connected
-directly to the Master’s AHB-Lite bus. It is driven by the connected
+The `slv_HREADYOUT` signal reflects the state of the connected master
+port’s `HREADY` port. It is provided to support local slaves connected
+directly to the master’s AHB-Lite bus. It is driven by the connected
 master’s `HREADY` port.
 
 **Note:** `slv_HREADYOUT` is not an AHB-Lite Signal.
@@ -750,19 +751,19 @@ effort has been undertaken to reduce area or improve performance.
 <p align=center><strong>Table: Resource Utilisation Examples</strong></p>
 
 **NOTE:** Config in the above table refers to the `MASTERS` x `SLAVES`
-configuration of the interconnect.
+configuration of the Interconnect.
 
 ## Revision History
 
 |  **Date**   | **Rev.** | **Comments**                         |
 |:-----------:|:--------:|:-------------------------------------|
-| 13-Oct-2017 |   1.0    | Initial Release                      |
-| 16-Sep-2019 |   1.1    | Add `SLAVE_MASK[ ]` Parameter        |
-| 04-Nov-2020 |   1.2    | Add Recursive Function support       |
-| 13-Nov-2020 |   1.3    | Add `ERROR_ON_NO_SLAVE[ ]` Parameter |
+| 13-Oct-2017 |   1.0    | Initial release                      |
+| 16-Sep-2019 |   1.1    | Add `SLAVE_MASK[ ]` parameter        |
+| 04-Nov-2020 |   1.2    | Add recursive function support       |
+| 13-Nov-2020 |   1.3    | Add `ERROR_ON_NO_SLAVE[ ]` parameter |
 |             |          |                                      |
 
 <p align=center><strong>Table: Revision History</strong></p>
 
-[^1]: The number of Bus Masters and Slaves is physically limited by the
+[^1]: The number of bus masters and slaves is physically limited by the
     timing requirements.
