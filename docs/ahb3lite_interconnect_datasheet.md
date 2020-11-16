@@ -231,16 +231,16 @@ and configuration options are described in this section.
 
 ### Core Parameters
 
-| Parameter                      |  Type   |      Default      | Description                                                   |
-|:-------------------------------|:-------:|:-----------------:|:--------------------------------------------------------------|
-| `HADDR_SIZE`                   | Integer |        32         | Address Bus Size                                              |
-| `HDATA_SIZE`                   | Integer |        32         | Data Bus Size                                                 |
-| `MASTERS`                      | Integer |         3         | Number of Master Ports                                        |
-| `SLAVES`                       | Integer |         8         | Number of Slave Ports                                         |
-| `SLAVE_MASK[MASTERS]`          |  Array  |     All ’1’s      | Mask Slaves accessible by each Master                         |
-| `ERROR_ON_SLAVE_MASK[MASTERS]` |  Array  | inv(`SLAVE_MASK`) | Enable Error Reporting for masked Slaves                      |
-| `ERROR_ON_NO_SLAVE[MASTERS]`   |  Array  |     All ’1’s      | Enable Error Reporting when non-mapped address space accessed |
-|                                |         |                   |                                                               |
+| Parameter                      |  Type   |      Default      | Description                                                                                    |
+|:-------------------------------|:-------:|:-----------------:|:-----------------------------------------------------------------------------------------------|
+| `HADDR_SIZE`                   | Integer |        32         | Address Bus Size                                                                               |
+| `HDATA_SIZE`                   | Integer |        32         | Data Bus Size                                                                                  |
+| `MASTERS`                      | Integer |         3         | Number of Master Ports                                                                         |
+| `SLAVES`                       | Integer |         8         | Number of Slave Ports                                                                          |
+| `SLAVE_MASK[MASTERS]`          |  Array  |     All ’1’s      | Mask Slaves accessible by each Master                                                          |
+| `ERROR_ON_SLAVE_MASK[MASTERS]` |  Array  | inv(`SLAVE_MASK`) | Enable Error Reporting for masked Slaves                                                       |
+| `ERROR_ON_NO_SLAVE[MASTERS]`   |  Array  |     All ’0’s      | Disable Error Reporting when non-mapped address space accessed (to match previous IP releases) |
+|                                |         |                   |                                                                                                |
 
 <p align=center><strong>Table: Core Parameters</strong></p>
 

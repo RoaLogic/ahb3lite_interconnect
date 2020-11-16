@@ -21,7 +21,7 @@ Parameter & Type & Default & Description\tabularnewline
 \texttt{SLAVES}                & Integer & 8      & Number of Slave Ports\tabularnewline
 \texttt{SLAVE\_MASK[MASTERS]}  & Array  & All '1's & Mask Slaves accessible by each Master\tabularnewline
 \texttt{ERROR\_ON\_SLAVE\_MASK[MASTERS]} & Array & inv(\texttt{SLAVE\_MASK}) & Enable Error Reporting for masked Slaves\tabularnewline
-\texttt{ERROR\_ON\_NO\_SLAVE[MASTERS]}  & Array  & All '1's & Enable Error Reporting when non-mapped address space accessed\tabularnewline
+\texttt{ERROR\_ON\_NO\_SLAVE[MASTERS]}  & Array  & All '0's & Disable Error Reporting when non-mapped address space accessed (to match previous IP releases)\tabularnewline
 
 \bottomrule
 \caption{Core Parameters}
