@@ -88,6 +88,7 @@
  *   selected = (HADDR & haddr_mask) == (haddr_base & haddr_mask)
  *   'haddr_mask' and 'haddr_base' should be static signals. Hardwiring these signals results in a smaller (less logic resource) and faster (larger slack) switch.
  *
+ *
  * SLAVE_MASK:
  *   Indicates that a master can/will never access a slave
  *   There is a MASK for each master with a bit for each slave. I.e. SLAVE_MASK is an array of MASTERS x SLAVES.
@@ -100,6 +101,7 @@
  *         1| 1 1 0    Slave[1] can only be accessed by masters 2 and 1. Master[0] never accesses Slave[1]
  *         0| 0 1 1    Slave[0] can only be accessed by masters 1 and 0. Master[2] never accesses Slave[0]
  *         SLAVE_MASK = '{2'b10, 2'b11, 2'b01}
+ *
  *
  * ERROR_ON_SLAVE_MASK:
  *   Indicates that an AHB transaction error response is generated when addressing a masked Slave
@@ -115,6 +117,11 @@
  *     When Master[0] accesses Slave[0], the parameter is ignored, because SLAVE_MASK='1'
  *
  *   WARNING: when SLAVE_MASK='0' and ERROR_ON_SLAVE_MASK='0', the master must ensure not to address the masked slave, because that will cause deadlock on the master AHB bus, where the master waits indefinitely for a response that never comes.
+ *
+ *
+ * ERROR_ON_NO_SLAVE:
+ *  Indicates that an AHB transaction error response is generated when no slave port is addressed
+ *  When a master tries to access an address that is not mapped to any Slave, the Master Port generates an AHB transaction error response when ERROR_ON_NO_SLAVE for that Master is set to '1'. If ERROR_ON_NO_SLAVE is set to '0', the Master Port does not generate and error transaction response. Note that the bus will hang in that case, because the master waits for a response that never comes.
  *
  */
 module ahb3lite_interconnect #(
