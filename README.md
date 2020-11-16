@@ -2,26 +2,26 @@
 
 # AHB-Lite Multilayer Switch
 
-The Roa Logic AHB-Lite Multi-layer Interconnect is a fully parameterized High Performance, Low Latency Interconnect Fabric soft IP for AHB-Lite. It allows a virtually unlimited number of AHB-Lite Bus Masters and Slaves to be connected without the need of bus arbitration to be implemented by the Bus Masters. Instead, Slave Side Arbitration is implemented for each Slave Port within the core.
+The Roa Logic *AHB-Lite Multi-layer Interconnect* is a fully parameterized High Performance, Low Latency Interconnect Fabric soft IP for AHB-Lite. It allows a virtually unlimited number of AHB-Lite bus masters and slaves to be connected without the need of bus arbitration to be implemented by the bus masters. Instead, slave side arbitration is implemented for each slave port within the core.
 
-The Multi-layer Interconnect supports Priority and Round-Robin based arbitration when multiple Bus Masters request access to the same Slave Port. Typically arbitration completes within 1 clock cycle
+The Multi-layer Interconnect supports priority and round-robin based arbitration when multiple bus masters request access to the same slave port. Arbitration typically completes within 1 clock cycle
 
 ![System Diagram][]
 
 ## Features
 
-- AMBA AHB-Lite Compatible
+- AMBA AHB-Lite compatible
 - Fully parameterized
-- Unlimited number of Bus Masters and Slaves<sup>1</sup>
+- Unlimited number of bus masters and slaves<sup>1</sup>
 - Slave side arbitration
-- Priority and Round-Robin based arbitration
-- Slave Port address decoding
-- Slave Masking to increase system performance - ***New in v1.2***
+- Priority and round-robin based arbitration
+- Slave port address decoding
+- Slave masking to increase system performance - ***New in v1.2***
 - Error assertion when no slave correctly addressed - ***New in v1.3***
 
 ## Interfaces
 
-- AHB-Lite Master & Slave Interfaces
+- AHB-Lite master & slave interfaces
 
 ## Documentation
 
