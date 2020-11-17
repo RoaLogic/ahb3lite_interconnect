@@ -6,6 +6,7 @@
 body {
 	background-color: #FFFFFF;
   padding-right: 30px;
+  padding-top: 0px;
 }
 
 /* Add Roa Logic Font */
@@ -33,14 +34,14 @@ a {
 
 /* Reduce left margin by 10px */
 header {
-	padding: 30px;
+	padding: 30px 30px 0 30px;
 	background-color: #159957;
 	background-image: linear-gradient(120deg, #155799, #159957);
 	-webkit-border-radius: 4px;
 	-moz-border-radius: 4px;
 	border-radius: 4px;
 	border: 0px;
-	margin: 30px 0px 20px 30px;
+	margin: 30px 0px 0px 30px;
 }
 
 footer {
@@ -75,15 +76,21 @@ header li:hover {
 }
 
 /* Format Logo in Header */
-p.logo {
-	/*background-color: #F7F7F7;
-	border: 1px solid #000;*/
+img.logo {
+/*  display: block;
+  margin: 0px auto;
+
+
+	background-color: #F7F7F7;
+	border: 1px solid #000;
 	-webkit-border-radius: 4px;
 	-moz-border-radius: 4px;
 	border-radius: 4px;
-	margin: 0px 10px 10px 0px;
-	padding: 5px;
+	margin: 10px 10px 10px 0px;
+	padding: 25px;*/
   max-width: 150px;
+  padding-top: 20px;
+  padding-bottom: 20px;
 }
 
 code, pre {
