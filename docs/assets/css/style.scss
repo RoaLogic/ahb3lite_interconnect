@@ -1,13 +1,13 @@
 ---
 ---
 
-/*@import "{{ site.theme }}";*/
+@import "rlskin";
+@import "rouge-github";
+@import "roalogic";
 
-@import "roalogic"; /* Alternative to theme styles */
+/* Custom styles */
 
-/* Over-rides */
-
-figure img, .center-max {
+.center-max {
   display: block;
   margin-left: auto;
   margin-right: auto;
@@ -16,29 +16,26 @@ figure img, .center-max {
   max-width: 500px;
 }
 
-figcaption {
+.center {
   text-align: center;
-  font-weight: bold;
-  margin-bottom: 1em;
+  img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
-
-ul, ul p {
-    margin: 0px;
-}
-
-/* Custom styles */
 
 .logo {
   max-width: 150px;
   padding: 10px 20px;
 }
 
-.download-pdf img {
-  width: 25px;
-  margin: 0 10px 0 0;
-  float: left;
-}
-
 .download-pdf {
   padding-top: 20px;
+  img {
+    width: 25px;
+    margin: 0 10px 0 0;
+    float: left;
+  }
 }
+
