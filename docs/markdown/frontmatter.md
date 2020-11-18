@@ -1,9 +1,10 @@
 ---
-title: AHB-Lite Multi-Layer Switch
-category: Product Brief
-author: Roa Logic
-layout: roalogic
+title: Datasheet
 ---
-# AHB-Lite Multi-Layer Switch Datasheet
+
+# Datasheet: {{site.title}}
+
+![Download PDF](assets/img/pdf.png) [Download PDF Datasheet](./{{site.github.repository_name | append: "_datasheet.pdf"}})
+{: .download-pdf}
 
 ## Contents

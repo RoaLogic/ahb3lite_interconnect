@@ -41,28 +41,28 @@ done
 
 echo -e "Convert LaTeX to Markdown...\n"
 # conversion options stored in markdown.yaml
-pandoc --defaults markdown ../$topfile.tex > $topfile.tmp.md 
+pandoc --defaults markdown ../$topfile.tex > $topfile.tmp 
 
 # Process Table Captions
 echo Updating markdown table captions:
 
-if [ -f ./$topfile.md ]; then 
-	rm ./$topfile.md
+if [ -f $topfile.md ]; then 
+	rm $topfile.md
 fi
 
 IFS=''
 while read -r line || [[ -n "${line}" ]]; do
 	if [ "${line:0:2}" == ": " ]; then
 		echo "  " $line
-		echo "<p align=center><strong>Table${line}</strong></p>" >> ./$topfile.md
+		echo "<p align=center><strong>Table${line}</strong></p>" >> $topfile.md
 	else
-		echo ${line} >> ./$topfile.md
+		echo ${line} >> $topfile.md
 	fi
-done < $topfile.tmp.md
+done < $topfile.tmp
 
 # Remove Preprocessed LaTeX source & install processed markdown
 echo -e "\nCleaning Up...\n"
-cp ./$topfile.md ../$topfile.md
-rm -rf tex/* $topfile.tmp.md ./$topfile.md
+cp $topfile.md ../$topfile.md
+rm -rf tex/* $topfile.tmp $topfile.md
 
 echo "Done!"

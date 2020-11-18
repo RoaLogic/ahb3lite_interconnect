@@ -1,5 +1,5 @@
 ---
-title: Non-Commercial License Agreement
+title: License
 permalink: /license/
 ---
 # Non-Commercial License Agreement

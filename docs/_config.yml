@@ -1,10 +1,12 @@
-title: AHB-Lite Multi-Layer Switch
+title: AHB-Lite Multi-Layer Interconnect Switch
 description: Parameterised AHB-Lite Multi-layer Interconnect Switch
 
 theme: jekyll-theme-dinky
 show_downloads: true
 show_license: true
 license: Non-Commercial License
+
+repository: RoaLogic/ahb3lite_interconnect
 
 url: https://roalogic.github.io
 baseurl: /ahb3lite_interconnect
@@ -19,7 +21,6 @@ exclude:
   - "*.sh"                  # Ignore any scripts
   - "/assets/img/*.pdf"     # PDF images used for PDF Datasheet 
   - "/assets/img/*.eps"     # EPS images used for PDF Datasheet
-  - build                   # Temp build folder for PDF Datasheet
   - markdown                # Markdown Datasheet generation scripts
   - pkg                     # PDF Datasheet layout definition
   - tex                     # Original source texfiles
@@ -32,5 +33,5 @@ defaults:
       path    : ""
       type    : pages
     values:
-      layout  : roalogic
+      layout  : roalogic    # Use custom layout for *all* pages
       author  : Roa Logic

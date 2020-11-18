@@ -1,4 +1,3 @@
 .ruby-version
-docs/build
-docs/*.sh
+docs/tex/build
 docs/_site
