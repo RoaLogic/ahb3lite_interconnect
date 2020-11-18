@@ -334,9 +334,12 @@ section {
 footer {
   width:190px;
   float:left;
+  transform: rotate(270deg);
+  transform-origin: 20px;
   position:fixed;
-  bottom:10px;
-  padding-left: 60px;
+  bottom:0px;
+  padding-left: 10px;
+  padding-top: 10px;
 }
 
 
@@ -352,12 +355,14 @@ footer {
     float:none;
     position:static;
     width:auto;
+    transform: none;
   }
 
   footer {
     border-top: 1px solid #ccc;
     margin:0 84px 0 50px;
     padding:0;
+    transform: none;
   }
 
   header {
@@ -397,6 +402,7 @@ footer {
 
   footer {
     margin: 0 0 0 30px;
+    transform: none;
   }
 
   header ul, header p.view {
@@ -412,6 +418,7 @@ footer {
 
   footer {
     margin: 0 0 0 20px;
+    transform: none;
   }
 
   footer a{
