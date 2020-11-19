@@ -262,7 +262,7 @@ module ahb3lite_interconnect_master_port #(
       endcase
 
 
-  assign error_response = resp_state[0];
+  assign error_response = resp_state;
 
 
   /*
