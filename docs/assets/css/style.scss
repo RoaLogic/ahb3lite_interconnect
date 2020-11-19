@@ -7,21 +7,19 @@
 
 /* Custom styles */
 
-.center-max {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  border: 0;
-  width: 100%;
-  max-width: 500px;
-}
-
 .center {
   text-align: center;
   img {
     display: block;
     margin-left: auto;
     margin-right: auto;
+  }
+}
+
+.max {
+  img {
+    width: 100%;
+    max-width: 500px;
   }
 }
 
@@ -33,7 +31,7 @@
 .download-pdf {
   padding-top: 20px;
   img {
-    width: 25px;
+    max-width: 25px;
     margin: 0 10px 0 0;
     float: left;
   }
