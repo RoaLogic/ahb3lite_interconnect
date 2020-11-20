@@ -1,5 +1,5 @@
 ---
-title: Test & Debug Page
+title: Test & Debug
 permalink: /test/
 ---
 # {{page.title}}

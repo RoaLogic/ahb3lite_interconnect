@@ -8,6 +8,7 @@
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
 
 {% seo %}
+
     <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700,400italic' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
     <script src="{{ '/assets/js/scale.fix.js' | relative_url }}"></script>
@@ -42,8 +43,10 @@
         {% endif %}
      
         {% if site.github.is_project_page %}
-          <p class="header">This project is maintained by:<br><a class="header name" href="{{ site.github.owner_url }}"><img src="{{ 'assets/img/RoaLogicLogo.png' | relative_url}}" class="logo"></a></p>
+          <p class="header">Project maintained by:</p>
         {% endif %}
+
+        <p class="header"><a class="header name" href="{{ site.github.owner_url }}"><img src="{{ 'assets/img/RoaLogicLogo.png' | relative_url}}" class="logo"></a></p>
 
       </header>
 
@@ -52,11 +55,13 @@
       </section>
 
       <footer>
-        <p align=center><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a></small></p>
+        <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a></small></p>
       </footer>
 
     </div>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    <!--[if !IE]><!-->
+      <script src="{{ "/assets/js/scale.fix.js" | relative_url }}"></script>
+    <!--<![endif]-->
 
   </body>
 </html>

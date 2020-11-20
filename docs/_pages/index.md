@@ -9,7 +9,9 @@ The Roa Logic *AHB-Lite Multi-layer Interconnect Switch* is a fully parameterize
 
 The Multi-layer Interconnect supports priority and round-robin based arbitration when multiple bus masters request access to the same slave port. Arbitration typically completes within 1 clock cycle
 
-![System Diagram][]
+![System Diagram][]  
+**Multi-layer Interconnect Usage Example**
+{: .center .max}
 
 ## Features
 

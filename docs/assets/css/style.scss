@@ -1,45 +1,39 @@
 ---
 ---
 
-/*@import "{{ site.theme }}";*/
-
-@import "roalogic"; /* Alternative to theme styles */
-
-/* Over-rides */
-
-p img, img {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  border: 0;
-  width: 100%;
-  max-width: 500px;
-}
-
-figcaption {
-  text-align: center;
-  font-weight: bold;
-  margin-bottom: 1em;
-}
-
-ul, ul p {
-    margin: 0px;
-}
+@import "rlskin";
+@import "rouge-github";
+@import "roalogic";
 
 /* Custom styles */
 
-img.logo {
-  max-width: 150px;
-  padding-top: 20px;
-  padding-bottom: 20px;
+.center {
+  text-align: center;
+  img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
 
-.download-pdf img {
-  width: 25px;
-  margin: 0 10px 0 0;
-  float: left;
+.max {
+  img {
+    width: 100%;
+    max-width: 500px;
+  }
+}
+
+.logo {
+  max-width: 150px;
+  padding: 10px 20px 10px 20px;
 }
 
 .download-pdf {
   padding-top: 20px;
+  img {
+    max-width: 25px;
+    margin: 0 10px 0 0;
+    float: left;
+  }
 }
+
