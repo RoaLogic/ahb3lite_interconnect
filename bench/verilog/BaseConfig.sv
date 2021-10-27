@@ -59,7 +59,7 @@ endfunction : new
 
 //-------------------------------------
 //Pretty print
-function void BaseConfig::display(string prefix);
+function void BaseConfig::display(string prefix="");
   $display("%sWarnings=%0d, Errors=%0d", prefix, nWarnings, nErrors);
 endfunction : display
 

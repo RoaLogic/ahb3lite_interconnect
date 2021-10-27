@@ -38,7 +38,8 @@
 
 //`define DEBUG
 
-`include "AHB3Lite_hdr.sv"
+import testbench_pkg::*;
+import ahb3lite_pkg::*;
 
 class AHB3LiteMon extends BaseMon;
   virtual ahb3lite_if.slave slave;            //Virtual IF, Slave Port

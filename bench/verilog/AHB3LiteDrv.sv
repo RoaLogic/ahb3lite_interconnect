@@ -36,7 +36,8 @@
 //                                                                //
 ////////////////////////////////////////////////////////////////////
 
-`include "AHB3Lite_hdr.sv"
+import testbench_pkg::*;
+import ahb3lite_pkg::*;
 
 class AHB3LiteDrv extends BaseDrv;
   virtual ahb3lite_if.master master;     //Virtual interface; master

@@ -36,6 +36,7 @@
 //                                                                //
 ////////////////////////////////////////////////////////////////////
 
+import testbench_pkg::*;
 
 class ScoreBoard #(type T=AHBBusTr) extends BaseScoreBoard;
   T TrQueue[$],
@@ -141,7 +142,7 @@ endfunction : check_actual
 
 //-------------------------------------
 //Pretty print
-function void ScoreBoard::display(string prefix);
+function void ScoreBoard::display(string prefix="");
 endfunction : display
 
 

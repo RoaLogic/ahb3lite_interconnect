@@ -38,6 +38,7 @@
 
 `define DEBUG
 
+import testbench_pkg::*;
 
 class Environment #(parameter HADDR_SIZE=32);
   Config       #(HADDR_SIZE) cfg;         //Test configuration

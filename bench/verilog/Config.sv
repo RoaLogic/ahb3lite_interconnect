@@ -36,6 +36,8 @@
 //                                                                //
 ////////////////////////////////////////////////////////////////////
 
+import testbench_pkg::*;
+
 class Config #(parameter HADDR_SIZE=32) extends BaseConfig;
   int nMasters, nSlaves;           //number of master and slave ports
 
@@ -91,7 +93,7 @@ endfunction : random
 
 //-------------------------------------
 //Pretty print
-function void Config::display(string prefix);
+function void Config::display(string prefix="");
   $display("%sTest configuration:", prefix);
 
   $display("--- Transactions per master --------");

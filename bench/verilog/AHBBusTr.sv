@@ -45,7 +45,7 @@
 //typedef enum {byte='b000, hword='b001, word='b010, dword='b011} tHSIZE;
 //typedef enum {single='b000, incr='b001, incr4='b011, incr8='b101, incr16='b111} tHBURST;
 
-`include "AHB3Lite_hdr.sv"
+import testbench_pkg::*;
 
 class AHBBusTr extends BusTr;
   extern         function              new(input int unsigned AddressSize, DataSize);
@@ -76,7 +76,7 @@ endfunction : new
 //-------------------------------------
 //Make a copy of this object
 //Keep $cast happy
-function BaseTr AHBBusTr::copy (input BaseTr to);
+function BaseTr AHBBusTr::copy (input BaseTr to=null);
   AHBBusTr cp;
   cp = new(AddressSize,DataSize);
 

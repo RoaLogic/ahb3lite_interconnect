@@ -39,6 +39,8 @@
 //`define DEBUG
 
 
+import testbench_pkg::*;
+
 //-------------------------------------
 // BusGenerator Class
 // Generates bus transactions

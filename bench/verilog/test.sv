@@ -36,6 +36,8 @@
 //                                                                //
 ////////////////////////////////////////////////////////////////////
 
+import testbench_pkg::*;
+
 program automatic test
 #(
   parameter int MASTERS    = 3,

@@ -38,8 +38,7 @@
 
 //`define DEBUG
 
-`include "AHB3Lite_hdr.sv"
-
+import testbench_pkg::*;
 
 //-------------------------------------
 // Bus Class
@@ -149,7 +148,7 @@ endfunction : compare
 
 //-------------------------------------
 //Make a copy of this object
-function BaseTr BusTr::copy (input BaseTr to);
+function BaseTr BusTr::copy (input BaseTr to=null);
   BusTr cp;
   byte address[], cp_address[],
        data[], cp_data[];
@@ -188,7 +187,7 @@ endfunction : copy
 
 //-------------------------------------
 //Pretty print
-function void BusTr::display (input string prefix);
+function void BusTr::display (input string prefix="");
   int i;
   byte address[],
        data[];

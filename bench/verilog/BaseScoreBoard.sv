@@ -36,6 +36,8 @@
 //                                                                //
 ////////////////////////////////////////////////////////////////////
 
+import testbench_pkg::*;
+
 virtual class BaseScoreBoard;
   BaseConfig cfg;
 
