@@ -385,7 +385,7 @@ endgenerate
   assign slvHPROT        = mux_sel ? mst_HPROT     : regHPROT;
   assign slvHTRANS       = mux_sel ? mst_HTRANS    : regHTRANS == HTRANS_SEQ && regHBURST == HBURST_INCR ? HTRANS_NONSEQ : regHTRANS;
   assign slvHMASTLOCK    = mux_sel ? mst_HMASTLOCK : regHMASTLOCK;
-  assign slvHREADYOUT    = mux_sel ? mst_HREADY & |(current_HSEL & slvHREADY) : slvHREADY[slave_sel]; //slave's HREADYOUT is driven by master's HREADY (mst_HREADY -> slv_HREADYOUT)
+  assign slvHREADYOUT    = mux_sel ? mst_HREADY & (|(current_HSEL & slvHREADY) | ~|current_HSEL): slvHREADY[slave_sel]; //slave's HREADYOUT is driven by master's HREADY (mst_HREADY -> slv_HREADYOUT)
   assign slvpriority     = mux_sel ? mst_priority  : regpriority;
 
 
