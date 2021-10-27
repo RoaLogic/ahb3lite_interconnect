@@ -66,6 +66,8 @@ ROOT_DIR=../../..
 INCDIRS:=$(INCDIRS)
 DEFINES:=$(DEFINES)
 
+LOG=$(TB_TOP).log
+
 shell=/bin/sh
 
 
