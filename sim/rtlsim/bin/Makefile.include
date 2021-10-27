@@ -62,10 +62,10 @@ DEFINES:= RECURSIVE_FUNCTIONS_SUPPORTED
 #####################################################################
 DUT_SRC_DIR=$(ROOT_DIR)/rtl/verilog
 RTL_TOP  = 
-RTL_VLOG = $(ROOT_DIR)/submodules/ahb3lite_pkg/rtl/verilog/ahb3lite_pkg.sv		\
-	   $(DUT_SRC_DIR)/ahb3lite_interconnect.sv			\
-	   $(DUT_SRC_DIR)/ahb3lite_interconnect_master_port.sv		\
-	   $(DUT_SRC_DIR)/ahb3lite_interconnect_slave_port.sv		\
+RTL_VLOG = $(ROOT_DIR)/submodules/ahb3lite_pkg/rtl/verilog/ahb3lite_pkg.sv	\
+	   $(DUT_SRC_DIR)/ahb3lite_interconnect.sv				\
+	   $(DUT_SRC_DIR)/ahb3lite_interconnect_master_port.sv			\
+	   $(DUT_SRC_DIR)/ahb3lite_interconnect_slave_port.sv			\
 	   $(DUT_SRC_DIR)/ahb3lite_interconnect_slave_priority.sv
 RTL_VHDL =
 
@@ -79,19 +79,7 @@ TB_SRC_DIR=$(ROOT_DIR)/bench/verilog
 
 TB_VLOG = $(TB_SRC_DIR)/ahb3lite_if.sv		\
 	  $(TB_SRC_DIR)/testbench_top.sv	\
-	  $(TB_SRC_DIR)/BaseTr.sv		\
-	  $(TB_SRC_DIR)/BusTr.sv		\
-	  $(TB_SRC_DIR)/AHBBusTr.sv		\
-	  $(TB_SRC_DIR)/BaseConfig.sv		\
-	  $(TB_SRC_DIR)/Config.sv		\
-	  $(TB_SRC_DIR)/BaseScoreBoard.sv	\
-	  $(TB_SRC_DIR)/ScoreBoard.sv		\
-	  $(TB_SRC_DIR)/BusGenerator.sv		\
-	  $(TB_SRC_DIR)/BaseDrv.sv		\
-	  $(TB_SRC_DIR)/AHB3LiteDrv.sv		\
-	  $(TB_SRC_DIR)/BaseMon.sv		\
-	  $(TB_SRC_DIR)/AHB3LiteMon.sv		\
-	  $(TB_SRC_DIR)/Environment.sv		\
+	  $(TB_SRC_DIR)/testbench_pkg.sv	\
 	  $(TB_SRC_DIR)/test.sv
 TB_VHDL =
 
