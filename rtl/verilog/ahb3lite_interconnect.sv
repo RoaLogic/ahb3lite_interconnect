@@ -245,7 +245,29 @@ module ahb3lite_interconnect #(
   //
   // Module Body
   //
-  
+
+//synopsys translate_off
+initial
+begin
+    #1;
+    $display("\n\n");
+    $display ("------------------------------------------------------------");
+    $display (" ,------.                    ,--.                ,--.       ");
+    $display (" |  .--. ' ,---.  ,--,--.    |  |    ,---. ,---. `--' ,---. ");
+    $display (" |  '--'.'| .-. |' ,-.  |    |  |   | .-. | .-. |,--.| .--' ");
+    $display (" |  |\\  \\ ' '-' '\\ '-'  |    |  '--.' '-' ' '-' ||  |\\ `--. ");
+    $display (" `--' '--' `---'  `--`--'    `-----' `---' `-   /`--' `---' ");
+    $display ("- AHB3-Lite Interconnect Configuration---  `---'  ----------");
+    $display ("- Module: %m");
+    $display ("- Masters: %0d, Slaves: %0d", MASTERS, SLAVES);
+    for (int n=0; n < MASTERS; n++)
+      $display ("master[%2d] priority=%0d", n, mst_priority[n]);
+    for (int n=0; n < SLAVES; n++)
+      $display ("slv_addr_base[%3d]=%32b (0x%8h), slv_addr_mask[%3d]=%32b (0x%8h)", n, slv_addr_base[n], slv_addr_base[n], n, slv_addr_mask[n], slv_addr_mask[n]);
+end
+//synopsys translate_on
+
+
   /*
    * Hookup Master Interfaces
    */
