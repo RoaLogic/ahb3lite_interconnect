@@ -64,7 +64,9 @@
 //   Other               :                                         
 // -FHDR-------------------------------------------------------------
  
-module ahb3lite_interconnect_master_port #(
+module ahb3lite_interconnect_master_port
+import ahb3lite_pkg::*;
+#(
   parameter              HADDR_SIZE                  = 32,
   parameter              HDATA_SIZE                  = 32,
   parameter              MASTERS                     = 3, //number of AHB Masters
@@ -126,8 +128,6 @@ module ahb3lite_interconnect_master_port #(
   //
   // Constants
   //
-  import ahb3lite_pkg::*;
-
   localparam SLAVES_BITS = $clog2(SLAVES);
 
 

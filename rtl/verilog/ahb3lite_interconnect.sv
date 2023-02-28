@@ -125,7 +125,11 @@
  *  When a master tries to access an address that is not mapped to any Slave, the Master Port generates an AHB transaction error response when ERROR_ON_NO_SLAVE for that Master is set to '1'. If ERROR_ON_NO_SLAVE is set to '0', the Master Port does not generate and error transaction response. Note that the bus will hang in that case, because the master waits for a response that never comes.
  *
  */
-module ahb3lite_interconnect #(
+
+
+module ahb3lite_interconnect
+import ahb3lite_pkg::*;
+#(
   parameter                  HADDR_SIZE                   = 32,
   parameter                  HDATA_SIZE                   = 32,
   parameter                  MASTERS                      = 3, //number of AHB Masters
@@ -184,8 +188,6 @@ module ahb3lite_interconnect #(
   //
   // Constants
   //
-  import ahb3lite_pkg::*;
-
   typedef bit [SLAVES-1:0] slave_mask_t [MASTERS];
 
   //////////////////////////////////////////////////////////////////
