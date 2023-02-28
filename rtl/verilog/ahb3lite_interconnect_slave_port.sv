@@ -157,9 +157,11 @@ import ahb3lite_pkg::*;
   endfunction : onehot2int
 
 
+`ifdef RECURSIVE_FUNCTIONS_SUPPORTED
   /*
-   * Intel Quartus does not support recursive functions.
+   * Intel Quartus and Verilator do not support recursive functions.
    * Even though this one would be perfectly fine
+   * Verilator doesn't even like reading recursive functions
   */
   function automatic [MASTER_BITS-1:0] highest_requested_priority (
     input [MASTERS-1:0]                  hsel,
@@ -185,7 +187,7 @@ import ahb3lite_pkg::*;
     //finally compare lo and hi priorities
     return (priority_hi > priority_lo) ? priority_hi : priority_lo;
   endfunction : highest_requested_priority
-
+`endif
 
   //If every master has its own unique priority, this just becomes HSEL
   function [MASTERS-1:0] requesters;
