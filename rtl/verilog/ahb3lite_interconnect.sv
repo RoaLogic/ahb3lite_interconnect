@@ -251,7 +251,6 @@ import ahb3lite_pkg::*;
 //synopsys translate_off
 initial
 begin
-    #1;
     $display("\n\n");
     $display ("------------------------------------------------------------");
     $display (" ,------.                    ,--.                ,--.       ");
