@@ -61,7 +61,9 @@
 // -FHDR-------------------------------------------------------------
 
 
-module ahb3lite_interconnect_slave_port #(
+module ahb3lite_interconnect_slave_port
+import ahb3lite_pkg::*;
+#(
   parameter HADDR_SIZE  = 32,
   parameter HDATA_SIZE  = 32,
   parameter MASTERS     = 3,  //number of slave-ports
@@ -112,8 +114,6 @@ module ahb3lite_interconnect_slave_port #(
   //////////////////////////////////////////////////////////////////
   //
   // Constants
-  //
-  import ahb3lite_pkg::*;
 
 
   //////////////////////////////////////////////////////////////////
@@ -157,9 +157,11 @@ module ahb3lite_interconnect_slave_port #(
   endfunction : onehot2int
 
 
+`ifdef RECURSIVE_FUNCTIONS_SUPPORTED
   /*
-   * Intel Quartus does not support recursive functions.
+   * Intel Quartus and Verilator do not support recursive functions.
    * Even though this one would be perfectly fine
+   * Verilator doesn't even like reading recursive functions
   */
   function automatic [MASTER_BITS-1:0] highest_requested_priority (
     input [MASTERS-1:0]                  hsel,
@@ -185,7 +187,7 @@ module ahb3lite_interconnect_slave_port #(
     //finally compare lo and hi priorities
     return (priority_hi > priority_lo) ? priority_hi : priority_lo;
   endfunction : highest_requested_priority
-
+`endif
 
   //If every master has its own unique priority, this just becomes HSEL
   function [MASTERS-1:0] requesters;
