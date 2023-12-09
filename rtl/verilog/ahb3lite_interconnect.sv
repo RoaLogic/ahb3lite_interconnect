@@ -251,6 +251,8 @@ import ahb3lite_pkg::*;
 //synopsys translate_off
 initial
 begin
+    //wait for potential always_comb signals to settle
+    #1;
     $display("\n\n");
     $display ("------------------------------------------------------------");
     $display (" ,------.                    ,--.                ,--.       ");
