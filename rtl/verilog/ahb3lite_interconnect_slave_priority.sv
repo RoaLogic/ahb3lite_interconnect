@@ -5,32 +5,28 @@
 //   |  |\  \ ' '-' '\ '-'  |    |  '--.' '-' ' '-' ||  |\ `--.    //
 //   `--' '--' `---'  `--`--'    `-----' `---' `-   /`--' `---'    //
 //                                             `---'               //
-//   RISC-V Platform-Level Interrupt Controller                    //
+//    AHB3-Lite Interconnect Switch (Multi-Layer Switch)           //
+//    Slave Priority decoder                                       //
 //                                                                 //
 /////////////////////////////////////////////////////////////////////
 //                                                                 //
-//             Copyright (C) 2017-2020 ROA Logic BV                //
+//             Copyright (C) 2016-2023 ROA Logic BV                //
 //             www.roalogic.com                                    //
 //                                                                 //
-//   This source file may be used and distributed without          //
-//   restriction provided that this copyright statement is not     //
-//   removed from the file and that any derivative work contains   //
-//   the original copyright notice and the associated disclaimer.  //
+//     Unless specifically agreed in writing, this software is     //
+//   licensed under the RoaLogic Non-Commercial License            //
+//   version-1.0 (the "License"), a copy of which is included      //
+//   with this file or may be found on the RoaLogic website        //
+//   http://www.roalogic.com. You may not use the file except      //
+//   in compliance with the License.                               //
 //                                                                 //
-//      THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY        //
-//   EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED     //
-//   TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS     //
-//   FOR A PARTICULAR PURPOSE. IN NO EVENT SHALL THE AUTHOR OR     //
-//   CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,  //
-//   SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT  //
-//   NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;  //
-//   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)      //
-//   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN     //
-//   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR  //
-//   OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS          //
-//   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  //
+//     THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY           //
+//   EXPRESS OF IMPLIED WARRANTIES OF ANY KIND.                    //
+//   See the License for permissions and limitations under the     //
+//   License.                                                      //
 //                                                                 //
 /////////////////////////////////////////////////////////////////////
+
 
 // +FHDR -  Semiconductor Reuse Standard File Header Section  -------
 // FILE NAME      : ahb3lite_interconnect_slave_priority.sv
