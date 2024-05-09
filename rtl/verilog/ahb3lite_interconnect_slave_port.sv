@@ -262,7 +262,7 @@ import ahb3lite_pkg::*;
    */
 
 //Impossible to prevent usage of ifdef here ...
-`ifdef RECURSIVE_FUNCTIONS_SUPPORTED
+`ifndef ALTERA_RESERVED_QIS
 
   //get highest priority from requesting masters
   assign requested_priority_lvl = highest_requested_priority(mstHSEL, mstpriority, MASTERS-1, 0);
