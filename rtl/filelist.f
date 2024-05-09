@@ -1,0 +1,5 @@
+verilog/ahb3lite_interconnect_slave_priority.sv
+verilog/ahb3lite_interconnect_slave_port.sv
+verilog/ahb3lite_interconnect_master_port.sv
+verilog/ahb3lite_interconnect.sv
+
