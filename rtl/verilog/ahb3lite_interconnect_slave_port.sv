@@ -157,7 +157,7 @@ import ahb3lite_pkg::*;
   endfunction : onehot2int
 
 
-`ifdef RECURSIVE_FUNCTIONS_SUPPORTED
+`ifndef ALTERA_RESERVED_QIS
   /*
    * Intel Quartus and Verilator do not support recursive functions.
    * Even though this one would be perfectly fine
